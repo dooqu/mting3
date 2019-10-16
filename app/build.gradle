@@ -9,13 +9,56 @@ android {
         targetSdkVersion 28
         versionCode 1
         versionName "1.0"
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
+    }
+
+    signingConfigs {
+        release {
+            keyAlias 'mting'
+            keyPassword 'xylink@20180928'
+            storeFile file('../doc/ting.jks')
+            storePassword 'xylink@20180928'
+        }
+        debug {
+            keyAlias 'mting'
+            keyPassword 'xylink@20180928'
+            storeFile file('../doc/ting.jks')
+            storePassword 'xylink@20180928'
+        }
+    }
+    android.applicationVariants.all { variant ->
+        variant.outputs.all { output ->
+            def time = new Date().format("yyyy-MM-dd", TimeZone.getTimeZone("GMT+08"))
+            outputFileName = "${variant.name}-v${defaultConfig.versionCode}-${defaultConfig.versionName}-${time}.apk"
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    flavorDimensions "mting"
+    productFlavors {
+        mting {
+            manifestPlaceholders = [TING_CHANNEL_VALUE: "mting"]
+//            manifestPlaceholders = [TING_CHANNEL_VALUE: "renrendict"]
+        }
+    }
+    compileOptions {
+        targetCompatibility 1.8
+        sourceCompatibility 1.8
+    }
+    packagingOptions {
+        exclude 'META-INF/rxjava.properties'
+    }
+    lintOptions {
+        abortOnError false
     }
 }
 
@@ -26,4 +69,15 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+    //
+    implementation 'com.google.code.gson:gson:2.8.6'
+    implementation 'org.greenrobot:eventbus:3.1.1'
+    implementation 'com.jakewharton:butterknife:8.8.1'
+    annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
+    implementation 'com.android.support:recyclerview-v7:28.0.0'
+    implementation 'com.lzy.net:okgo:3.0.4'
+    implementation 'com.lzy.net:okrx2:2.0.2'
+    implementation 'com.github.bumptech.glide:glide:4.9.0'
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.9.0'
+    implementation 'com.android.support:support-v4:28.0.0'
 }
