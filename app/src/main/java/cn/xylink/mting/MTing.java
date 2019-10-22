@@ -1,6 +1,5 @@
 package cn.xylink.mting;
 
-import android.app.ActivityManager;
 import android.app.Application;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
@@ -65,10 +64,10 @@ public class MTing extends Application {
             // 则此application::onCreate 是被service 调用的，直接返回
             return;
         }
-        /*
+
         activityManager = ActivityManager.getScreenManager();
         ContentManager.init(this);
-        WXapi.init(this);
+         /* WXapi.init(this);
         try {
             QQApi.init(this);
         } catch (Exception e) {
