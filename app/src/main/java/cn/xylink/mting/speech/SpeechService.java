@@ -5,26 +5,20 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import android.app.Notification;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.app.Service;
 import android.bluetooth.BluetoothA2dp;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.os.Binder;
 import android.os.IBinder;
 import android.util.Log;
 
+import org.greenrobot.eventbus.EventBus;
 
-import cn.xylink.mting.MainActivity;
-import cn.xylink.mting.R;
 import cn.xylink.mting.bean.Article;
+import cn.xylink.mting.speech.data.ArticleDataProvider;
 import cn.xylink.mting.speech.data.ArticleDataProviderFake;
 import cn.xylink.mting.speech.list.DynamicSpeechList;
 import cn.xylink.mting.speech.list.SpeechList;
@@ -85,7 +79,7 @@ public class SpeechService extends Service {
     SpeechServiceState serviceState;
 
     /*常用对Article的网络操作类*/
-    ArticleDataProviderFake articleDataProvider;
+    ArticleDataProvider articleDataProvider;
 
 
     SpeechNotification speechNotification;
@@ -100,7 +94,7 @@ public class SpeechService extends Service {
     Timer countdownTimer;
 
 
-    NotificationManager notificationManager;
+    //NotificationManager notificationManager;
 
     boolean isForegroundService;
 
@@ -162,7 +156,7 @@ public class SpeechService extends Service {
         isReleased = true;
         speechor.reset();
         speechor.release();
-        articleDataProvider.release();
+        //articleDataProvider.release();
         if (countdownTimer != null) {
             countdownTimer.cancel();
         }
@@ -175,8 +169,8 @@ public class SpeechService extends Service {
         isForegroundService = false;
         isReleased = false;
         serviceState = SpeechServiceState.Ready;
-        articleDataProvider = new ArticleDataProviderFake(this);
-        notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        articleDataProvider = new ArticleDataProvider(this);
+        //notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 
         speechor = new SpeechEngineWrapper(this) {
             @Override
@@ -259,16 +253,16 @@ public class SpeechService extends Service {
     private void onSpeechStart(Article article) {
         speechNotification.update();
         //initNotification();
-       // EventBus.getDefault().post(new SpeechStartEvent(article));
+        EventBus.getDefault().post(new SpeechStartEvent(article));
 
     }
 
     private void onSpeechReady(Article article) {
-        //EventBus.getDefault().post(new SpeechReadyEvent(article));
         speechDurationOfArticle = System.currentTimeMillis();
         speechDurationOfArticle = 0;
         speechStartTimeOfArticle = new java.util.Date().getTime();
         speechArticleIdOfArticle = article.getArticleId();
+        EventBus.getDefault().post(new SpeechReadyEvent(article));
     }
 
     private void onSpeechProgress(Article article, int fragmentIndex, List<String> fragments) {
@@ -276,48 +270,47 @@ public class SpeechService extends Service {
         //if(fragmentIndex == 0) {
         speechNotification.update();
         // }
-        //EventBus.getDefault().post(new SpeechProgressEvent(fragmentIndex, fragments, article));
+        EventBus.getDefault().post(new SpeechProgressEvent(fragmentIndex, fragments, article));
     }
 
     private void onSpeechBuffering(Article article) {
-       // EventBus.getDefault().post(new SpeechBufferingEvent(getSpeechorFrameIndex(), getSpeechorTextFragments(), article));
+        EventBus.getDefault().post(new SpeechBufferingEvent(getSpeechorFrameIndex(), getSpeechorTextFragments(), article));
     }
 
     private void onSpeechError(int errorCode, String message, Article article) {
-        //EventBus.getDefault().post(new SpeechErrorEvent(errorCode, message, article));
+        EventBus.getDefault().post(new SpeechErrorEvent(errorCode, message, article));
         speechNotification.update();
     }
 
     private void onSpeechEnd(Article article, float progress, boolean deleteFromList) {
         //与云端同步数据状态
         //articleDataProvider.readArticle(article, progress, deleteFromList, ((errorCode, articleResult) -> {
-            //EventBus.getDefault().post(new SpeechArticleStatusSavedOnServerEvent(errorCode, "", articleResult));
+        //EventBus.getDefault().post(new SpeechArticleStatusSavedOnServerEvent(errorCode, "", articleResult));
         //}));
 
         if (progress == 1) {
-            //EventBus.getDefault().post(new SpeechEndEvent(article, progress));
+            EventBus.getDefault().post(new SpeechEndEvent(article, progress));
         }
 
         long duration = new java.util.Date().getTime() - speechStartTimeOfArticle;
         speechDurationOfArticle += (duration > 0) ? duration : 0;
-
         //articleDataProvider.appendArticleRecord(speechArticleIdOfArticle, speechDurationOfArticle / 1000);
     }
 
     private void onSpeechPause(Article article) {
-        //EventBus.getDefault().post(new SpeechPauseEvent(article));
+        EventBus.getDefault().post(new SpeechPauseEvent(article));
         long duration = new java.util.Date().getTime() - speechStartTimeOfArticle;
         speechDurationOfArticle += (duration > 0) ? duration : 0;
     }
 
     private void onSpeechResume(Article article) {
-       // EventBus.getDefault().post(new SpeechResumeEvent(article));
+        EventBus.getDefault().post(new SpeechResumeEvent(article));
         speechStartTimeOfArticle = new java.util.Date().getTime();
     }
 
 
     private void onSpeechStoped(SpeechStopEvent.StopReason reason) {
-        //EventBus.getDefault().post(new SpeechStopEvent(reason));
+        EventBus.getDefault().post(new SpeechStopEvent(reason));
         //notificationManager.cancelAll();
         if (reason == SpeechStopEvent.StopReason.ListIsNull) {
             //this.stopForeground(true);
@@ -334,7 +327,6 @@ public class SpeechService extends Service {
     public synchronized void setCountDown(CountDownMode mode, int tickcountValue) {
 
         this.cancelCountDown();
-
         if (tickcountValue <= 0 || mode == CountDownMode.None) {
             return;
         }
@@ -483,6 +475,21 @@ public class SpeechService extends Service {
         return speechList.getCurrent();
     }
 
+    public synchronized void loadAndPlay(String broadcastId, String articleId) {
+        ArticleDataProvider articleDataProvider = new ArticleDataProvider(this);
+        articleDataProvider.getSpeechList(broadcastId, articleId, new ArticleDataProvider.ArticleLoader<List<Article>>() {
+            @Override
+            public void invoke(int errorCode, List<Article> data) {
+                if(errorCode == 0) {
+                    synchronized (SpeechService.this) {
+                        SpeechService.this.resetSpeechList(data, SpeechService.SpeechListType.Dynamic);
+                        SpeechService.this.play(articleId);
+                    }
+                }
+            }
+        });
+    }
+
 
     public synchronized Article play(String articleId) {
         if (articleId == null || speechList == null) {
@@ -501,7 +508,6 @@ public class SpeechService extends Service {
         }
         return article;
     }
-
 
 
     public synchronized Article pushFrontToSpeechListAndPlay(Article article) {
@@ -547,11 +553,11 @@ public class SpeechService extends Service {
         boolean isFirst = (speechList instanceof DynamicSpeechList && speechList.getFirst() != null && speechList.getFirst() == article);
         boolean isLast = (speechList instanceof DynamicSpeechList && speechList.getLast() != null && speechList.getLast() == article);
 
-        this.articleDataProvider.loadArticleContentAndList(article, needSourceEffect, isFirst, isLast, (int errorcode, Article articleUpdated, List<Article> list) -> {
+        this.articleDataProvider.loadArticleAndList(article, needSourceEffect, isFirst, isLast, (int errorcode, ArticleDataProvider.ArticleListArgument responseResult) -> {
 
             synchronized (this) {
 
-                if (isReleased || serviceState != SpeechServiceState.Loadding || articleUpdated != this.speechList.getCurrent()) {
+                if (isReleased || serviceState != SpeechServiceState.Loadding || responseResult.article != this.speechList.getCurrent()) {
                     return;
                 }
 
@@ -561,12 +567,12 @@ public class SpeechService extends Service {
                     return;
                 }
 
-                if(list != null && list.size() > 0) {
-                    if(isFirst) {
-                        speechList.pushFront(list);
+                if (responseResult.list != null && responseResult.list.size() > 0) {
+                    if (isFirst) {
+                        speechList.pushFront(responseResult.list);
                     }
-                    else if(isLast) {
-                        speechList.pushBack(list);
+                    else if (isLast) {
+                        speechList.pushBack(responseResult.list);
                     }
                 }
 
@@ -634,9 +640,8 @@ public class SpeechService extends Service {
     }
 
 
-
-    protected synchronized  void pushFrontToSpeechList(List<Article> list) {
-        if(this.speechList == null) {
+    protected synchronized void pushFrontToSpeechList(List<Article> list) {
+        if (this.speechList == null) {
             return;
         }
 
@@ -645,14 +650,14 @@ public class SpeechService extends Service {
 
 
     protected synchronized void pushBackToSpeechList(List<Article> list) {
-        if(this.speechList == null) {
+        if (this.speechList == null) {
             return;
         }
         this.speechList.pushBack(list);
     }
 
     public synchronized void resetSpeechList(List<Article> list, SpeechListType speechListType) {
-        if(list == null || list.size() <= 0) {
+        if (list == null || list.size() <= 0) {
             return;
         }
         this.clearSpeechList();
@@ -699,7 +704,7 @@ public class SpeechService extends Service {
 
 
     public synchronized Article getSpeechListSelected() {
-        return this.speechList != null? this.speechList.getCurrent() : null;
+        return this.speechList != null ? this.speechList.getCurrent() : null;
     }
 
 
@@ -895,8 +900,8 @@ public class SpeechService extends Service {
                     case "exit":
                         pause();
                         speechNotification.stopAndNotRemove();
-                       // stopForeground(false);
-                       // ((NotificationManager) SpeechService.this.getSystemService(Context.NOTIFICATION_SERVICE)).cancelAll();
+                        // stopForeground(false);
+                        // ((NotificationManager) SpeechService.this.getSystemService(Context.NOTIFICATION_SERVICE)).cancelAll();
                         break;
                 } // end switch
             } // end sychornized

@@ -5,6 +5,7 @@ public class Article
 {
     String articleId;
     String title;
+    String broadcastId;
     String content;
     int inType;
     String url;
@@ -12,6 +13,7 @@ public class Article
     String sourceName;
     String sourceLogo;
     String picture;
+    long createAt;
     long updateAt;
     float progress;
     int store;
@@ -38,6 +40,13 @@ public class Article
         return this.articleId;
     }
 
+    public String getBroadcastId() {
+        return broadcastId;
+    }
+
+    public void setBroadcastId(String broadcastId) {
+        this.broadcastId = broadcastId;
+    }
 
     public void setTitle(String title)
     {
@@ -178,6 +187,14 @@ public class Article
 
     public void setDescribe(String describe) {
         this.describe = describe;
+    }
+
+    public long getCreateAt() {
+        return createAt;
+    }
+
+    public void setCreateAt(long createAt) {
+        this.createAt = createAt;
     }
 
     @Override

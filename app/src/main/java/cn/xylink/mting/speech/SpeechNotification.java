@@ -153,5 +153,4 @@ public class SpeechNotification {
             service.stopForeground(true);
         }
     }
-
 }
