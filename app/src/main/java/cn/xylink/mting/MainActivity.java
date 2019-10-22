@@ -28,7 +28,7 @@ public class MainActivity extends AppCompatActivity {
             protected void onConnected(boolean connected, SpeechService service) {
                 if(connected) {
                     speechService = service;
-                    speechService.setRole(Speechor.SpeechorRole.XiaoYao);
+                    speechService.setRole(Speechor.SpeechorRole.XiaoIce);
                     onSpeechServiceReady();
                 }
             }
@@ -48,12 +48,10 @@ public class MainActivity extends AppCompatActivity {
 
     protected  void onSpeechServiceReady() {
         List<Article> initList = new ArrayList<Article>();
-        for(int i = 0; i < 10; i++) {
+        for(int i = 0; i < 5; i++) {
             initList.add(ArticleDataProviderFake.createArticle(new Article()));
         }
-        speechService.resetSpeechList(initList, SpeechService.SpeechListType.Dynamic);
-
-
+        speechService.resetSpeechList(initList, SpeechService.SpeechListType.Unread);
         speechService.play(initList.get(0).getArticleId());
     }
 }

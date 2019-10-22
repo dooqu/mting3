@@ -50,8 +50,9 @@ public class ArticleDataProviderFake {
         handler = new Handler(Looper.getMainLooper());
     }
 
+    static int articleId = 0;
     public static  Article createArticle(Article article) {
-        article.setTitle("秋到了，秋有文");
+        article.setTitle("秋到了，秋有文" + articleId++);
         article.setArticleId(UUID.randomUUID().toString());
         article.setTextBody("秋的万盏灯火旖旎风景，天地的万里江河婆娑星月。\n" +
                 "\n" +
