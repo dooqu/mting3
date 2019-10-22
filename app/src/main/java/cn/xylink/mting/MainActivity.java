@@ -52,8 +52,6 @@ public class MainActivity extends AppCompatActivity {
             initList.add(ArticleDataProviderFake.createArticle(new Article()));
         }
         speechService.resetSpeechList(initList, SpeechService.SpeechListType.Unread);
-
-
         speechService.play(initList.get(0).getArticleId());
     }
 }

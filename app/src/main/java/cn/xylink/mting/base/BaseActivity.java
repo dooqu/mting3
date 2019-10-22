@@ -25,6 +25,7 @@ import android.widget.Toast;
 
 import com.tendcloud.tenddata.TCAgent;
 
+
 import java.io.File;
 import java.util.List;
 import java.util.Timer;
@@ -65,7 +66,7 @@ public abstract class BaseActivity extends AppCompatActivity {
             checkOnlineUpgrade();
         }
 
-        TCAgent.onPageStart(this, this.getComponentName().getClassName());
+       // TCAgent.onPageStart(this, this.getComponentName().getClassName());
     }
 
 
