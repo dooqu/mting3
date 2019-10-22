@@ -1,4 +1,4 @@
-package cn.xylink.mting.base;
+package cn.xylink.mting.ui.activity;
 
 import android.Manifest;
 import android.app.Activity;
