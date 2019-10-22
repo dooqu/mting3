@@ -87,6 +87,9 @@ public class SpeechService extends Service {
     /*常用对Article的网络操作类*/
     ArticleDataProviderFake articleDataProvider;
 
+
+    SpeechNotification speechNotification;
+
     /*倒计时数值，可以表示倒计时的分钟数，也可以表示倒计时的播放数*/
     int countdownValue;
 
@@ -131,6 +134,7 @@ public class SpeechService extends Service {
         initService();
         initReceiver();
         setRole(Speechor.SpeechorRole.XiaoYao);
+        speechNotification = new SpeechNotification(this);
     }
 
 
@@ -162,7 +166,8 @@ public class SpeechService extends Service {
         if (countdownTimer != null) {
             countdownTimer.cancel();
         }
-        this.stopForeground(true);
+        //this.stopForeground(true);
+        speechNotification.stopAndRemove();
     }
 
 
@@ -247,13 +252,13 @@ public class SpeechService extends Service {
         notifIntent.addAction("exit");
         registerReceiver(notifReceiver, notifIntent);
         IntentFilter a2dpIntent = new IntentFilter(BluetoothA2dp.ACTION_CONNECTION_STATE_CHANGED);
-
         registerReceiver(a2dpReceiver, a2dpIntent);
     }
 
 
     private void onSpeechStart(Article article) {
-        initNotification();
+        speechNotification.update();
+        //initNotification();
        // EventBus.getDefault().post(new SpeechStartEvent(article));
 
     }
@@ -269,7 +274,7 @@ public class SpeechService extends Service {
     private void onSpeechProgress(Article article, int fragmentIndex, List<String> fragments) {
         article.setProgress((float) fragmentIndex / (float) fragments.size());
         //if(fragmentIndex == 0) {
-        initNotification();
+        speechNotification.update();
         // }
         //EventBus.getDefault().post(new SpeechProgressEvent(fragmentIndex, fragments, article));
     }
@@ -280,7 +285,7 @@ public class SpeechService extends Service {
 
     private void onSpeechError(int errorCode, String message, Article article) {
         //EventBus.getDefault().post(new SpeechErrorEvent(errorCode, message, article));
-        initNotification();
+        speechNotification.update();
     }
 
     private void onSpeechEnd(Article article, float progress, boolean deleteFromList) {
@@ -315,7 +320,8 @@ public class SpeechService extends Service {
         //EventBus.getDefault().post(new SpeechStopEvent(reason));
         //notificationManager.cancelAll();
         if (reason == SpeechStopEvent.StopReason.ListIsNull) {
-            this.stopForeground(true);
+            //this.stopForeground(true);
+            speechNotification.stopAndRemove();
         }
     }
 
@@ -420,7 +426,7 @@ public class SpeechService extends Service {
             case Playing:
                 this.serviceState = SpeechServiceState.Paused;
                 result = this.speechor.pause();
-                initNotification();
+                speechNotification.update();
                 onSpeechPause(speechList.getCurrent());
                 return true;
         }
@@ -438,7 +444,8 @@ public class SpeechService extends Service {
 
             if (this.isSimulatePaused == true) {
                 playSelected();
-                initNotification();
+                speechNotification.update();
+                //initNotification();
                 onSpeechResume(speechList.getCurrent());
                 return true;
             }
@@ -446,12 +453,13 @@ public class SpeechService extends Service {
                 result = this.speechor.resume();
                 if (result) {
                     serviceState = SpeechServiceState.Playing;
-                    initNotification();
+                    speechNotification.update();
+                    //initNotification();
                     onSpeechResume(speechList.getCurrent());
                 }
                 else {
                     result = seek(getProgress()) > 0;
-                    initNotification();
+                    speechNotification.update();
                     //onSpeechResume(speechList.getCurrent());
                 }
                 return result;
@@ -516,15 +524,6 @@ public class SpeechService extends Service {
     }
 
 
-    /*
-    public synchronized void addFirst(List<Article> list) {
-        this.speechList.pushFront(list);
-    }
-
-     */
-
-
-
     public synchronized void setSpeed(Speechor.SpeechorSpeed speed) {
         this.speechor.setSpeed(speed);
     }
@@ -542,8 +541,8 @@ public class SpeechService extends Service {
         this.serviceState = SpeechServiceState.Loadding;
         this.onSpeechStart(article);
 
-        boolean isFirst = (speechList.getFirst() != null && speechList.getFirst() == article);
-        boolean isLast = (speechList.getLast() != null && speechList.getLast() == article);
+        boolean isFirst = (speechList instanceof DynamicSpeechList && speechList.getFirst() != null && speechList.getFirst() == article);
+        boolean isLast = (speechList instanceof DynamicSpeechList && speechList.getLast() != null && speechList.getLast() == article);
 
         this.articleDataProvider.loadArticleContentAndList(article, needSourceEffect, isFirst, isLast, (int errorcode, Article articleUpdated, List<Article> list) -> {
 
@@ -714,10 +713,8 @@ public class SpeechService extends Service {
         return speechor.getFragmentIndex();
     }
 
-    public void updateNotification() {
-        this.initNotification();
-    }
 
+    /*
 
     private void initNotification() {
 
@@ -746,7 +743,7 @@ public class SpeechService extends Service {
             //>= android 8.0 设定foregroundService的前提是notification要创建channel，并关掉channel的sound
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
                 String channelId = "cn.xylink.mting";
-                String channelName = "SPEECH_SERVICE_NAME";
+                String channelName = "轩辕听";
                 NotificationChannel notificationChannel = null;
                 notificationChannel = new NotificationChannel(channelId, channelName, NotificationManager.IMPORTANCE_DEFAULT);
                 notificationChannel.enableLights(true);
@@ -822,6 +819,8 @@ public class SpeechService extends Service {
         }
     }
 
+     */
+
     private BroadcastReceiver notifReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -892,8 +891,9 @@ public class SpeechService extends Service {
 
                     case "exit":
                         pause();
-                        stopForeground(false);
-                        ((NotificationManager) SpeechService.this.getSystemService(Context.NOTIFICATION_SERVICE)).cancelAll();
+                        speechNotification.stopAndNotRemove();
+                       // stopForeground(false);
+                       // ((NotificationManager) SpeechService.this.getSystemService(Context.NOTIFICATION_SERVICE)).cancelAll();
                         break;
                 } // end switch
             } // end sychornized
