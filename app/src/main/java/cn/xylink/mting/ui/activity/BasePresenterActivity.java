@@ -7,7 +7,6 @@ import android.content.Context;
 import java.util.ArrayList;
 import java.util.List;
 
-import cn.xylink.mting.base.BaseActivity;
 import cn.xylink.mting.contract.IBaseView;
 import cn.xylink.mting.dialog.LoadingDialog;
 import cn.xylink.mting.dialog.TipDialog;

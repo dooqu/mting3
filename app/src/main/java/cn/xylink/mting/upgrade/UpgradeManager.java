@@ -21,7 +21,7 @@ import java.io.File;
 import java.io.IOException;
 
 import cn.xylink.mting.MTing;
-import cn.xylink.mting.base.BaseActivity;
+import cn.xylink.mting.ui.activity.BaseActivity;
 import cn.xylink.mting.bean.UpgradeInfo;
 
 import static android.content.Context.DOWNLOAD_SERVICE;

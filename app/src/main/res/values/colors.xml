@@ -12,6 +12,6 @@
     <color name="c333333">#333333</color>
     <color name="cbbbbbb">#bbbbbb</color>
     <color name="c488def">#488def</color>
-
+    <color name="color_login_text_gray">#bbbbbb</color>
 
 </resources>

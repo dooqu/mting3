@@ -1,17 +1,6 @@
 package cn.xylink.mting.utils;
 
 import android.content.Context;
-import android.text.TextUtils;
-
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import cn.xylink.mting.MTing;
-import cn.xylink.mting.base.BaseActivity;
-import cn.xylink.mting.base.BaseActivity;
 //import cn.xylink.mting.bean.UserInfo;
 //import cn.xylink.mting.model.data.Const;
 //import cn.xylink.mting.model.data.FileCache;
