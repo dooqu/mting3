@@ -480,7 +480,7 @@ public class SpeechService extends Service {
         articleDataProvider.getSpeechList(broadcastId, articleId, new ArticleDataProvider.ArticleLoader<List<Article>>() {
             @Override
             public void invoke(int errorCode, List<Article> data) {
-                if(errorCode == 0) {
+                if (errorCode == 0) {
                     synchronized (SpeechService.this) {
                         SpeechService.this.resetSpeechList(data, SpeechService.SpeechListType.Dynamic);
                         SpeechService.this.play(articleId);
@@ -721,113 +721,6 @@ public class SpeechService extends Service {
         return speechor.getFragmentIndex();
     }
 
-
-    /*
-
-    private void initNotification() {
-
-        synchronized (this) {
-            Article currentArticle = this.speechList.getCurrent();
-            if (currentArticle == null) {
-                return;
-            }
-
-            Intent intentNotifOpen = new Intent(this, MainActivity.class);
-            intentNotifOpen.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            PendingIntent pendingIntent = PendingIntent.getActivity(this, 1, intentNotifOpen, PendingIntent.FLAG_UPDATE_CURRENT);
-
-            Notification.Builder builder = new Notification.Builder(this)
-                    .setContentIntent(pendingIntent)
-                    //.setDeleteIntent(pendingIntentCancel)
-                    .setSmallIcon(R.mipmap.icon_notif)
-                    .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.mipmap.icon_notify_logo))
-                    .setTicker(currentArticle.getTitle())
-                    .setContentTitle("轩辕听")
-                    .setContentText(currentArticle.getTitle())
-                    .setOngoing(true)
-                    .setAutoCancel(false)
-                    .setShowWhen(false);
-
-            //>= android 8.0 设定foregroundService的前提是notification要创建channel，并关掉channel的sound
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-                String channelId = "cn.xylink.mting";
-                String channelName = "轩辕听";
-                NotificationChannel notificationChannel = null;
-                notificationChannel = new NotificationChannel(channelId, channelName, NotificationManager.IMPORTANCE_DEFAULT);
-                notificationChannel.enableLights(true);
-                notificationChannel.setLightColor(Color.RED);
-                notificationChannel.setShowBadge(true);
-                notificationChannel.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
-                notificationChannel.setSound(null, null);
-                NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-                manager.createNotificationChannel(notificationChannel);
-                //设定builder的channelid
-                builder.setChannelId(channelId);
-            }
-
-            Intent playIntent = new Intent("play");
-            Intent resumeIntent = new Intent("resume");
-            Intent pauseIntent = new Intent("pause");
-            Intent favIntent = new Intent("favorite");
-            Intent unFavIntent = new Intent("unfavorite");
-            Intent nextIntent = new Intent("next");
-            Intent noneIntent = new Intent("null");
-            Intent exitIntent = new Intent("exit");
-
-            Notification.Action actionPlay = null, actionNext = null, actionFav = null, actionExit = null;
-
-            boolean favorited = currentArticle.getStore() == 1;
-
-            switch (serviceState) {
-                case Loadding:
-                case Playing:
-                    actionFav = new Notification.Action(favorited ? R.mipmap.icon_favorited : R.mipmap.icon_unfavorited, "", PendingIntent.getBroadcast(this, ++executeCode, favorited ? unFavIntent : favIntent, PendingIntent.FLAG_UPDATE_CURRENT));
-                    actionPlay = new Notification.Action(R.mipmap.icon_pause, "", PendingIntent.getBroadcast(this, ++executeCode, pauseIntent, PendingIntent.FLAG_UPDATE_CURRENT));
-                    actionNext = new Notification.Action(R.mipmap.next, "", PendingIntent.getBroadcast(this, ++executeCode, (hasNext() ? nextIntent : noneIntent), PendingIntent.FLAG_UPDATE_CURRENT));
-                    break;
-
-                case Paused:
-                    actionFav = new Notification.Action(favorited ? R.mipmap.icon_favorited : R.mipmap.icon_unfavorited, "", PendingIntent.getBroadcast(this, ++executeCode, favorited ? unFavIntent : favIntent, PendingIntent.FLAG_UPDATE_CURRENT));
-                    actionPlay = new Notification.Action(R.mipmap.icon_playing, "", PendingIntent.getBroadcast(this, ++executeCode, resumeIntent, PendingIntent.FLAG_UPDATE_CURRENT));
-                    actionNext = new Notification.Action(R.mipmap.next, "", PendingIntent.getBroadcast(this, ++executeCode, (hasNext() ? nextIntent : noneIntent), PendingIntent.FLAG_UPDATE_CURRENT));
-                    break;
-
-                case Error:
-                    actionFav = new Notification.Action(favorited ? R.mipmap.icon_favorited : R.mipmap.icon_unfavorited, "", PendingIntent.getBroadcast(this, ++executeCode, noneIntent, PendingIntent.FLAG_UPDATE_CURRENT));
-                    actionPlay = new Notification.Action(R.mipmap.icon_playing, "", PendingIntent.getBroadcast(this, ++executeCode, playIntent, PendingIntent.FLAG_UPDATE_CURRENT));
-                    actionNext = new Notification.Action(R.mipmap.next, "", PendingIntent.getBroadcast(this, ++executeCode, (hasNext() ? nextIntent : noneIntent), PendingIntent.FLAG_UPDATE_CURRENT));
-                    break;
-
-                default:
-                    return;
-            }
-
-            actionExit = new Notification.Action(R.mipmap.icon_dialog_close, "", PendingIntent.getBroadcast(this, ++executeCode, exitIntent, PendingIntent.FLAG_UPDATE_CURRENT));
-
-            if (actionFav != null) {
-                builder.addAction(actionFav);
-            }
-
-            if (actionPlay != null) {
-                builder.addAction(actionPlay);
-            }
-
-            if (actionNext != null) {
-                builder.addAction(actionNext);
-            }
-
-            builder.addAction(actionExit);
-
-            Notification.MediaStyle mediaStyle = new Notification.MediaStyle();
-            mediaStyle.setShowActionsInCompactView(1, 2, 3);
-            builder.setStyle(mediaStyle);
-
-            Notification notification = builder.build();
-            this.startForeground(android.os.Process.myPid(), notification);
-        }
-    }
-
-     */
 
     private BroadcastReceiver notifReceiver = new BroadcastReceiver() {
         @Override
