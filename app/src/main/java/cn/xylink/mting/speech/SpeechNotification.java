@@ -12,6 +12,8 @@ import android.graphics.Color;
 import cn.xylink.mting.MainActivity;
 import cn.xylink.mting.R;
 import cn.xylink.mting.bean.Article;
+import cn.xylink.mting.speech.list.DynamicSpeechList;
+import cn.xylink.mting.speech.list.SpeechList;
 
 import static android.content.Context.NOTIFICATION_SERVICE;
 
@@ -86,6 +88,12 @@ public class SpeechNotification {
 
         switch (service.getState()) {
             case Loadding:
+                SpeechList speechList = service.getSpeechList();
+                boolean isFirst = (speechList instanceof DynamicSpeechList && speechList.getFirst() != null && speechList.getFirst() == currentArticle);
+                boolean isLast = (speechList instanceof DynamicSpeechList && speechList.getLast() != null && speechList.getLast() == currentArticle);
+                actionFav = new Notification.Action(favorited ? R.mipmap.icon_favorited : R.mipmap.icon_unfavorited, "", PendingIntent.getBroadcast(service, ++executeCode, favorited ? unFavIntent : favIntent, PendingIntent.FLAG_UPDATE_CURRENT));
+                actionPlay = new Notification.Action(R.mipmap.icon_pause, "", PendingIntent.getBroadcast(service, ++executeCode, pauseIntent, PendingIntent.FLAG_UPDATE_CURRENT));
+                actionNext = new Notification.Action(R.mipmap.next, "", PendingIntent.getBroadcast(service, ++executeCode, (hasNext && !isLast ? nextIntent : noneIntent), PendingIntent.FLAG_UPDATE_CURRENT));
             case Playing:
                 actionFav = new Notification.Action(favorited ? R.mipmap.icon_favorited : R.mipmap.icon_unfavorited, "", PendingIntent.getBroadcast(service, ++executeCode, favorited ? unFavIntent : favIntent, PendingIntent.FLAG_UPDATE_CURRENT));
                 actionPlay = new Notification.Action(R.mipmap.icon_pause, "", PendingIntent.getBroadcast(service, ++executeCode, pauseIntent, PendingIntent.FLAG_UPDATE_CURRENT));

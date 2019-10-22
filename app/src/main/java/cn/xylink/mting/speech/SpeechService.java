@@ -532,6 +532,10 @@ public class SpeechService extends Service {
         return this.speechor.getSpeed();
     }
 
+    public synchronized SpeechList getSpeechList() {
+        return this.speechList;
+    }
+
 
     private void prepareArticle(final Article article, boolean needSourceEffect) {
         if (speechList.getCurrent() != null && serviceState == SpeechServiceState.Playing) {
@@ -540,7 +544,6 @@ public class SpeechService extends Service {
 
         this.serviceState = SpeechServiceState.Loadding;
         this.onSpeechStart(article);
-
         boolean isFirst = (speechList instanceof DynamicSpeechList && speechList.getFirst() != null && speechList.getFirst() == article);
         boolean isLast = (speechList instanceof DynamicSpeechList && speechList.getLast() != null && speechList.getLast() == article);
 
