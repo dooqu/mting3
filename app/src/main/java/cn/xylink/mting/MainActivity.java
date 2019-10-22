@@ -17,19 +17,17 @@ import cn.xylink.mting.speech.data.ArticleDataProviderFake;
 public class MainActivity extends AppCompatActivity {
 
     SpeechServiceProxy proxy;
-    SpeechService speechService;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
         proxy = new SpeechServiceProxy(this) {
             @Override
             protected void onConnected(boolean connected, SpeechService service) {
                 if(connected) {
-                    speechService = service;
-                    speechService.setRole(Speechor.SpeechorRole.XiaoIce);
-                    onSpeechServiceReady();
+                    service.setRole(Speechor.SpeechorRole.XiaoIce);
+                    onSpeechServiceReady(service);
                 }
             }
         };
@@ -37,16 +35,16 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    protected  void onSpeechServiceReady(SpeechService service) {
+        service.loadAndPlay("2019102118414971152446751", "2019102211541422454428823");
+    }
+
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
-
         if(proxy != null) {
             proxy.unbind();
         }
-    }
-
-    protected  void onSpeechServiceReady() {
-        speechService.loadAndPlay("2019102118414971152446751", "2019102211541422454428823");
     }
 }
