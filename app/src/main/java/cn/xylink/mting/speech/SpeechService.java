@@ -19,7 +19,6 @@ import org.greenrobot.eventbus.EventBus;
 
 import cn.xylink.mting.bean.Article;
 import cn.xylink.mting.speech.data.ArticleDataProvider;
-import cn.xylink.mting.speech.data.ArticleDataProviderFake;
 import cn.xylink.mting.speech.list.DynamicSpeechList;
 import cn.xylink.mting.speech.list.SpeechList;
 import cn.xylink.mting.speech.event.*;
@@ -170,7 +169,6 @@ public class SpeechService extends Service {
         isReleased = false;
         serviceState = SpeechServiceState.Ready;
         articleDataProvider = new ArticleDataProvider(this);
-        //notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 
         speechor = new SpeechEngineWrapper(this) {
             @Override
@@ -773,7 +771,6 @@ public class SpeechService extends Service {
                                 EventBus.getDefault().post(new FavoriteEvent(currentArticle));
                             }
                         }));
-
                          */
                     case "unfavorite":
                         if (currentArticle.getStore() == 0) {

@@ -4,24 +4,6 @@ import java.util.List;
 
 public interface Speechor {
     static int ERROR_RETRY_COUNT = 3;
-    @FunctionalInterface
-    public static interface StateChangedListener
-    {
-        void onChanged(SpeechorState state);
-    }
-
-    @FunctionalInterface
-    public static interface SpeakProgressListener
-    {
-        void onProgress(List<String> fragments, int index);
-    }
-
-    @FunctionalInterface
-    public static interface ErrorListener
-    {
-        void onError(int errorCode, String message);
-    }
-
 
     static enum  SpeechorSpeed
     {
