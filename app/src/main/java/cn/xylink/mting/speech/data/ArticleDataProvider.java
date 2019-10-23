@@ -9,6 +9,8 @@ import java.util.List;
 
 import cn.xylink.mting.bean.Article;
 import cn.xylink.mting.contract.IBaseView;
+import cn.xylink.mting.model.ArticleInfoRequest;
+import cn.xylink.mting.model.ArticleInfoResponse;
 import cn.xylink.mting.model.SpeechListRequest;
 import cn.xylink.mting.model.SpeechListResponse;
 import cn.xylink.mting.model.data.SpeechListNearByRequest;
@@ -157,50 +159,71 @@ public class ArticleDataProvider {
             soundEffector.playSwitch(null);
         }
 
-        ArticleListArgument responseResult = new ArticleListArgument();
-        responseResult.article = article;
-        article.setContent("你好世界");
+        ArticleInfoRequest request = new ArticleInfoRequest();
+        request.setArticleId(article.getArticleId());
+        request.setBroadcastId(article.getBroadcastId());
+        request.setToken("1");
+        request.doSign();
 
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
+        ArticleListArgument articleListArgument = new ArticleListArgument();
+        articleListArgument.article = article;
 
-                try {
-                    //模拟网络加载
-                    Thread.sleep(1500);
-                }
-                catch (InterruptedException ex) {
-                    ex.printStackTrace();
-                }
+        OkGoUtils.getInstance().postData(
+                new IBaseView() {
+                    @Override
+                    public void showLoading() {
+                    }
 
-                if (isFirst || isLast) {
-                    getSpeechListNearBy(article.getBroadcastId(), article.getCreateAt(), (isFirst) ? "old" : "new", new ArticleLoader<List<Article>>() {
-                        @Override
-                        public void invoke(int errorCode, List<Article> data) {
-                            handler.post(new Runnable() {
+                    @Override
+                    public void hideLoading() {
+                    }
+                },
+                RemoteUrl.getSpeechListUrl(),
+                GsonUtil.GsonString(request), ArticleInfoResponse.class,
+                new OkGoUtils.ICallback<ArticleInfoResponse>() {
+                    @Override
+                    public void onStart() {
+                    }
+
+                    @Override
+                    public void onFailure(int code, String errorMsg) {
+                        if (callback != null) {
+                            callback.invoke(code, null);
+                        }
+                    }
+
+                    @Override
+                    public void onSuccess(ArticleInfoResponse response) {
+                        Article responseArt = response.getData();
+                        article.setContent(responseArt.getContent());
+                        article.setTitle(responseArt.getTitle());
+                        article.setUserId(responseArt.getUserId());
+                        article.setNickName(responseArt.getNickName());
+                        article.setSourceName(responseArt.getSourceName());
+                        article.setRead(responseArt.getRead());
+                        article.setShareUrl(responseArt.getShareUrl());
+                        article.setStore(responseArt.getStore());
+
+                        if (isFirst || isLast) {
+                            getSpeechListNearBy(article.getBroadcastId(), article.getCreateAt(), (isFirst) ? "old" : "new", new ArticleLoader<List<Article>>() {
                                 @Override
-                                public void run() {
-                                    responseResult.list = data;
-                                    callback.invoke(0, responseResult);
+                                public void invoke(int errorCode, List<Article> data) {
+                                    articleListArgument.list = data;
+                                    //不管列表成功失败，都返回0;
+                                    callback.invoke(0, articleListArgument);
                                 }
                             });
                         }
-                    });
-                    return;
-                }
-
-                handler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (tickCountAtTime == tickcount && callback != null) {
-                            callback.invoke(0, responseResult);
-                        }
                         else {
-                            Log.d("xylink", "取消");
+                            callback.invoke(0, articleListArgument);
                         }
                     }
+
+                    @Override
+                    public void onComplete() {
+                        Log.d("xylink", "onComplete");
+                    }
                 });
-            }
-        }).start();
+
     }
 }

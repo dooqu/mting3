@@ -165,7 +165,7 @@ public class RemoteUrl {
 
     public static String  getArticleDetailUrl() { return URL_BASE +  "/api/sct/v2/article/detail";}
 
-    public static String getArticleReadedUrl() { return URL_BASE + "/api/sct/v2/article/read"; }
+    //public static String getArticleReadedUrl() { return URL_BASE + "/api/sct/v2/article/read"; }
 
     public static String getStoreArticleUrl() { return URL_BASE + "/api/sct/v2/article/store";}
 
@@ -188,5 +188,9 @@ public class RemoteUrl {
 
     public static String getSpeechListNearByUrl() {
         return URL_BASE + "/api/art/v1/broadcast/item/list";
+    }
+
+    public static String getArticleInfoUrl() {
+        return URL_BASE + "/api/art/v1/article/detail";
     }
 }
