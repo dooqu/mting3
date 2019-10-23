@@ -21,6 +21,9 @@ public class Article
     String id;
     boolean isChecked;
     String describe;
+    String userId;
+    String nickName;
+    int checked;
 
     public String getId() {
         return id;
@@ -195,6 +198,30 @@ public class Article
 
     public void setCreateAt(long createAt) {
         this.createAt = createAt;
+    }
+
+    public int getChecked() {
+        return checked;
+    }
+
+    public void setChecked(int checked) {
+        this.checked = checked;
+    }
+
+    public String getNickName() {
+        return nickName;
+    }
+
+    public void setNickName(String nickName) {
+        this.nickName = nickName;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
     @Override

@@ -28,7 +28,6 @@ public class SpeechNotification {
 
 
     public void update() {
-
         if (service == null || service.getSelected() == null) {
             return;
         }
@@ -39,7 +38,6 @@ public class SpeechNotification {
         }
 
         boolean hasNext = service.hasNext();
-
         Intent intentNotifOpen = new Intent(service, MainActivity.class);
         intentNotifOpen.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         PendingIntent pendingIntent = PendingIntent.getActivity(service, 1, intentNotifOpen, PendingIntent.FLAG_UPDATE_CURRENT);
@@ -149,7 +147,7 @@ public class SpeechNotification {
 
 
     public void stopAndRemove() {
-        if(service != null) {
+        if (service != null) {
             service.stopForeground(true);
         }
     }
