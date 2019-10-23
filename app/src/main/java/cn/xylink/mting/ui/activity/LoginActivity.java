@@ -145,7 +145,7 @@ public class LoginActivity extends BasePresenterActivity implements ThirdLoginCo
                     toastShort(HttpConst.NO_NETWORK);
                     return;
                 }
-//                startActivity(new Intent(LoginActivity.this, PhoneLoginActivity.class));
+                startActivity(new Intent(LoginActivity.this, PhoneLoginActivity.class));
                 break;
         }
 
@@ -194,10 +194,10 @@ public class LoginActivity extends BasePresenterActivity implements ThirdLoginCo
         final int code = loginInfoBaseResponse.code;
         switch (code) {
             case -5: {
-//                Intent intent = new Intent(this, BindingPhoneActivity.class);
-//                intent.putExtra(BindingPhoneActivity.EXTRA_SOURCE, "bind_phone");
-//                intent.putExtra(BindingPhoneActivity.EXTRA_PLATFORM, platform);
-//                startActivity(intent);
+                Intent intent = new Intent(this, BindingPhoneActivity.class);
+                intent.putExtra(BindingPhoneActivity.EXTRA_SOURCE, "bind_phone");
+                intent.putExtra(BindingPhoneActivity.EXTRA_PLATFORM, platform);
+                startActivity(intent);
                 break;
             }
             case 200: {
