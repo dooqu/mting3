@@ -54,7 +54,6 @@ public class PhoneLoginActivity extends BasePresenterActivity implements GetCode
     }
 
 
-
     @Override
     public void showLoading() {
         super.showLoading();
@@ -83,12 +82,11 @@ public class PhoneLoginActivity extends BasePresenterActivity implements GetCode
 
             @Override
             public void afterTextChanged(Editable s) {
-                if(s.length() > 0)
-                {
+                if (s.length() > 0) {
                     ivDelEt.setVisibility(View.VISIBLE);
                     mBtnNext.setBackground(getResources().getDrawable(R.drawable.bg_phone_click_btn));
                     mBtnNext.setEnabled(true);
-                }else{
+                } else {
                     mBtnNext.setBackground(getResources().getDrawable(R.drawable.bg_phone_default_btn));
                     ivDelEt.setVisibility(View.GONE);
                     mBtnNext.setEnabled(false);
@@ -114,10 +112,9 @@ public class PhoneLoginActivity extends BasePresenterActivity implements GetCode
     }
 
     @OnClick({R.id.btn_next, R.id.iv_del_et, R.id.btn_left})
-    public void onClick(View v){
+    public void onClick(View v) {
 
-        switch (v.getId())
-        {
+        switch (v.getId()) {
             case R.id.btn_left:
                 finish();
                 break;
@@ -126,25 +123,19 @@ public class PhoneLoginActivity extends BasePresenterActivity implements GetCode
                 break;
             case R.id.btn_next:
                 int netWorkStates = NetworkUtil.getNetWorkStates(context);
-                if(netWorkStates == NetworkUtil.TYPE_NONE)
-                {
+                if (netWorkStates == NetworkUtil.TYPE_NONE) {
                     toastShort(HttpConst.NO_NETWORK);
                     return;
                 }
                 phone = etPhone.getText().toString();
                 phone = phone.replaceAll(" ", "");
-                if(phone.length() == 0)
-                {
+                if (phone.length() == 0) {
                     toastShort("手机号不能为空");
                     return;
-                }
-
-                else if (phone.length() < 11 ){
+                } else if (phone.length() < 11) {
                     toastShort("手机号码应该是11位数字");
                     return;
-                }
-                else if(!PhoneNumberUtils.isMobileNO(phone))
-                {
+                } else if (!PhoneNumberUtils.isMobileNO(phone)) {
                     toastShort("手机号码输入有误，请重新输入");
                     return;
                 }
@@ -169,11 +160,11 @@ public class PhoneLoginActivity extends BasePresenterActivity implements GetCode
 //            case 200:
 //            case -3:{
 
-                Intent mIntent = new Intent(this, GetCodeActivity.class);
-                mIntent.putExtra(EXTRA_PHONE, phone);
-                mIntent.putExtra(EXTRA_SOURCE,"register");
-                mIntent.putExtra(EXTRA_CODE, response.data.getCodeId());
-                startActivity(mIntent);
+        Intent mIntent = new Intent(this, GetCodeActivity.class);
+        mIntent.putExtra(EXTRA_PHONE, phone);
+        mIntent.putExtra(EXTRA_SOURCE, "register");
+        mIntent.putExtra(EXTRA_CODE, response.data.getCodeId());
+        startActivity(mIntent);
 //                break;
 //            }
 //            case -2: {
@@ -187,8 +178,8 @@ public class PhoneLoginActivity extends BasePresenterActivity implements GetCode
 
     @Override
     public void onCodeError(int code, String errorMsg) {
-        L.v("code",code);
-        if(!TextUtils.isEmpty(errorMsg)) {
+        L.v("code", code);
+        if (!TextUtils.isEmpty(errorMsg)) {
             toastShort(errorMsg);
         }
 //        switch (code)

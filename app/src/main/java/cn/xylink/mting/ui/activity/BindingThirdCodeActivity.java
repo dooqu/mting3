@@ -141,12 +141,11 @@ public class BindingThirdCodeActivity extends BasePresenterActivity implements G
     }
 
 
-    private void smsLogin(String smsContent)
-    {
+    private void smsLogin(String smsContent) {
         L.v(smsContent.length());
         ThirdPlatformRequest requset = new ThirdPlatformRequest();
         try {
-            requset.setCode( SafeUtils.getRsaString(smsContent, Const.publicKey) );
+            requset.setCode(SafeUtils.getRsaString(smsContent, Const.publicKey));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -259,6 +258,7 @@ public class BindingThirdCodeActivity extends BasePresenterActivity implements G
                 break;
         }
     }
+
     @Override
     protected void onStop() {
         super.onStop();
@@ -266,7 +266,7 @@ public class BindingThirdCodeActivity extends BasePresenterActivity implements G
             timer.cancel();
             timer.onFinish();
         }
-        if(pCcode != null){
+        if (pCcode != null) {
             pCcode.clearText();
         }
 
@@ -280,7 +280,7 @@ public class BindingThirdCodeActivity extends BasePresenterActivity implements G
             ContentManager.getInstance().setUserInfo(response.data);
 
             TCAgent.onRegister(ContentManager.getInstance().getUserInfo().getUserId(), TDAccount.AccountType.ANONYMOUS, "");
-            TCAgent.onLogin(ContentManager.getInstance().getUserInfo().getUserId(), TDAccount.AccountType.ANONYMOUS,"");
+            TCAgent.onLogin(ContentManager.getInstance().getUserInfo().getUserId(), TDAccount.AccountType.ANONYMOUS, "");
             Intent mIntent = new Intent(this, MainActivity.class);
             mIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(mIntent);
@@ -291,7 +291,7 @@ public class BindingThirdCodeActivity extends BasePresenterActivity implements G
 
     @Override
     public void onThirdPlatformError(int code, String errorMsg) {
-        L.v("code",code);
+        L.v("code", code);
         switch (code) {
             case -3:
                 pCcode.clearText();
