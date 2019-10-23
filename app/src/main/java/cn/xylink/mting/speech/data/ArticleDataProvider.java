@@ -7,6 +7,7 @@ import android.util.Log;
 
 import java.util.List;
 
+import cn.xylink.mting.base.BaseRequest;
 import cn.xylink.mting.bean.Article;
 import cn.xylink.mting.contract.IBaseView;
 import cn.xylink.mting.model.ArticleInfoRequest;
@@ -61,7 +62,7 @@ public class ArticleDataProvider {
 
     public void getSpeechListNearBy(String broadcastId, long createAt, String event, ArticleLoader<List<Article>> callback) {
         SpeechListNearByRequest request = new SpeechListNearByRequest();
-        request.setCreateAt(createAt);
+        request.setLastAt(createAt);
         request.setBroadcastId(broadcastId);
         request.setEvent(event);
         request.setToken("1");
@@ -143,6 +144,53 @@ public class ArticleDataProvider {
                         List<Article> list = response.getData();
                         for (Article article : list) {
                             article.setBroadcastId(broadcastId);
+                        }
+                        if (callback != null) {
+                            callback.invoke(0, response.getData());
+                        }
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        Log.d("xylink", "onComplete");
+                    }
+                });
+    }
+
+
+    public void getUnreadSpeechList(ArticleLoader<List<Article>> callback) {
+        BaseRequest request = new BaseRequest();
+        request.setToken("1");
+        request.doSign();
+        OkGoUtils.getInstance().postData(
+                new IBaseView() {
+                    @Override
+                    public void showLoading() {
+                    }
+
+                    @Override
+                    public void hideLoading() {
+                    }
+                },
+                RemoteUrl.getUnreadListUrl(),
+                GsonUtil.GsonString(request), SpeechListResponse.class,
+                new OkGoUtils.ICallback<SpeechListResponse>() {
+                    @Override
+                    public void onStart() {
+                    }
+
+                    @Override
+                    public void onFailure(int code, String errorMsg) {
+                        if (callback != null) {
+                            callback.invoke(code, null);
+                        }
+                    }
+
+                    @Override
+                    public void onSuccess(SpeechListResponse response) {
+                        List<Article> list = response.getData();
+                        for (Article article : list) {
+                            article.setBroadcastId("-1");
                         }
                         if (callback != null) {
                             callback.invoke(0, response.getData());

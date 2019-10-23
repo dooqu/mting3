@@ -475,17 +475,32 @@ public class SpeechService extends Service {
 
     public synchronized void loadAndPlay(String broadcastId, String articleId) {
         ArticleDataProvider articleDataProvider = new ArticleDataProvider(this);
-        articleDataProvider.getSpeechList(broadcastId, articleId, new ArticleDataProvider.ArticleLoader<List<Article>>() {
-            @Override
-            public void invoke(int errorCode, List<Article> data) {
-                if (errorCode == 0) {
-                    synchronized (SpeechService.this) {
-                        SpeechService.this.resetSpeechList(data, SpeechService.SpeechListType.Dynamic);
-                        SpeechService.this.play(articleId);
+        if("-1".equals(broadcastId)) {
+            articleDataProvider.getSpeechList(broadcastId, articleId, new ArticleDataProvider.ArticleLoader<List<Article>>() {
+                @Override
+                public void invoke(int errorCode, List<Article> data) {
+                    if (errorCode == 0) {
+                        synchronized (SpeechService.this) {
+                            SpeechService.this.resetSpeechList(data, SpeechService.SpeechListType.Dynamic);
+                            SpeechService.this.play(articleId);
+                        }
                     }
                 }
-            }
-        });
+            });
+        }
+        else {
+            articleDataProvider.getUnreadSpeechList(new ArticleDataProvider.ArticleLoader<List<Article>>() {
+                @Override
+                public void invoke(int errorCode, List<Article> data) {
+                    if (errorCode == 0) {
+                        synchronized (SpeechService.this) {
+                            SpeechService.this.resetSpeechList(data, SpeechListType.Unread);
+                            SpeechService.this.play(articleId);
+                        }
+                    }
+                }
+            });
+        }
     }
 
 

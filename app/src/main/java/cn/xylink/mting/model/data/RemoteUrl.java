@@ -193,4 +193,8 @@ public class RemoteUrl {
     public static String getArticleInfoUrl() {
         return URL_BASE + "/api/art/v1/article/detail";
     }
+
+    public static String getUnreadListUrl() {
+        return URL_BASE + "/api/art/v1/article/unread/list";
+    }
 }
