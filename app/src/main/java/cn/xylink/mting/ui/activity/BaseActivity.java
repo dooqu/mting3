@@ -66,7 +66,7 @@ public abstract class BaseActivity extends AppCompatActivity {
             checkOnlineUpgrade();
         }
 
-       // TCAgent.onPageStart(this, this.getComponentName().getClassName());
+        TCAgent.onPageStart(this, this.getComponentName().getClassName());
     }
 
 

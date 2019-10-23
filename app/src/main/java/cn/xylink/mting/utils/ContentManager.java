@@ -1,10 +1,16 @@
 package cn.xylink.mting.utils;
 
 import android.content.Context;
-//import cn.xylink.mting.bean.UserInfo;
-//import cn.xylink.mting.model.data.Const;
-//import cn.xylink.mting.model.data.FileCache;
-//import cn.xylink.mting.model.data.MemoryCache;
+import android.text.TextUtils;
+
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
+import cn.xylink.mting.MTing;
+import cn.xylink.mting.bean.UserInfo;
+import cn.xylink.mting.model.data.Const;
+import cn.xylink.mting.model.data.FileCache;
+import cn.xylink.mting.model.data.MemoryCache;
 
 /**
  * Created by wjn on 2019/3/4.
@@ -15,9 +21,9 @@ public class ContentManager {
     private static Context mContext;
 
     private ContentManager(Context context) {
-//        MemoryCache.init();
+        MemoryCache.init();
         this.mContext = context.getApplicationContext();
-//        FileCache.init(mContext);
+        FileCache.init(mContext);
     }
 
     public static void init(Context context) {
@@ -40,18 +46,18 @@ public class ContentManager {
 //        MemoryCache.getInstance().closeActivityEx(act);
 //    }
 //
-//    public void setLoginToken(String token) {
-//        MemoryCache.getInstance().setLoginToken(token);
-//        FileCache.getInstance().setLoginToken(token);
-//    }
-//
-//    public String getLoginToken() {
-//        String loginToken = MemoryCache.getInstance().getLoginToken();
-//        if (TextUtils.isEmpty(loginToken)) {
-//            loginToken = FileCache.getInstance().getLogintoken();
-//        }
-//        return loginToken;
-//    }
+    public void setLoginToken(String token) {
+        MemoryCache.getInstance().setLoginToken(token);
+        FileCache.getInstance().setLoginToken(token);
+    }
+
+    public String getLoginToken() {
+        String loginToken = MemoryCache.getInstance().getLoginToken();
+        if (TextUtils.isEmpty(loginToken)) {
+            loginToken = FileCache.getInstance().getLogintoken();
+        }
+        return loginToken;
+    }
 //
 //    public void setExperience(int experience) {
 //        MemoryCache.getInstance().setExperience(experience);
@@ -62,21 +68,21 @@ public class ContentManager {
 //        int experience = FileCache.getInstance().getExperience();
 //        return experience;
 //    }
-//
-//    public void setUserInfo(UserInfo userInformation) {
-//        MemoryCache.getInstance().setUserInfo(userInformation);
-//        FileUtil.writeFile(MTing.getInstance(), Const.FileName.USER_INFO, new Gson().toJson(userInformation));
-//    }
-//
-//    public UserInfo getUserInfo() {
-//        UserInfo userInfo = MemoryCache.getInstance().getUserInfo();
-//        if (userInfo == null) {
-//            String userInfoData = FileUtil.readFile(MTing.getInstance(), Const.FileName.USER_INFO);
-//            userInfo = new Gson().fromJson(userInfoData, new TypeToken<UserInfo>() {
-//            }.getType());
-//        }
-//        return userInfo;
-//    }
+
+    public void setUserInfo(UserInfo userInformation) {
+        MemoryCache.getInstance().setUserInfo(userInformation);
+        FileUtil.writeFile(MTing.getInstance(), Const.FileName.USER_INFO, new Gson().toJson(userInformation));
+    }
+
+    public UserInfo getUserInfo() {
+        UserInfo userInfo = MemoryCache.getInstance().getUserInfo();
+        if (userInfo == null) {
+            String userInfoData = FileUtil.readFile(MTing.getInstance(), Const.FileName.USER_INFO);
+            userInfo = new Gson().fromJson(userInfoData, new TypeToken<UserInfo>() {
+            }.getType());
+        }
+        return userInfo;
+    }
 //
 //    public void setDeviceUuid(String uuid) {
 //        MemoryCache.getInstance().setDeviceUuid(uuid);

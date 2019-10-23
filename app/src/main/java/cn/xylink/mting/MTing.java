@@ -10,6 +10,7 @@ import android.util.Log;
 import com.lzy.okgo.OkGo;
 import com.lzy.okgo.https.HttpsUtils;
 import com.lzy.okgo.interceptor.HttpLoggingInterceptor;
+import com.tendcloud.tenddata.TCAgent;
 
 
 import java.io.File;
@@ -20,9 +21,12 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
 
+import cn.xylink.mting.common.Const;
 import cn.xylink.mting.contract.IBaseView;
 import cn.xylink.mting.model.UpgradeRequest;
 import cn.xylink.mting.model.UpgradeResponse;
+import cn.xylink.mting.openapi.QQApi;
+import cn.xylink.mting.openapi.WXapi;
 import cn.xylink.mting.utils.*;
 
 
@@ -67,14 +71,13 @@ public class MTing extends Application {
 
         activityManager = ActivityManager.getScreenManager();
         ContentManager.init(this);
-         /* WXapi.init(this);
+          WXapi.init(this);
         try {
             QQApi.init(this);
         } catch (Exception e) {
             Log.e("Application", "qq未安装");
         }
 
-         */
         initOkHttp();
         ImageUtils.init(this);
 
@@ -97,12 +100,10 @@ public class MTing extends Application {
             ex.printStackTrace();
         }
 
-        /*
         TCAgent.LOG_ON = true;
         TCAgent.init(this, Const.TCAGENT_APPID, "renrendict");
         TCAgent.setReportUncaughtExceptions(true);
 
-         */
     }
 
     private void initOkHttp() {
