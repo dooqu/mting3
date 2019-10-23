@@ -92,6 +92,10 @@ public class ArticleDataProvider {
 
                     @Override
                     public void onSuccess(SpeechListResponse response) {
+                        List<Article> list = response.getData();
+                        for(Article article : list) {
+                            article.setBroadcastId(broadcastId);
+                        }
                         if (callback != null) {
                             callback.invoke(0, response.getData());
                         }
@@ -178,7 +182,7 @@ public class ArticleDataProvider {
                     public void hideLoading() {
                     }
                 },
-                RemoteUrl.getSpeechListUrl(),
+                RemoteUrl.getArticleInfoUrl(),
                 GsonUtil.GsonString(request), ArticleInfoResponse.class,
                 new OkGoUtils.ICallback<ArticleInfoResponse>() {
                     @Override
@@ -204,13 +208,15 @@ public class ArticleDataProvider {
                         article.setShareUrl(responseArt.getShareUrl());
                         article.setStore(responseArt.getStore());
 
+                        ArticleListArgument argumentInner = articleListArgument;
+
                         if (isFirst || isLast) {
                             getSpeechListNearBy(article.getBroadcastId(), article.getCreateAt(), (isFirst) ? "old" : "new", new ArticleLoader<List<Article>>() {
                                 @Override
                                 public void invoke(int errorCode, List<Article> data) {
-                                    articleListArgument.list = data;
+                                    argumentInner.list = data;
                                     //不管列表成功失败，都返回0;
-                                    callback.invoke(0, articleListArgument);
+                                    callback.invoke(0, argumentInner);
                                 }
                             });
                         }
