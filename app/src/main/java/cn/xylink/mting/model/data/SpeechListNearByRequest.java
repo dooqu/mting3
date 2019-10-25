@@ -4,14 +4,14 @@ import cn.xylink.mting.model.SpeechListRequest;
 
 public class SpeechListNearByRequest extends SpeechListRequest {
     private String event;
-    private long createAt;
+    private long lastAt;
 
-    public long getCreateAt() {
-        return createAt;
+    public long getLastAt() {
+        return lastAt;
     }
 
-    public void setCreateAt(long createAt) {
-        this.createAt = createAt;
+    public void setLastAt(long createAt) {
+        this.lastAt = createAt;
     }
 
     public String getEvent() {
