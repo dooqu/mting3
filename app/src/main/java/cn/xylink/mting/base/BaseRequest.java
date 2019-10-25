@@ -14,7 +14,7 @@ public class BaseRequest {
     public String deviceId;
 
     public BaseRequest() {
-        //token = ContentManager.getInstance().getLoginToken();
+        token = ContentManager.getInstance().getLoginToken();
         timestamp = System.currentTimeMillis();
         deviceId = TingUtils.getDeviceId(MTing.getInstance());
     }

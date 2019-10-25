@@ -181,12 +181,12 @@ public class LoginActivity extends BasePresenterActivity implements ThirdLoginCo
 
     public void thirdLogin(String token, String openId, String platform) {
         this.platform = platform;
-        ThirdLoginRequset requset = new ThirdLoginRequset();
-        requset.setAccess_token(token);
-        requset.setOpenid(openId);
-        requset.setPlatform(platform);
-        requset.doSign();
-        thirdLoginPresenter.onThirdLogin(requset);
+        ThirdLoginRequset request = new ThirdLoginRequset();
+        request.setAccess_token(token);
+        request.setOpenid(openId);
+        request.setPlatform(platform);
+        request.doSign();
+        thirdLoginPresenter.onThirdLogin(request);
     }
 
     @Override
@@ -207,6 +207,7 @@ public class LoginActivity extends BasePresenterActivity implements ThirdLoginCo
                     TCAgent.onLogin(ContentManager.getInstance().getUserInfo().getUserId(), TDAccount.AccountType.WEIXIN, "");
                 }
                 ContentManager.getInstance().setLoginToken(loginInfoBaseResponse.data.getToken());
+                L.e("token"+ContentManager.getInstance().getLoginToken());
                 Intent mIntent = new Intent(this, MainActivity.class);
                 mIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(mIntent);

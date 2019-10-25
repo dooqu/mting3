@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">Mting3</string>
+
+    <string name="guide_one_title">深度好文太多，没时间看</string>
+    <string name="guide_one_msg">边开车，边听文章，充分利用时间</string>
+    <string name="guide_two_title">每天进步一点点</string>
+    <string name="guide_two_msg">上下班坐地铁，也可以听文章</string>
+    <string name="guide_three_title">手机看文章太久，累眼睛</string>
+    <string name="guide_three_msg">休息休息，让轩辕听代劳吧</string>
 </resources>
