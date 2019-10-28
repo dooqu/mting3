@@ -25,7 +25,6 @@ import android.widget.Toast;
 
 import com.tendcloud.tenddata.TCAgent;
 
-
 import java.io.File;
 import java.util.List;
 import java.util.Timer;
@@ -44,7 +43,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     protected Intent mUpdateIntent;
     protected Context context;
     protected Timer upgradeTimer;
-    UpgradeManager.DownloadReceiver downloadReceiver ;
+    UpgradeManager.DownloadReceiver downloadReceiver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,8 +91,6 @@ public abstract class BaseActivity extends AppCompatActivity {
         }
         return false;
     }
-
-
 
 
     @Override
@@ -263,7 +260,6 @@ public abstract class BaseActivity extends AppCompatActivity {
     }
 
 
-
     private void installApk() {
         if (Build.VERSION.SDK_INT >= 26) {
             boolean b = getPackageManager().canRequestPackageInstalls();
@@ -301,21 +297,19 @@ public abstract class BaseActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode == GET_UNKNOWN_APP_SOURCES) {
-            if(resultCode == Activity.RESULT_CANCELED) {
+        if (requestCode == GET_UNKNOWN_APP_SOURCES) {
+            if (resultCode == Activity.RESULT_CANCELED) {
                 Log.d("SPEECH_", "授权被取消");
-                if(UpgradeManager.CurrentUpgradeInfo != null && UpgradeManager.CurrentUpgradeInfo.getNeedUpdate() == 0) {
+                if (UpgradeManager.CurrentUpgradeInfo != null && UpgradeManager.CurrentUpgradeInfo.getNeedUpdate() == 0) {
                     Toast.makeText(this, "当前升级为重要更新，请开启应用重新授权", Toast.LENGTH_SHORT).show();
                     System.exit(0);
                     return;
-                }
-                else {
+                } else {
                     Toast.makeText(this, "授权被取消，升级安装中断", Toast.LENGTH_SHORT).show();
                 }
-            }
-            else if(resultCode == Activity.RESULT_OK) {
+            } else if (resultCode == Activity.RESULT_OK) {
                 Log.d("SPEECH_", "授权成功");
-                if(UpgradeManager.DownloadTaskFilePath != null) {
+                if (UpgradeManager.DownloadTaskFilePath != null) {
                     downloadReceiver.installApk(UpgradeManager.DownloadTaskFilePath);
                 }
             }
@@ -372,6 +366,7 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     protected void checkOnlineUpgrade() {
         int currentVersionCode = Integer.parseInt(PackageUtils.getAppVersionCode(this));
+        L.e("currentVersionCode","currentVersionCode===="+currentVersionCode);
         if (UpgradeManager.CurrentUpgradeInfo == null || UpgradeManager.CurrentUpgradeInfo.getAppVersionCode() <= currentVersionCode) {
             return;
         }
@@ -379,7 +374,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         handler.postDelayed(() -> {
             Log.d("SPEECH_", "isDestroy:" + BaseActivity.this.isDestroyed());
             Log.d("SPEECH_", "isFinishing:" + BaseActivity.this.isFinishing());
-            if(BaseActivity.this.isFinishing() || BaseActivity.this.isDestroyed()) {
+            if (BaseActivity.this.isFinishing() || BaseActivity.this.isDestroyed()) {
                 return;
             }
             if (UpgradeManager.CurrentUpgradeInfo != null && UpgradeManager.CurrentUpgradeInfo.getAppVersionCode() > currentVersionCode) {

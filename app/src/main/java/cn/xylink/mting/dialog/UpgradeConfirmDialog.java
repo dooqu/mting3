@@ -144,8 +144,7 @@ public class UpgradeConfirmDialog extends Dialog {
             forceUpdateConfirm = true;
             Toast.makeText(this.context, "该升级为强制升级，再次点击返回键退出应用", Toast.LENGTH_SHORT).show();
             return false;
-        }
-        else {
+        } else {
             System.exit(0);
             return false;
         }

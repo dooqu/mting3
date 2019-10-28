@@ -21,8 +21,8 @@ import java.io.File;
 import java.io.IOException;
 
 import cn.xylink.mting.MTing;
-import cn.xylink.mting.ui.activity.BaseActivity;
 import cn.xylink.mting.bean.UpgradeInfo;
+import cn.xylink.mting.ui.activity.BaseActivity;
 
 import static android.content.Context.DOWNLOAD_SERVICE;
 
@@ -78,8 +78,7 @@ public class UpgradeManager {
             Runtime runtime = Runtime.getRuntime();
             try {
                 Process p = runtime.exec(command);
-            }
-            catch (IOException e) {
+            } catch (IOException e) {
                 e.printStackTrace();
             }
         }
@@ -93,8 +92,7 @@ public class UpgradeManager {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                 installIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
                 fileUri = FileProvider.getUriForFile(activity, "cn.xylink.mting.utils.DownloadFileProvider", apkFile);
-            }
-            else {
+            } else {
                 fileUri = Uri.fromFile(apkFile);
             }
 
@@ -104,8 +102,7 @@ public class UpgradeManager {
                 if (UpgradeManager.CurrentUpgradeInfo != null && UpgradeManager.CurrentUpgradeInfo.getNeedUpdate() == 0) {
                     System.exit(0);
                 }
-            }
-            catch (Exception ex) {
+            } catch (Exception ex) {
                 ex.printStackTrace();
             }
         }
@@ -128,8 +125,7 @@ public class UpgradeManager {
                                     if (UpgradeManager.CurrentUpgradeInfo != null && UpgradeManager.CurrentUpgradeInfo.getNeedUpdate() == 0) {
                                         System.exit(0);
                                         return;
-                                    }
-                                    else {
+                                    } else {
                                         Toast.makeText(activity, "安全授权被取消", Toast.LENGTH_SHORT).show();
                                     }
                                 }
@@ -208,8 +204,7 @@ public class UpgradeManager {
                 bytesAndStatus[1] = cursor.getInt(cursor.getColumnIndexOrThrow(DownloadManager.COLUMN_TOTAL_SIZE_BYTES));
                 bytesAndStatus[2] = cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_STATUS));
             }
-        }
-        finally {
+        } finally {
             if (cursor != null) {
                 cursor.close();
             }

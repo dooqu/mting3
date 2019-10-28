@@ -207,7 +207,7 @@ public class LoginActivity extends BasePresenterActivity implements ThirdLoginCo
                     TCAgent.onLogin(ContentManager.getInstance().getUserInfo().getUserId(), TDAccount.AccountType.WEIXIN, "");
                 }
                 ContentManager.getInstance().setLoginToken(loginInfoBaseResponse.data.getToken());
-                L.e("token"+ContentManager.getInstance().getLoginToken());
+                L.e("token" + ContentManager.getInstance().getLoginToken());
                 Intent mIntent = new Intent(this, MainActivity.class);
                 mIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(mIntent);
