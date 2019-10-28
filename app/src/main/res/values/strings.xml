@@ -7,4 +7,7 @@
     <string name="guide_two_msg">上下班坐地铁，也可以听文章</string>
     <string name="guide_three_title">手机看文章太久，累眼睛</string>
     <string name="guide_three_msg">休息休息，让轩辕听代劳吧</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
