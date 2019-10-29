@@ -102,10 +102,10 @@ public class LoginActivity extends BasePresenterActivity implements ThirdLoginCo
                     toastShort(HttpConst.NO_NETWORK);
                     return;
                 }
-//                Intent mIntent = new Intent(this, PlayerlActivity.class);
-//                mIntent.putExtra(PlayerlActivity.EXTRA_HTML, Const.USERPROTOCOL_URL);
-//                mIntent.putExtra(PlayerlActivity.EXTRA_TITLE,"用户使用协议");
-//                startActivity(mIntent);
+                Intent mIntent = new Intent(this, PlayerActivity.class);
+                mIntent.putExtra(PlayerActivity.EXTRA_HTML, Const.USERPROTOCOL_URL);
+                mIntent.putExtra(PlayerActivity.EXTRA_TITLE,"用户使用协议");
+                startActivity(mIntent);
                 break;
             }
 //            case R.id.btn_left:
