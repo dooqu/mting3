@@ -1,4 +1,4 @@
-package cn.xylink.mting.dialog;
+package cn.xylink.mting.ui.dialog;
 
 import android.app.Dialog;
 import android.content.Context;

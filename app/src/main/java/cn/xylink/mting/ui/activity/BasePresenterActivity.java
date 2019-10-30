@@ -8,8 +8,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cn.xylink.mting.contract.IBaseView;
-import cn.xylink.mting.dialog.LoadingDialog;
-import cn.xylink.mting.dialog.TipDialog;
+import cn.xylink.mting.ui.dialog.LoadingDialog;
+import cn.xylink.mting.ui.dialog.TipDialog;
 import cn.xylink.mting.presenter.BasePresenter;
 import cn.xylink.mting.utils.L;
 
