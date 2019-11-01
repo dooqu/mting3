@@ -8,6 +8,12 @@
     <string name="guide_three_title">手机看文章太久，累眼睛</string>
     <string name="guide_three_msg">休息休息，让轩辕听代劳吧</string>
 
+    <string name="please_choose">请选择</string>
+    <string name="take_pic">拍照</string>
+    <string name="select_album">从相册选择</string>
+    <string name="sex_woman">女</string>
+    <string name="sex_man">男</string>
+
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

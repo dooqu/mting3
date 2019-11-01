@@ -30,7 +30,7 @@ import java.util.List;
 import java.util.Timer;
 
 import butterknife.ButterKnife;
-import cn.xylink.mting.dialog.UpgradeConfirmDialog;
+import cn.xylink.mting.ui.dialog.UpgradeConfirmDialog;
 import cn.xylink.mting.upgrade.UpgradeManager;
 import cn.xylink.mting.utils.L;
 import cn.xylink.mting.utils.PackageUtils;
