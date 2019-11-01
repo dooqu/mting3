@@ -73,19 +73,17 @@ dependencies {
     //
     implementation 'com.google.code.gson:gson:2.8.6'
     implementation 'org.greenrobot:eventbus:3.1.1'
-    implementation 'com.jakewharton:butterknife:10.2.0'
-    annotationProcessor 'com.jakewharton:butterknife-compiler:10.2.0'
+    implementation 'com.jakewharton:butterknife:8.8.1'
+    annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
     implementation 'com.android.support:recyclerview-v7:28.0.0'
     implementation 'com.lzy.net:okgo:3.0.4'
     implementation 'com.lzy.net:okrx2:2.0.2'
-    implementation 'com.github.bumptech.glide:glide:4.10.0'
-    annotationProcessor 'com.github.bumptech.glide:compiler:4.10.0'
+    implementation 'com.github.bumptech.glide:glide:4.9.0'
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.9.0'
     implementation 'com.android.support:support-v4:28.0.0'
     implementation files('libs/com.baidu.tts_2.3.2.20180713_6101c2a.jar')
     implementation files('libs/SaaS_AppAnalytics_Android_SDK_V4.0.30.jar')
     implementation files('libs/wechat-sdk-android-with-mta-5.1.6.jar')
-    implementation 'androidx.navigation:navigation-fragment:2.0.0'
-    implementation 'androidx.navigation:navigation-ui:2.0.0'
     implementation('com.jph.takephoto:takephoto_library:4.0.3') {
         exclude group: 'com.android.support'
     }
