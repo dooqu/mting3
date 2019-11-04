@@ -4,7 +4,10 @@ import android.view.View;
 
 import cn.xylink.mting.R;
 
-public class TingFragment extends BaseFragment {
+/**
+ * @author JoDragon
+ */
+public class TingFragment extends BasePresenterFragment {
 
 
     public static TingFragment newInstance() {
