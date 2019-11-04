@@ -1,0 +1,296 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:orientation="vertical">
+
+    <include layout="@layout/title_include" />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="32dp"
+        android:layout_marginLeft="16dp"
+        android:gravity="center_vertical"
+        android:text="声音选择"
+        android:textColor="#333333"
+        android:textSize="16sp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginRight="16dp"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:id="@+id/bt_type1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:orientation="vertical">
+
+            <FrameLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <ProgressBar
+                    android:id="@+id/pb_main_play_progress1"
+                    style="@style/Widget.AppCompat.ProgressBar"
+                    android:layout_width="73dp"
+                    android:layout_height="73dp"
+                    android:layout_centerInParent="true"
+                    android:indeterminateTint="@color/cbbbbbb"
+                    android:visibility="invisible" />
+
+                <ImageView
+                    android:layout_width="56dp"
+                    android:layout_height="56dp"
+                    android:layout_gravity="center"
+                    android:src="@mipmap/ico_jiayi" />
+
+                <ImageView
+                    android:id="@+id/iv_check1"
+                    android:layout_width="64dp"
+                    android:layout_height="64dp"
+                    android:layout_gravity="center"
+                    android:background="@drawable/bg_ico_shape_huan"
+                    android:visibility="invisible" />
+
+
+            </FrameLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:text="佳怡"
+                android:textSize="14sp" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_weight="1" />
+
+        <LinearLayout
+            android:id="@+id/bt_type2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:orientation="vertical">
+
+            <FrameLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <ProgressBar
+                    android:id="@+id/pb_main_play_progress2"
+                    style="@style/Widget.AppCompat.ProgressBar"
+                    android:layout_width="73dp"
+                    android:layout_height="73dp"
+                    android:layout_centerInParent="true"
+                    android:indeterminateTint="@color/cbbbbbb"
+                    android:visibility="invisible" />
+
+                <ImageView
+                    android:layout_width="56dp"
+                    android:layout_height="56dp"
+                    android:layout_gravity="center"
+                    android:src="@mipmap/ico_jiaxin" />
+
+                <ImageView
+                    android:id="@+id/iv_check2"
+                    android:layout_width="64dp"
+                    android:layout_height="64dp"
+                    android:layout_gravity="center"
+                    android:background="@drawable/bg_ico_shape_huan"
+                    android:visibility="invisible" />
+
+            </FrameLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:text="佳馨"
+                android:textSize="14sp" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_weight="1" />
+
+        <LinearLayout
+            android:id="@+id/bt_type3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:orientation="vertical">
+
+            <FrameLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <ProgressBar
+                    android:id="@+id/pb_main_play_progress3"
+                    style="@style/Widget.AppCompat.ProgressBar"
+                    android:layout_width="73dp"
+                    android:layout_height="73dp"
+                    android:layout_centerInParent="true"
+                    android:indeterminateTint="@color/cbbbbbb"
+                    android:visibility="invisible" />
+
+                <ImageView
+                    android:layout_width="56dp"
+                    android:layout_height="56dp"
+                    android:layout_gravity="center"
+                    android:src="@mipmap/ico_zixuan" />
+
+                <ImageView
+                    android:id="@+id/iv_check3"
+                    android:layout_width="64dp"
+                    android:layout_height="64dp"
+                    android:layout_gravity="center"
+                    android:background="@drawable/bg_ico_shape_huan"
+                    android:visibility="invisible" />
+
+            </FrameLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:text="子轩"
+                android:textSize="14sp" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_weight="1" />
+
+        <LinearLayout
+            android:id="@+id/bt_type4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:orientation="vertical">
+
+            <FrameLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <ProgressBar
+                    android:id="@+id/pb_main_play_progress4"
+                    style="@style/Widget.AppCompat.ProgressBar"
+                    android:layout_width="73dp"
+                    android:layout_height="73dp"
+                    android:layout_centerInParent="true"
+                    android:indeterminateTint="@color/cbbbbbb"
+                    android:visibility="invisible" />
+
+                <ImageView
+                    android:layout_width="56dp"
+                    android:layout_height="56dp"
+                    android:layout_gravity="center"
+                    android:src="@mipmap/ico_zimo" />
+
+                <ImageView
+                    android:id="@+id/iv_check4"
+                    android:layout_width="64dp"
+                    android:layout_height="64dp"
+                    android:layout_gravity="center"
+                    android:background="@drawable/bg_ico_shape_huan"
+                    android:visibility="invisible" />
+
+            </FrameLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:text="子墨"
+                android:textSize="14sp" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:layout_marginTop="20dp"
+        android:background="@color/color_dedede" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="32dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="10dp"
+        android:gravity="center_vertical"
+        android:text="倍数朗读"
+        android:textColor="#333333"
+        android:textSize="16sp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="24dp"
+        android:layout_marginRight="16dp"
+        android:orientation="horizontal">
+
+        <RadioGroup
+            android:id="@+id/rg_speed"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <RadioButton
+                android:id="@+id/rb_half"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:buttonTint="@color/selector_button_color"
+                android:text="x0.5" />
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_weight="1" />
+
+            <RadioButton
+                android:id="@+id/rb_normal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:buttonTint="@color/selector_button_color"
+                android:text="x1" />
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_weight="1" />
+
+            <RadioButton
+                android:id="@+id/rb_1_5"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:buttonTint="@color/selector_button_color"
+                android:text="x1.5" />
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_weight="1" />
+
+            <RadioButton
+                android:id="@+id/rb_2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:buttonTint="@color/selector_button_color"
+                android:text="x2" />
+        </RadioGroup>
+
+    </LinearLayout>
+
+</LinearLayout>

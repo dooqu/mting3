@@ -136,15 +136,15 @@ public class ContentManager {
 //    public boolean getHxFirst() {
 //        return FileCache.getInstance().getHxFirst();
 //    }
-//
-//    public void setRgTime(int rgtime) {
-//        MemoryCache.getInstance().setRgTime(rgtime);
-//    }
-//
-//
-//    public int getRgTime() {
-//        return MemoryCache.getInstance().getRgTime();
-//    }
+
+    public void setRgTime(int rgtime) {
+        MemoryCache.getInstance().setRgTime(rgtime);
+    }
+
+
+    public int getRgTime() {
+        return MemoryCache.getInstance().getRgTime();
+    }
 //
 //    public void setTextSize(int change) {
 //        MemoryCache.getInstance().setTextSize(change);
