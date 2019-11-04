@@ -4,6 +4,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RadioGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import butterknife.BindView;
@@ -19,6 +20,8 @@ import cn.xylink.mting.utils.SharedPreHelper;
  * @date 2019/10/31
  */
 public class SettingReadActivity extends BasePresenterActivity {
+    @BindView(R.id.tv_include_title)
+    TextView tvTitle;
     @BindView(R.id.pb_main_play_progress1)
     ProgressBar mpb1;
     @BindView(R.id.pb_main_play_progress2)
@@ -96,7 +99,7 @@ public class SettingReadActivity extends BasePresenterActivity {
 
     @Override
     protected void initTitleBar() {
-
+        tvTitle.setText("朗读设置");
     }
 
     public void closeAll() {

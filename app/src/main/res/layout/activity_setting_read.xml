@@ -6,15 +6,7 @@
     android:background="@color/white"
     android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/tv_title"
-        android:layout_width="match_parent"
-        android:layout_height="44dp"
-        android:gravity="center"
-        android:text="朗读设置"
-        android:textColor="@color/color_333333"
-        android:textSize="@dimen/text_18" />
-
+    <include layout="@layout/title_include" />
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="32dp"
