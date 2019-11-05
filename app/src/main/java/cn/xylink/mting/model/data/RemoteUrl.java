@@ -197,4 +197,8 @@ public class RemoteUrl {
     public static String getUnreadListUrl() {
         return URL_BASE + "/api/art/v1/article/unread/list";
     }
+
+    public static String getTingListUrl() {
+        return URL_BASE + "/api/art/v1/subscribe/list";
+    }
 }

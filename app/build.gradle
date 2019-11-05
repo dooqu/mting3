@@ -89,4 +89,5 @@ dependencies {
     }
     implementation 'com.github.yalantis:ucrop:2.2.2'
     implementation 'com.contrarywind:Android-PickerView:3.2.6'
+    implementation 'com.github.zincPower:JRecycleview:latest.release'
 }
