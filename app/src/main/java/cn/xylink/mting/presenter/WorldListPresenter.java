@@ -3,25 +3,24 @@ package cn.xylink.mting.presenter;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
-import cn.xylink.mting.base.BaseRequest;
-import cn.xylink.mting.base.BaseResponse;
 import cn.xylink.mting.base.BaseResponseArray;
-import cn.xylink.mting.bean.TingInfo;
-import cn.xylink.mting.contract.TingListContact;
+import cn.xylink.mting.bean.WorldInfo;
+import cn.xylink.mting.bean.WorldRequest;
+import cn.xylink.mting.contract.WorldListContact;
 import cn.xylink.mting.model.data.OkGoUtils;
 import cn.xylink.mting.model.data.RemoteUrl;
 
 /**
- * 享听列表
- * <p>
+ * 世界列表
  * -----------------------------------------------------------------
- * 2019/11/5 15:46 : Create TingListPresenter.java (JoDragon);
+ * 2019/11/6 14:05 : Create WorldListPresenter.java (JoDragon);
  * -----------------------------------------------------------------
  */
-public class TingListPresenter extends BasePresenter<TingListContact.ITingListView> implements TingListContact.Presenter {
+public class WorldListPresenter extends BasePresenter<WorldListContact.IWorldListView> implements WorldListContact.Presenter {
     @Override
-    public void getTingList(BaseRequest request) {
-        OkGoUtils.getInstance().postData(mView, RemoteUrl.getTingListUrl(), new Gson().toJson(request), new TypeToken<BaseResponseArray<TingInfo>>() {
+    public void getWorldList(WorldRequest request) {
+        OkGoUtils.getInstance().postData(mView, RemoteUrl.getWordlListUrl(), new Gson().toJson(request),
+                new TypeToken<BaseResponseArray<WorldInfo>>() {
 
         }.getType(), new OkGoUtils.ICallback() {
             @Override
@@ -30,18 +29,18 @@ public class TingListPresenter extends BasePresenter<TingListContact.ITingListVi
 
             @Override
             public void onSuccess(Object data) {
-                BaseResponseArray<TingInfo> baseResponse = (BaseResponseArray<TingInfo>) data;
+                BaseResponseArray<WorldInfo> baseResponse = (BaseResponseArray<WorldInfo>) data;
                 int code = baseResponse.code;
                 if (code == 200) {
-                    mView.onTingListSuccess(baseResponse);
+                    mView.onWorldListSuccess(baseResponse.data);
                 } else {
-                    mView.onTingListError(code, baseResponse.message);
+                    mView.onWorldListError(code, baseResponse.message);
                 }
             }
 
             @Override
             public void onFailure(int code, String errorMsg) {
-                mView.onTingListError(code, errorMsg);
+                mView.onWorldListError(code, errorMsg);
             }
 
             @Override
@@ -50,3 +49,4 @@ public class TingListPresenter extends BasePresenter<TingListContact.ITingListVi
         });
     }
 }
+
