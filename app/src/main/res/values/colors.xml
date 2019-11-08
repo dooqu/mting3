@@ -39,4 +39,5 @@
     <color name="font_black2">#50525b</color>
 
     <color name="hint_gray">#d7d7d7</color>
+    <color name="cutting_line">#e0e0e0</color>
 </resources>
