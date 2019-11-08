@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tv_world_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="3"
+            android:textColor="@color/c333333"
+            android:textSize="18sp"
+            android:layout_marginTop="16dp"
+            tools:text="水水水水水撒大大啊大苏打阿阿萨大大阿德飒飒打撒阿斯顿阿德啊德飒飒的阿三大苏打达到阿德阿斯顿阿斯顿" />
+
+        <TextView
+            android:id="@+id/tv_world_msg"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:lines="1"
+            android:layout_marginTop="20dp"
+            android:textColor="@color/c666666"
+            android:textSize="15sp"
+            android:layout_marginBottom="16dp"
+            tools:text="sisisisi" />
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/iv_world_img"
+        android:layout_width="80dp"
+        android:layout_height="104dp"
+        android:layout_marginLeft="16dp"
+        android:layout_gravity="center_vertical"
+        tools:src="@mipmap/icon_favorited" />
+</LinearLayout>

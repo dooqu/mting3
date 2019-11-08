@@ -17,6 +17,7 @@ import cn.xylink.mting.bean.TingInfo;
 import cn.xylink.mting.contract.TingListContact;
 import cn.xylink.mting.presenter.TingListPresenter;
 import cn.xylink.mting.ui.adapter.TingAdapter;
+import cn.xylink.mting.widget.TingRefreshView;
 
 /**
  * @author JoDragon
@@ -56,6 +57,8 @@ public class TingFragment extends BasePresenterFragment implements TingListConta
             request.doSign();
             mTingListPresenter.getTingList(request);
         });
+        mJAdapter.setRefreshLoadView(new TingRefreshView(getActivity()));
+        mJAdapter.setRefreshComplete();
     }
 
     @Override
