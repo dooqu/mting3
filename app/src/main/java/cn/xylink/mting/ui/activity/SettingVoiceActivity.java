@@ -19,7 +19,7 @@ import cn.xylink.mting.utils.SharedPreHelper;
  * @author wjn
  * @date 2019/10/31
  */
-public class SettingReadActivity extends BasePresenterActivity {
+public class SettingVoiceActivity extends BasePresenterActivity {
     @BindView(R.id.tv_include_title)
     TextView tvTitle;
     @BindView(R.id.pb_main_play_progress1)
@@ -56,7 +56,7 @@ public class SettingReadActivity extends BasePresenterActivity {
             @Override
             protected void onConnected(boolean connected, SpeechService service) {
                 if (connected) {
-                    SettingReadActivity.this.service = service;
+                    SettingVoiceActivity.this.service = service;
                     role = service.getRole();
                     speed = service.getSpeed();
                     setCheckRole(role);
@@ -99,7 +99,7 @@ public class SettingReadActivity extends BasePresenterActivity {
 
     @Override
     protected void initTitleBar() {
-        tvTitle.setText("朗读设置");
+        tvTitle.setText("声音设置");
     }
 
     public void closeAll() {

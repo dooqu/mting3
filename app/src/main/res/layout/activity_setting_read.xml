@@ -7,21 +7,23 @@
     android:orientation="vertical">
 
     <include layout="@layout/title_include" />
+
     <TextView
         android:layout_width="wrap_content"
-        android:layout_height="32dp"
-        android:layout_marginLeft="16dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/setting_dimen_16"
+        android:layout_marginTop="@dimen/setting_dimen_24"
         android:gravity="center_vertical"
         android:text="声音选择"
         android:textColor="#333333"
-        android:textSize="16sp" />
+        android:textSize="@dimen/setting_font_15" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="16dp"
-        android:layout_marginTop="20dp"
-        android:layout_marginRight="16dp"
+        android:layout_marginLeft="@dimen/setting_dimen_16"
+        android:layout_marginTop="@dimen/setting_dimen_32"
+        android:layout_marginRight="@dimen/setting_dimen_16"
         android:orientation="horizontal">
 
         <LinearLayout
@@ -219,19 +221,19 @@
 
     <View
         android:layout_width="match_parent"
-        android:layout_height="0.5dp"
-        android:layout_marginTop="20dp"
-        android:background="@color/color_dedede" />
+        android:layout_height="1dp"
+        android:layout_marginTop="@dimen/setting_dimen_24"
+        android:background="@color/cutting_line" />
 
     <TextView
         android:layout_width="wrap_content"
-        android:layout_height="32dp"
+        android:layout_height="wrap_content"
         android:layout_marginLeft="16dp"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="@dimen/setting_dimen_24"
         android:gravity="center_vertical"
         android:text="倍数朗读"
         android:textColor="#333333"
-        android:textSize="16sp" />
+        android:textSize="@dimen/my_font_15" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -251,8 +253,13 @@
                 android:id="@+id/rb_half"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:buttonTint="@color/selector_button_color"
-                android:text="x0.5" />
+                android:background="@null"
+                android:button="@null"
+                android:drawableLeft="@drawable/bg_check_btn"
+                android:drawablePadding="@dimen/setting_dimen_7"
+                android:text="x0.5"
+                android:textColor="#333333"
+                android:textSize="@dimen/setting_font_13" />
 
             <View
                 android:layout_width="0dp"
@@ -263,8 +270,13 @@
                 android:id="@+id/rb_normal"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:buttonTint="@color/selector_button_color"
-                android:text="x1" />
+                android:background="@null"
+                android:button="@null"
+                android:drawableLeft="@drawable/bg_check_btn"
+                android:drawablePadding="@dimen/setting_dimen_7"
+                android:text="x1"
+                android:textColor="#333333"
+                android:textSize="@dimen/setting_font_13" />
 
             <View
                 android:layout_width="0dp"
@@ -275,8 +287,13 @@
                 android:id="@+id/rb_1_5"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:buttonTint="@color/selector_button_color"
-                android:text="x1.5" />
+                android:background="@null"
+                android:button="@null"
+                android:drawableLeft="@drawable/bg_check_btn"
+                android:drawablePadding="@dimen/setting_dimen_7"
+                android:text="x1.5"
+                android:textColor="#333333"
+                android:textSize="@dimen/setting_font_13" />
 
             <View
                 android:layout_width="0dp"
@@ -287,10 +304,20 @@
                 android:id="@+id/rb_2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:buttonTint="@color/selector_button_color"
-                android:text="x2" />
+                android:background="@null"
+                android:button="@null"
+                android:drawableLeft="@drawable/bg_check_btn"
+                android:drawablePadding="@dimen/setting_dimen_7"
+                android:text="x2"
+                android:textColor="#333333"
+                android:textSize="@dimen/setting_font_13" />
         </RadioGroup>
 
     </LinearLayout>
 
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="@dimen/setting_dimen_24"
+        android:background="@color/cutting_line" />
 </LinearLayout>

@@ -41,10 +41,9 @@ public class SettingSystemActivity extends BasePresenterActivity {
         switch (view.getId()) {
             case R.id.btn_left:
                 finish();
-                toastLong("................");
                 break;
             case R.id.ll_voice:
-                startActivity(new Intent(this, SettingReadActivity.class));
+                startActivity(new Intent(this, SettingVoiceActivity.class));
                 break;
             case R.id.ll_time:
 
