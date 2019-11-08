@@ -47,7 +47,7 @@ public class SettingVoiceActivity extends BasePresenterActivity {
 
     @Override
     protected void preView() {
-        setContentView(R.layout.activity_setting_read);
+        setContentView(R.layout.activity_setting_voice);
     }
 
     @Override
