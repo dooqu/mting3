@@ -145,20 +145,20 @@ public class ContentManager {
     public int getRgTime() {
         return MemoryCache.getInstance().getRgTime();
     }
-//
-//    public void setTextSize(int change) {
-//        MemoryCache.getInstance().setTextSize(change);
-//        FileCache.getInstance().setTextSize(change);
-//    }
-//
-//    public int getTextSize() {
-//        int i = MemoryCache.getInstance().getTextSize();
-//        if (i > 0) {
-//            return i;
-//        }
-//        return FileCache.getInstance().getTextSize();
-//    }
-//
+
+    public void setTextSize(int change) {
+        MemoryCache.getInstance().setTextSize(change);
+        FileCache.getInstance().setTextSize(change);
+    }
+
+    public int getTextSize() {
+        int i = MemoryCache.getInstance().getTextSize();
+        if (i > 0) {
+            return i;
+        }
+        return FileCache.getInstance().getTextSize();
+    }
+
 //    public void setCopyArray(List<String> stringList) {
 //        MemoryCache.getInstance().setCopyArray(stringList);
 //        FileUtil.writeFile(MTing.getInstance(), Const.FileName.COPY_ARRAY, new Gson().toJson(stringList));

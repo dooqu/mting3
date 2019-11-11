@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#F8F9FD"
     android:orientation="vertical"
     tools:context=".MainActivity">
 
@@ -22,39 +23,48 @@
     <RadioGroup
         android:id="@+id/rg_tab"
         android:layout_width="match_parent"
-        android:layout_height="40dp"
+        android:layout_height="48dp"
         android:orientation="horizontal">
 
         <RadioButton
             android:id="@+id/rb_tab_ting"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:text="享听"
-            android:gravity="center"
+            android:layout_weight="1"
             android:button="@null"
             android:checked="true"
             android:drawableTop="@drawable/selector_menu_ting"
-            android:layout_weight="1" />
+            android:gravity="center"
+            android:paddingTop="4dp"
+            android:text="享听"
+            android:textColor="@color/color_999999"
+            android:textSize="12sp" />
 
         <RadioButton
             android:id="@+id/rb_tab_world"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:text="世界"
-            android:gravity="center"
+            android:layout_weight="1"
             android:button="@null"
-            android:drawableTop="@drawable/selector_menu_ting"
-            android:layout_weight="1" />
+            android:drawableTop="@drawable/selector_tab_world"
+            android:gravity="center"
+            android:paddingTop="4dp"
+            android:text="世界"
+            android:textColor="@color/color_999999"
+            android:textSize="12sp" />
 
         <RadioButton
             android:id="@+id/rb_tab_my"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:text="我的"
-            android:gravity="center"
+            android:layout_weight="1"
             android:button="@null"
-            android:drawableTop="@drawable/selector_menu_ting"
-            android:layout_weight="1" />
+            android:drawableTop="@drawable/selector_tab_my"
+            android:gravity="center"
+            android:paddingTop="4dp"
+            android:text="我的"
+            android:textColor="@color/color_999999"
+            android:textSize="12sp" />
     </RadioGroup>
 
 

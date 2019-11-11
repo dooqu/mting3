@@ -6,7 +6,6 @@ public class RemoteUrl {
     private static final String URL_BASE = "http://test.xylink.cn";//外网2019-4-9
 
 
-
     //获取短信验证码
     public static String getCodeUrl() {
         return URL_BASE + "/api/sms/common/v2/code/get";
@@ -121,6 +120,7 @@ public class RemoteUrl {
     public static String feedbackUrl() {
         return URL_BASE + "/api/sct/v1/feedback/save";
     }
+
     //反馈接口
     public static String feedbackUrlv2() {
         return URL_BASE + "/api/sct/v2/feedback/save";
@@ -146,39 +146,54 @@ public class RemoteUrl {
     public static String getEditArticle() {
         return URL_BASE + "/api/sct/v1/article/edit";
     }
+
     //分享加入待读接口
     public static String shareAddUrl() {
         return URL_BASE + "/api/sct/v1/article/share/add";
     }
+
     //短信快捷登录接口
     public static String smsLogin() {
         return URL_BASE + "/api/user/common/v3/sms/login";
     }
+
     //第三方账号绑定接口(验证码)v1
     public static String v1PlatformBind() {
         return URL_BASE + "/api/user/v1/third_platform/bind";
     }
+
     //教程页
     public static String tutorialUrl() {
         return URL_BASE + "/article/html/tutorial_quick.html?";
     }
 
-    public static String  getArticleDetailUrl() { return URL_BASE +  "/api/sct/v2/article/detail";}
+    public static String getArticleDetailUrl() {
+        return URL_BASE + "/api/sct/v2/article/detail";
+    }
 
     //public static String getArticleReadedUrl() { return URL_BASE + "/api/sct/v2/article/read"; }
 
-    public static String getStoreArticleUrl() { return URL_BASE + "/api/sct/v2/article/store";}
+    public static String getStoreArticleUrl() {
+        return URL_BASE + "/api/sct/v2/article/store";
+    }
 
-    public static String getArticleReadDurationUrl() { return URL_BASE + "/api/analyse/v1/article/reader_time";}
+    public static String getArticleReadDurationUrl() {
+        return URL_BASE + "/api/analyse/v1/article/reader_time";
+    }
 
 
-    public static String getPersonalSpeechSettingUrl() { return URL_BASE +  "/api/user/v1/user_setting/update"; }
+    public static String getPersonalSpeechSettingUrl() {
+        return URL_BASE + "/api/user/v1/user_setting/update";
+    }
 
 
-    public static String getXiaoIceTTSUrl() { return URL_BASE + "/api/tts/v1/text2audio/xiaobing";}
+    public static String getXiaoIceTTSUrl() {
+        return URL_BASE + "/api/tts/v1/text2audio/xiaobing";
+    }
 
-    public static String getUpgradeUrl() {  return URL_BASE + "/api/v2/version/check";}
-
+    public static String getUpgradeUrl() {
+        return URL_BASE + "/api/v2/version/check";
+    }
 
 
     public static String getSpeechListUrl() {
@@ -196,5 +211,13 @@ public class RemoteUrl {
 
     public static String getUnreadListUrl() {
         return URL_BASE + "/api/art/v1/article/unread/list";
+    }
+
+    public static String getTingListUrl() {
+        return URL_BASE + "/api/art/v1/subscribe/list";
+    }
+
+    public static String getWordlListUrl() {
+        return URL_BASE + "/api/art/v1/world/list";
     }
 }

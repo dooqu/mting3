@@ -4,13 +4,13 @@
     <dimen name="dimen_title_height">52dp</dimen>
 
 
-    <dimen name="title_bar_height">50dip</dimen>
+    <dimen name="title_bar_height">48dp</dimen>
     <dimen name="title_bar_padding">5dip</dimen>
     <dimen name="btn_margin">10dip</dimen>
     <dimen name="title_tv_width">300dip</dimen>
     <dimen name="title_tv_padding">15dip</dimen>
     <dimen name="title_tv_paddingRight">20dip</dimen>
-    <dimen name="title_size">20sp</dimen>
+    <dimen name="title_size">24sp</dimen>
     <dimen name="padding_15">15dp</dimen>
     <dimen name="padding_5">5dp</dimen>
     <dimen name="text_14">14sp</dimen>
@@ -32,4 +32,19 @@
 
     <dimen name="margin156">156dp</dimen>
     <dimen name="margin15">15dp</dimen>
+    <dimen name="my_dimen_32">32dp</dimen>
+    <dimen name="my_dimen_16">16dp</dimen>
+    <dimen name="my_font_24">24sp</dimen>
+    <dimen name="my_dimen_8">8dp</dimen>
+    <dimen name="my_font_15">15sp</dimen>
+    <dimen name="my_dimen_57">57dp</dimen>
+    <dimen name="my_dimen_12">12dp</dimen>
+    <dimen name="my_dimen_10">10dp</dimen>
+    <dimen name="dimen_cutting_line">1dp</dimen>
+    <dimen name="setting_dimen_24">24dp</dimen>
+    <dimen name="setting_font_15">15sp</dimen>
+    <dimen name="setting_dimen_16">16dp</dimen>
+    <dimen name="setting_dimen_32">32dp</dimen>
+    <dimen name="setting_font_13">13sp</dimen>
+    <dimen name="setting_dimen_7">7dp</dimen>
 </resources>

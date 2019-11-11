@@ -6,7 +6,6 @@ import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -20,9 +19,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.Window;
-import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -32,7 +28,6 @@ import com.tendcloud.tenddata.TCAgent;
 import java.io.File;
 import java.util.List;
 import java.util.Timer;
-
 import butterknife.ButterKnife;
 import cn.xylink.mting.speech.SpeechService;
 import cn.xylink.mting.speech.SpeechServiceProxy;
@@ -59,14 +54,14 @@ public abstract class BaseActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         context = this;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-//            Window window = getWindow();
-//            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-//            window.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-//                    | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+//            Window window = this.getWindow();
 //            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+//            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+//            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
+//            window.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
 //            window.setStatusBarColor(Color.TRANSPARENT);
-        }
+
         preView();
 
 //        ViewGroup contentFrameLayout = findViewById(Window.ID_ANDROID_CONTENT);
@@ -78,19 +73,15 @@ public abstract class BaseActivity extends AppCompatActivity {
         initData();
         initView();
         initTitleBar();
-
-
-
         downloadReceiver = new UpgradeManager.DownloadReceiver();
         downloadReceiver.regist(this);
 
-        if(enableSpeechService() == true) {
+        if (enableSpeechService() == true) {
             connectSpeechService();
         }
         if (enableVersionUpgrade() == true) {
             checkOnlineUpgrade();
         }
-
         TCAgent.onPageStart(this, this.getComponentName().getClassName());
     }
 
@@ -104,18 +95,38 @@ public abstract class BaseActivity extends AppCompatActivity {
         proxy = new SpeechServiceProxy(this) {
             @Override
             protected void onConnected(boolean connected, SpeechService service) {
-                if(connected) {
+                if (connected) {
                     speechServiceConnected = connected;
                     speechService = service;
-                    onSpeechServiceAvailable(service);
+                    initSpeechPanel();
+                    onSpeechServiceAvailable();
                 }
             }
         };
         proxy.bind();
     }
 
+    protected boolean isSpeechServiceAvailable() {
+        return speechServiceConnected;
+    }
 
-    protected void onSpeechServiceAvailable(SpeechService speechService) {
+    protected SpeechService getSpeechService() {
+        if(isSpeechServiceAvailable()) {
+            return speechService;
+        }
+        return null;
+    }
+
+    protected void initSpeechPanel() {
+        if(speechService.getSelected() == null) {
+            return;
+        }
+
+
+    }
+
+    protected void onSpeechServiceAvailable() {
+
     }
 
 
@@ -172,7 +183,7 @@ public abstract class BaseActivity extends AppCompatActivity {
             upgradeTimer = null;
         }
 
-        if(proxy != null) {
+        if (proxy != null) {
             proxy.unbind();
             speechServiceConnected = false;
             speechService = null;
