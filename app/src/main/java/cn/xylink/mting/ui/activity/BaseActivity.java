@@ -34,6 +34,8 @@ import java.util.List;
 import java.util.Timer;
 
 import butterknife.ButterKnife;
+import cn.xylink.mting.speech.SpeechService;
+import cn.xylink.mting.speech.SpeechServiceProxy;
 import cn.xylink.mting.ui.dialog.UpgradeConfirmDialog;
 import cn.xylink.mting.upgrade.UpgradeManager;
 import cn.xylink.mting.utils.L;
@@ -47,6 +49,10 @@ public abstract class BaseActivity extends AppCompatActivity {
     protected Intent mUpdateIntent;
     protected Context context;
     protected Timer upgradeTimer;
+    protected SpeechService speechService;
+    protected boolean speechServiceConnected;
+    protected SpeechServiceProxy proxy;
+
     UpgradeManager.DownloadReceiver downloadReceiver;
 
     @Override
@@ -60,7 +66,7 @@ public abstract class BaseActivity extends AppCompatActivity {
 //                    | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
 //            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
 //            window.setStatusBarColor(Color.TRANSPARENT);
-    }
+        }
         preView();
 
 //        ViewGroup contentFrameLayout = findViewById(Window.ID_ANDROID_CONTENT);
@@ -73,13 +79,43 @@ public abstract class BaseActivity extends AppCompatActivity {
         initView();
         initTitleBar();
 
+
+
         downloadReceiver = new UpgradeManager.DownloadReceiver();
         downloadReceiver.regist(this);
+
+        if(enableSpeechService() == true) {
+            connectSpeechService();
+        }
         if (enableVersionUpgrade() == true) {
             checkOnlineUpgrade();
         }
 
         TCAgent.onPageStart(this, this.getComponentName().getClassName());
+    }
+
+
+    protected boolean enableSpeechService() {
+        return true;
+    }
+
+
+    protected void connectSpeechService() {
+        proxy = new SpeechServiceProxy(this) {
+            @Override
+            protected void onConnected(boolean connected, SpeechService service) {
+                if(connected) {
+                    speechServiceConnected = connected;
+                    speechService = service;
+                    onSpeechServiceAvailable(service);
+                }
+            }
+        };
+        proxy.bind();
+    }
+
+
+    protected void onSpeechServiceAvailable(SpeechService speechService) {
     }
 
 
@@ -99,7 +135,8 @@ public abstract class BaseActivity extends AppCompatActivity {
                     && event.getRawY() > top && event.getRawY() < bottom) {
                 // 点击的是输入框区域，保留点击EditText的事件
                 return false;
-            } else {
+            }
+            else {
                 return true;
             }
         }
@@ -133,6 +170,12 @@ public abstract class BaseActivity extends AppCompatActivity {
         if (upgradeTimer != null) {
             upgradeTimer.cancel();
             upgradeTimer = null;
+        }
+
+        if(proxy != null) {
+            proxy.unbind();
+            speechServiceConnected = false;
+            speechService = null;
         }
 
         downloadReceiver.regist(null);
@@ -249,7 +292,8 @@ public abstract class BaseActivity extends AppCompatActivity {
         }
         if (code > 0) {
             startActivityForResult(intent, code);
-        } else {
+        }
+        else {
             startActivity(intent);
         }
     }
@@ -259,7 +303,8 @@ public abstract class BaseActivity extends AppCompatActivity {
         try {
             InputMethodManager imm = (InputMethodManager) getApplicationContext().getSystemService(Context.INPUT_METHOD_SERVICE);
             imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -268,7 +313,8 @@ public abstract class BaseActivity extends AppCompatActivity {
         try {
             InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
             imm.showSoftInput(view, InputMethodManager.SHOW_FORCED);
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
 
         }
     }
@@ -279,10 +325,12 @@ public abstract class BaseActivity extends AppCompatActivity {
             boolean b = getPackageManager().canRequestPackageInstalls();
             if (b) {
                 installAPK();
-            } else {                //请求安装未知应用来源的权限
+            }
+            else {                //请求安装未知应用来源的权限
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.REQUEST_INSTALL_PACKAGES}, INSTALL_PACKAGES_REQUESTCODE);
             }
-        } else {
+        }
+        else {
             installAPK();
         }
     }
@@ -301,7 +349,8 @@ public abstract class BaseActivity extends AppCompatActivity {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             imageUri = FileProvider.getUriForFile(context,
                     "cn.xylink.mting.fileprovider", file);//通过FileProvider创建一个content类型的Uri
-        } else {
+        }
+        else {
             imageUri = Uri.fromFile(file);
         }
         return imageUri;
@@ -318,10 +367,12 @@ public abstract class BaseActivity extends AppCompatActivity {
                     Toast.makeText(this, "当前升级为重要更新，请开启应用重新授权", Toast.LENGTH_SHORT).show();
                     System.exit(0);
                     return;
-                } else {
+                }
+                else {
                     Toast.makeText(this, "授权被取消，升级安装中断", Toast.LENGTH_SHORT).show();
                 }
-            } else if (resultCode == Activity.RESULT_OK) {
+            }
+            else if (resultCode == Activity.RESULT_OK) {
                 Log.d("SPEECH_", "授权成功");
                 if (UpgradeManager.DownloadTaskFilePath != null) {
                     downloadReceiver.installApk(UpgradeManager.DownloadTaskFilePath);
@@ -337,7 +388,8 @@ public abstract class BaseActivity extends AppCompatActivity {
             case INSTALL_PACKAGES_REQUESTCODE:
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     installApk();
-                } else {
+                }
+                else {
                     Intent intent = new Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES);
                     startActivityForResult(intent, GET_UNKNOWN_APP_SOURCES);
                 }
@@ -364,10 +416,12 @@ public abstract class BaseActivity extends AppCompatActivity {
         try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 startForegroundService(intent);// 启动服务
-            } else {
+            }
+            else {
                 startService(intent);
             }
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
 
         }
     }
@@ -380,7 +434,7 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     protected void checkOnlineUpgrade() {
         int currentVersionCode = Integer.parseInt(PackageUtils.getAppVersionCode(this));
-        L.e("currentVersionCode","currentVersionCode===="+currentVersionCode);
+        L.e("currentVersionCode", "currentVersionCode====" + currentVersionCode);
         if (UpgradeManager.CurrentUpgradeInfo == null || UpgradeManager.CurrentUpgradeInfo.getAppVersionCode() <= currentVersionCode) {
             return;
         }
