@@ -2,6 +2,7 @@ package cn.xylink.mting;
 
 
 import android.support.v4.view.ViewPager;
+import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.RadioButton;
 
@@ -101,13 +102,16 @@ public class MainActivity extends BasePresenterActivity implements ViewPager.OnP
     public void onPageSelected(int i) {
             switch (i) {
                 case 0:
+                    getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE| View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
                     mTingButton.setChecked(true);
                     break;
                 case 1:
+                    getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR| View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
                     mWorldButton.setChecked(true);
                     break;
                 case 2:
                     mMyButton.setChecked(true);
+                    getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE| View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
                     break;
             }
     }

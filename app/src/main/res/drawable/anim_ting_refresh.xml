@@ -4,51 +4,51 @@
 
     <item
         android:drawable="@drawable/w_00001"
-        android:duration="60" />
+        android:duration="40" />
     <item
         android:drawable="@drawable/w_00002"
-        android:duration="60" />
+        android:duration="40" />
     <item
         android:drawable="@drawable/w_00003"
-        android:duration="60" />
+        android:duration="40" />
     <item
         android:drawable="@drawable/w_00004"
-        android:duration="60" />
+        android:duration="40" />
     <item
         android:drawable="@drawable/w_00005"
-        android:duration="60" />
+        android:duration="40" />
     <item
         android:drawable="@drawable/w_00006"
-        android:duration="60" />
+        android:duration="40" />
     <item
         android:drawable="@drawable/w_00007"
-        android:duration="60" />
+        android:duration="40" />
     <item
         android:drawable="@drawable/w_00008"
-        android:duration="60" />
+        android:duration="40" />
     <item
         android:drawable="@drawable/w_00009"
-        android:duration="60" />
+        android:duration="40" />
     <item
         android:drawable="@drawable/w_00010"
-        android:duration="60" />
+        android:duration="40" />
     <item
         android:drawable="@drawable/w_00011"
-        android:duration="60" />
+        android:duration="40" />
     <item
         android:drawable="@drawable/w_00012"
-        android:duration="60" />
+        android:duration="40" />
     <item
         android:drawable="@drawable/w_00013"
-        android:duration="60" />
+        android:duration="40" />
     <item
         android:drawable="@drawable/w_00014"
-        android:duration="60" />
+        android:duration="40" />
     <item
         android:drawable="@drawable/w_00015"
-        android:duration="60" />
+        android:duration="40" />
     <item
         android:drawable="@drawable/w_00016"
-        android:duration="60" />
+        android:duration="40" />
 
 </animation-list>
