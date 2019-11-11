@@ -41,4 +41,10 @@
     <dimen name="my_dimen_12">12dp</dimen>
     <dimen name="my_dimen_10">10dp</dimen>
     <dimen name="dimen_cutting_line">1dp</dimen>
+    <dimen name="setting_dimen_24">24dp</dimen>
+    <dimen name="setting_font_15">15sp</dimen>
+    <dimen name="setting_dimen_16">16dp</dimen>
+    <dimen name="setting_dimen_32">32dp</dimen>
+    <dimen name="setting_font_13">13sp</dimen>
+    <dimen name="setting_dimen_7">7dp</dimen>
 </resources>
