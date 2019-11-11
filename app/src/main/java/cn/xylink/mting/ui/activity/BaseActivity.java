@@ -18,22 +18,35 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.tendcloud.tenddata.TCAgent;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.io.File;
 import java.util.List;
 import java.util.Timer;
 import butterknife.ButterKnife;
+import cn.xylink.mting.R;
+import cn.xylink.mting.bean.Article;
 import cn.xylink.mting.speech.SpeechService;
 import cn.xylink.mting.speech.SpeechServiceProxy;
+import cn.xylink.mting.speech.event.RecycleEvent;
 import cn.xylink.mting.ui.dialog.UpgradeConfirmDialog;
 import cn.xylink.mting.upgrade.UpgradeManager;
 import cn.xylink.mting.utils.L;
@@ -50,6 +63,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     protected SpeechService speechService;
     protected boolean speechServiceConnected;
     protected SpeechServiceProxy proxy;
+    protected View speechPanelView;
 
     UpgradeManager.DownloadReceiver downloadReceiver;
 
@@ -97,6 +111,7 @@ public abstract class BaseActivity extends AppCompatActivity {
             checkOnlineUpgrade();
         }
         TCAgent.onPageStart(this, this.getComponentName().getClassName());
+        EventBus.getDefault().register(this);
     }
 
 
@@ -112,8 +127,10 @@ public abstract class BaseActivity extends AppCompatActivity {
                 if (connected) {
                     speechServiceConnected = connected;
                     speechService = service;
-                    initSpeechPanel();
+
                     onSpeechServiceAvailable();
+                    updateSpeechPanel();
+
                 }
             }
         };
@@ -131,16 +148,86 @@ public abstract class BaseActivity extends AppCompatActivity {
         return null;
     }
 
-    protected void initSpeechPanel() {
-        if(speechService.getSelected() == null) {
+    protected boolean isPlaying;
+
+    protected void updateSpeechPanel() {
+        if(isSpeechServiceAvailable() == false
+                || getSpeechService() == null
+                || getSpeechService().getSelected() == null) {
             return;
         }
+        getPanelView();
+        ImageView statusIcon = speechPanelView.findViewById(R.id.ico_panel_status);
+        TextView articleTitle = speechPanelView.findViewById(R.id.tv_panel_title);
+        TextView broadcastTitle = speechPanelView.findViewById(R.id.tv_panel_broadcast_title);
+        ProgressBar progressBar = speechPanelView.findViewById(R.id.progressbar_panel);
+
+        Article article = speechService.getSelected();
+        articleTitle.setText(article.getTitle());
+        broadcastTitle.setText(article.getBroadcastId());
+
+        switch (speechService.getState()) {
+            case Ready:
+            case Playing:
+                isPlaying = true;
+                progressBar.setVisibility(View.INVISIBLE);
+                statusIcon.setImageResource(R.mipmap.panel_pause);
+                break;
+            case Loadding:
+                progressBar.setVisibility(View.VISIBLE);
+                statusIcon.setImageResource(R.mipmap.panel_pause);
+                isPlaying = true;
+                break;
+            case Error:
+            case Paused:
+                isPlaying = false;
+                progressBar.setVisibility(View.INVISIBLE);
+                statusIcon.setImageResource(R.mipmap.panel_play);
+                break;
+        }
+    }
 
 
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onSpeechEvent(RecycleEvent event) {
+        updateSpeechPanel();
+    }
+
+    protected View getPanelView() {
+        if(speechPanelView == null) {
+            speechPanelView = View.inflate(this, R.layout.view_control_panel, null);
+            RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
+            this.addContentView(speechPanelView, layoutParams);
+
+            ImageView icoPanelCollapse = speechPanelView.findViewById(R.id.ico_panel_collapse);
+            icoPanelCollapse.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    showPanelControllDialog();
+                }
+            });
+
+            View icoPanelStatus = speechPanelView.findViewById(R.id.btn_panel_status);
+            icoPanelStatus.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if(isPlaying) {
+                        getSpeechService().pause();
+                    }
+                    else {
+                        getSpeechService().resume();
+                    }
+                }
+            });
+        }
+        return speechPanelView;
+    }
+
+    protected void showPanelControllDialog() {
+        Toast.makeText(this, "collapse", Toast.LENGTH_SHORT).show();
     }
 
     protected void onSpeechServiceAvailable() {
-
     }
 
 
@@ -204,6 +291,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         }
 
         downloadReceiver.regist(null);
+        EventBus.getDefault().unregister(this);
 
         TCAgent.onPageEnd(this, this.getComponentName().getClassName());
     }
