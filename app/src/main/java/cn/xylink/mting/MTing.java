@@ -86,8 +86,6 @@ public class MTing extends Application {
         /*
         String defaultRole = String.valueOf(SharedPreHelper.getInstance(this).getSharedPreference("SPEECH_ROLE", "XiaoIce"));
         String defaultSpeed = String.valueOf(SharedPreHelper.getInstance(this).getSharedPreference("SPEECH_SPEED", "SPEECH_SPEED_NORMAL"));
-
-
         serviceIntent.putExtra("role", defaultRole);
         serviceIntent.putExtra("speed", defaultSpeed);
 
@@ -187,9 +185,7 @@ public class MTing extends Application {
                         Log.d("xylink", "onComplete");
                     }
                 });
-
          */
-
     }
 
 

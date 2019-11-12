@@ -268,6 +268,7 @@ public class SpeechService extends Service {
         //if(fragmentIndex == 0) {
         speechNotification.update();
         // }
+
         EventBus.getDefault().post(new SpeechProgressEvent(fragmentIndex, fragments, article));
     }
 
@@ -475,7 +476,7 @@ public class SpeechService extends Service {
 
     public synchronized void loadAndPlay(String broadcastId, String articleId) {
         ArticleDataProvider articleDataProvider = new ArticleDataProvider(this);
-        if("-1".equals(broadcastId)) {
+        if("-1".equals(broadcastId) == false) {
             articleDataProvider.getSpeechList(broadcastId, articleId, new ArticleDataProvider.ArticleLoader<List<Article>>() {
                 @Override
                 public void invoke(int errorCode, List<Article> data) {

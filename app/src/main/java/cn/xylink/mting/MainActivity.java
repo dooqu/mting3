@@ -55,10 +55,12 @@ public class MainActivity extends BasePresenterActivity implements ViewPager.OnP
 
     }
 
-    protected void onSpeechServiceReady(SpeechService service) {
-        service.loadAndPlay("2019102118414971152446751", "2019102211541422454428823");
-    }
 
+    @Override
+    protected void onSpeechServiceAvailable() {
+        super.onSpeechServiceAvailable();
+        getSpeechService().loadAndPlay("2019102118414971152446751", "2019102211541422454428823");
+    }
 
     @Override
     protected void onDestroy() {
