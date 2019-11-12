@@ -25,18 +25,18 @@ import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.Toast;
-import com.tendcloud.tenddata.TCAgent;
 
+import com.tendcloud.tenddata.TCAgent;
 
 
 import java.io.File;
 import java.util.List;
 import java.util.Timer;
+
 import butterknife.ButterKnife;
-import cn.xylink.mting.R;
 import cn.xylink.mting.speech.SpeechService;
 import cn.xylink.mting.speech.SpeechServiceProxy;
-import cn.xylink.mting.ui.adapter.PanelViewAdapter;
+import cn.xylink.mting.speech.ui.PanelViewAdapter;
 import cn.xylink.mting.ui.dialog.UpgradeConfirmDialog;
 import cn.xylink.mting.upgrade.UpgradeManager;
 import cn.xylink.mting.utils.L;
@@ -92,9 +92,10 @@ public abstract class BaseActivity extends AppCompatActivity {
         initData();
         initView();
         initTitleBar();
+
         downloadReceiver = new UpgradeManager.DownloadReceiver();
         downloadReceiver.regist(this);
-
+        panelViewAdapter = new PanelViewAdapter();
         if (enableSpeechService() == true) {
             connectSpeechService();
         }
@@ -110,6 +111,8 @@ public abstract class BaseActivity extends AppCompatActivity {
         return false;
     }
 
+    protected void onSpeechServiceAvailable() {
+    }
 
     protected void connectSpeechService() {
         proxy = new SpeechServiceProxy(this) {
@@ -119,7 +122,8 @@ public abstract class BaseActivity extends AppCompatActivity {
                     speechServiceConnected = connected;
                     speechService = service;
                     onSpeechServiceAvailable();
-                    getPanelView().update();
+                    panelViewAdapter.attach(BaseActivity.this, speechService);
+                    panelViewAdapter.update();
                 }
             }
         };
@@ -130,30 +134,12 @@ public abstract class BaseActivity extends AppCompatActivity {
         return speechServiceConnected;
     }
 
+
     protected SpeechService getSpeechService() {
-        if(isSpeechServiceAvailable()) {
+        if (isSpeechServiceAvailable()) {
             return speechService;
         }
         return null;
-    }
-
-
-    protected PanelViewAdapter getPanelView() {
-        if(panelViewAdapter == null) {
-            panelViewAdapter = new PanelViewAdapter(this, getSpeechService(), R.layout.view_control_panel);
-        }
-        return panelViewAdapter;
-    }
-
-    protected void showPanelControllDialog() {
-        Toast.makeText(this, "collapse", Toast.LENGTH_SHORT).show();
-    }
-
-    protected void onSpeechServiceAvailable() {
-    }
-
-    protected void onPanelViewClose() {
-        speechPanelView.setVisibility(View.VISIBLE);
     }
 
 
@@ -209,22 +195,16 @@ public abstract class BaseActivity extends AppCompatActivity {
             upgradeTimer.cancel();
             upgradeTimer = null;
         }
-
         if (proxy != null) {
             proxy.unbind();
             speechServiceConnected = false;
             speechService = null;
         }
-
-        if(panelViewAdapter != null) {
-            panelViewAdapter.abandon();
+        if (panelViewAdapter != null) {
+            panelViewAdapter.detach();
             panelViewAdapter = null;
         }
-
-
         downloadReceiver.regist(null);
-
-
         TCAgent.onPageEnd(this, this.getComponentName().getClassName());
     }
 
