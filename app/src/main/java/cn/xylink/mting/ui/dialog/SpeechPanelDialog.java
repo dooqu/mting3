@@ -33,6 +33,7 @@ public class SpeechPanelDialog extends Dialog {
     SeekBar seekBar;
 
     TextView tvTitle;
+    View buttonClose;
     public SpeechPanelDialog(@NonNull Context context, SpeechService speechService) {
         super(context, R.style.bottom_dialog);
         contextWeakReference = new WeakReference<Context>(context);
@@ -46,6 +47,13 @@ public class SpeechPanelDialog extends Dialog {
         setContentView(R.layout.dialog_control_panel);
         tvTitle = findViewById(R.id.dialog_panel_article_title);
         seekBar = findViewById(R.id.dialog_panel_seekbar);
+        buttonClose = findViewById(R.id.dialog_panel_close);
+        buttonClose.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dismiss();
+            }
+        });
 
         Window dialogWindow = this.getWindow();
         dialogWindow.setWindowAnimations(R.style.share_animation);

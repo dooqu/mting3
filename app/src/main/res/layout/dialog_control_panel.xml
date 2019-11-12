@@ -23,12 +23,20 @@
             android:singleLine="true"
             android:text="文章标题"></TextView>
 
-        <ImageView
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:layout_marginLeft="16dp"
-            android:layout_marginRight="16dp"
-            android:src="@mipmap/ico_array_down"></ImageView>
+        <LinearLayout
+            android:id="@+id/dialog_panel_close"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent">
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:src="@mipmap/ico_array_down"></ImageView>
+        </LinearLayout>
+
+
 
         <ImageView
             android:layout_width="20dp"
