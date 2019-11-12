@@ -1,5 +1,6 @@
 package cn.xylink.mting.ui.fragment;
 
+import android.content.Intent;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -22,6 +23,7 @@ import cn.xylink.mting.base.BaseResponseArray;
 import cn.xylink.mting.bean.TingInfo;
 import cn.xylink.mting.contract.TingListContact;
 import cn.xylink.mting.presenter.TingListPresenter;
+import cn.xylink.mting.ui.activity.BroadcastActivity;
 import cn.xylink.mting.ui.adapter.TingAdapter;
 import cn.xylink.mting.utils.DensityUtil;
 import cn.xylink.mting.widget.TingHeaderView;
@@ -29,7 +31,7 @@ import cn.xylink.mting.widget.TingHeaderView;
 /**
  * @author JoDragon
  */
-public class TingFragment extends BasePresenterFragment implements TingListContact.ITingListView {
+public class TingFragment extends BasePresenterFragment implements TingListContact.ITingListView ,TingAdapter.OnItemClickListener{
 
     @BindView(R.id.rv_tab_ting)
     RecyclerView mRecyclerView;
@@ -56,7 +58,7 @@ public class TingFragment extends BasePresenterFragment implements TingListConta
         mTitleLayout.setLayoutParams(lp);
         mTingListPresenter = (TingListPresenter) createPresenter(TingListPresenter.class);
         mTingListPresenter.attachView(this);
-        mAdapter = new TingAdapter(getActivity());
+        mAdapter = new TingAdapter(getActivity(),this);
         mRecyclerView.setItemAnimator(null);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
@@ -94,5 +96,13 @@ public class TingFragment extends BasePresenterFragment implements TingListConta
     @Override
     public void onTingListError(int code, String errorMsg) {
 
+    }
+
+    @Override
+    public void onItemClick(TingInfo article) {
+        Intent intent =new Intent(getActivity(), BroadcastActivity.class);
+        intent.putExtra(BroadcastActivity.EXTRA_BROADCASTID,article.getBroadcastId());
+        intent.putExtra(BroadcastActivity.EXTRA_TITLE,article.getName());
+        getActivity().startActivity(intent);
     }
 }

@@ -220,4 +220,8 @@ public class RemoteUrl {
     public static String getWordlListUrl() {
         return URL_BASE + "/api/art/v1/world/list";
     }
+
+    public static String getBroadcastlListUrl() {
+        return URL_BASE + "/api/art/v1/broadcast/item/list";
+    }
 }
