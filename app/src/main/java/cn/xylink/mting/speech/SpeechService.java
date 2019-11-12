@@ -268,6 +268,7 @@ public class SpeechService extends Service {
         //if(fragmentIndex == 0) {
         speechNotification.update();
         // }
+
         EventBus.getDefault().post(new SpeechProgressEvent(fragmentIndex, fragments, article));
     }
 
