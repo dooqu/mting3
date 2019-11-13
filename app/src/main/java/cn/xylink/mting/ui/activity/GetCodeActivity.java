@@ -138,15 +138,17 @@ public class GetCodeActivity extends BasePresenterActivity implements GetCodeCon
     }
 
 
-    private void smsLogin(String smsContent)
-    {
+    private void smsLogin(String smsContent) {
         L.v(smsContent.length());
         SmsLoginRequset requset = new SmsLoginRequset();
         try {
             requset.code = SafeUtils.getRsaString(smsContent, Const.publicKey);
-            L.v("code",requset.code);
+            L.v("code", requset.code);
         } catch (Exception e) {
             e.printStackTrace();
+        }
+        if (!TextUtils.isEmpty(ContentManager.getInstance().getLoginToken())) {
+            requset.token = ContentManager.getInstance().getLoginToken();
         }
         requset.phone = phone.replaceAll(" ", "");
         requset.codeId = codeID;
@@ -254,7 +256,6 @@ public class GetCodeActivity extends BasePresenterActivity implements GetCodeCon
     }
 
 
-
     @Override
     protected void onStop() {
         super.onStop();
@@ -262,7 +263,7 @@ public class GetCodeActivity extends BasePresenterActivity implements GetCodeCon
             timer.cancel();
             timer.onFinish();
         }
-        if(pCcode != null){
+        if (pCcode != null) {
             pCcode.clearText();
         }
 
@@ -276,7 +277,7 @@ public class GetCodeActivity extends BasePresenterActivity implements GetCodeCon
             ContentManager.getInstance().setUserInfo(response.data);
 
             TCAgent.onRegister(ContentManager.getInstance().getUserInfo().getUserId(), TDAccount.AccountType.ANONYMOUS, "");
-            TCAgent.onLogin(ContentManager.getInstance().getUserInfo().getUserId(), TDAccount.AccountType.ANONYMOUS,"");
+            TCAgent.onLogin(ContentManager.getInstance().getUserInfo().getUserId(), TDAccount.AccountType.ANONYMOUS, "");
             Intent mIntent = new Intent(this, MainActivity.class);
             mIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(mIntent);
