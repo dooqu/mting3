@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="128dp"
+    android:background="@drawable/bg_main_add_menu_pop"
+    android:paddingLeft="26dp"
+    android:orientation="vertical">
+
+    <Button
+        android:id="@+id/btn_group_member_pop_create"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:background="@color/transparent"
+        android:text="创建文章"
+        android:textColor="@color/c333333"
+        android:drawableLeft="@mipmap/icon_create_article"
+        android:drawablePadding="12dp"
+        android:gravity="left|center_vertical"
+        android:textSize="15sp" />
+
+
+    <Button
+        android:id="@+id/btn_group_member_pop_put"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:background="@color/transparent"
+        android:textColor="@color/c333333"
+        android:text="导入内容"
+        android:gravity="left|center_vertical"
+        android:drawableLeft="@mipmap/icon_put"
+        android:drawablePadding="12dp"
+        android:textSize="15sp" />
+    <Button
+        android:id="@+id/btn_group_member_pop_create_broadcast"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:background="@color/transparent"
+        android:textColor="@color/c333333"
+        android:text="创建播单"
+        android:gravity="left|center_vertical"
+        android:drawableLeft="@mipmap/icon_create_broadcast"
+        android:drawablePadding="12dp"
+        android:textSize="15sp" />
+
+</LinearLayout>

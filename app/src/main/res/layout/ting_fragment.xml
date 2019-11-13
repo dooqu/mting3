@@ -25,7 +25,7 @@
             android:layout_marginLeft="16dp"
             android:layout_weight="1"
             android:background="@drawable/bg_search"
-            android:drawableLeft="@mipmap/icon_search"
+            android:drawableLeft="@mipmap/icon_search_w"
             android:drawablePadding="8dp"
             android:gravity="center_vertical"
             android:paddingLeft="9dp"
@@ -34,11 +34,12 @@
             android:textSize="13.5sp" />
 
         <ImageView
+            android:id="@+id/iv_ting_menu"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:paddingLeft="16dp"
             android:paddingRight="16dp"
-            android:src="@mipmap/icon_add_fast" />
+            android:src="@mipmap/icon_add_w" />
     </LinearLayout>
 
     <com.scwang.smartrefresh.layout.SmartRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"

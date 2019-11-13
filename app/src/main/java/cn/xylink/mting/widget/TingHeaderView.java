@@ -3,6 +3,7 @@ package cn.xylink.mting.widget;
 import android.content.Context;
 import android.graphics.drawable.AnimationDrawable;
 import android.support.annotation.NonNull;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
@@ -16,6 +17,8 @@ import com.scwang.smartrefresh.layout.constant.RefreshState;
 import com.scwang.smartrefresh.layout.constant.SpinnerStyle;
 
 import cn.xylink.mting.R;
+import cn.xylink.mting.ui.dialog.MainAddMenuPop;
+import cn.xylink.mting.utils.DensityUtil;
 import cn.xylink.mting.utils.L;
 
 
@@ -104,7 +107,7 @@ public class TingHeaderView extends LinearLayout implements RefreshHeader {
 
     @Override
     public void onMoving(boolean isDragging, float percent, int offset, int height, int maxDragHeight) {
-        L.v("isDragging" + isDragging + "~~~~percent" + percent + "~~~~offset" + offset + "~~~~height" + height + "~~~~maxDragHeight" + maxDragHeight);
+//        L.v("isDragging" + isDragging + "~~~~percent" + percent + "~~~~offset" + offset + "~~~~height" + height + "~~~~maxDragHeight" + maxDragHeight);
     }
 
     @Override
