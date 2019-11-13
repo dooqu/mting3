@@ -38,11 +38,12 @@
 
                     <ImageView
                         android:id="@+id/imv_head"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_width="72dp"
+                        android:layout_height="72dp"
                         android:src="@mipmap/img_head_no" />
 
                     <TextView
+                        android:id="@+id/tv_nick_name"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"

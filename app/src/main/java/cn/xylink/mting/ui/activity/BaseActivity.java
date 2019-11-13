@@ -3,8 +3,10 @@ package cn.xylink.mting.ui.activity;
 import android.Manifest;
 import android.app.Activity;
 import android.app.ActivityManager;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.net.Uri;
@@ -44,6 +46,10 @@ import cn.xylink.mting.utils.PackageUtils;
 import cn.xylink.mting.utils.T;
 
 public abstract class BaseActivity extends AppCompatActivity {
+
+    //退出的广播频段
+    private static final String EXITACTION = "action2exit";
+    private ExitReceiver exitReceiver = new ExitReceiver();
 
     private static final int INSTALL_PACKAGES_REQUESTCODE = 100;
     public static final int GET_UNKNOWN_APP_SOURCES = 106;
@@ -102,6 +108,10 @@ public abstract class BaseActivity extends AppCompatActivity {
         if (enableVersionUpgrade() == true) {
             checkOnlineUpgrade();
         }
+        //界面创建时需要注册广播
+        IntentFilter filter=new IntentFilter();
+        filter.addAction(EXITACTION);
+        registerReceiver(exitReceiver,filter);
 
         TCAgent.onPageStart(this, this.getComponentName().getClassName());
     }
@@ -159,8 +169,7 @@ public abstract class BaseActivity extends AppCompatActivity {
                     && event.getRawY() > top && event.getRawY() < bottom) {
                 // 点击的是输入框区域，保留点击EditText的事件
                 return false;
-            }
-            else {
+            } else {
                 return true;
             }
         }
@@ -205,6 +214,8 @@ public abstract class BaseActivity extends AppCompatActivity {
             panelViewAdapter = null;
         }
         downloadReceiver.regist(null);
+        //界面销毁时解除广播
+        unregisterReceiver(exitReceiver);
         TCAgent.onPageEnd(this, this.getComponentName().getClassName());
     }
 
@@ -317,8 +328,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         }
         if (code > 0) {
             startActivityForResult(intent, code);
-        }
-        else {
+        } else {
             startActivity(intent);
         }
     }
@@ -328,8 +338,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         try {
             InputMethodManager imm = (InputMethodManager) getApplicationContext().getSystemService(Context.INPUT_METHOD_SERVICE);
             imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -338,8 +347,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         try {
             InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
             imm.showSoftInput(view, InputMethodManager.SHOW_FORCED);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
 
         }
     }
@@ -350,12 +358,10 @@ public abstract class BaseActivity extends AppCompatActivity {
             boolean b = getPackageManager().canRequestPackageInstalls();
             if (b) {
                 installAPK();
-            }
-            else {                //请求安装未知应用来源的权限
+            } else {                //请求安装未知应用来源的权限
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.REQUEST_INSTALL_PACKAGES}, INSTALL_PACKAGES_REQUESTCODE);
             }
-        }
-        else {
+        } else {
             installAPK();
         }
     }
@@ -374,8 +380,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             imageUri = FileProvider.getUriForFile(context,
                     "cn.xylink.mting.fileprovider", file);//通过FileProvider创建一个content类型的Uri
-        }
-        else {
+        } else {
             imageUri = Uri.fromFile(file);
         }
         return imageUri;
@@ -392,12 +397,10 @@ public abstract class BaseActivity extends AppCompatActivity {
                     Toast.makeText(this, "当前升级为重要更新，请开启应用重新授权", Toast.LENGTH_SHORT).show();
                     System.exit(0);
                     return;
-                }
-                else {
+                } else {
                     Toast.makeText(this, "授权被取消，升级安装中断", Toast.LENGTH_SHORT).show();
                 }
-            }
-            else if (resultCode == Activity.RESULT_OK) {
+            } else if (resultCode == Activity.RESULT_OK) {
                 Log.d("SPEECH_", "授权成功");
                 if (UpgradeManager.DownloadTaskFilePath != null) {
                     downloadReceiver.installApk(UpgradeManager.DownloadTaskFilePath);
@@ -413,8 +416,7 @@ public abstract class BaseActivity extends AppCompatActivity {
             case INSTALL_PACKAGES_REQUESTCODE:
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     installApk();
-                }
-                else {
+                } else {
                     Intent intent = new Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES);
                     startActivityForResult(intent, GET_UNKNOWN_APP_SOURCES);
                 }
@@ -441,12 +443,10 @@ public abstract class BaseActivity extends AppCompatActivity {
         try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 startForegroundService(intent);// 启动服务
-            }
-            else {
+            } else {
                 startService(intent);
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
 
         }
     }
@@ -476,5 +476,13 @@ public abstract class BaseActivity extends AppCompatActivity {
                 upgradeConfirmDialog.show();
             }
         }, 3000);
+    }
+
+    class ExitReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            //收到广播时，finish
+            BaseActivity.this.finish();
+        }
     }
 }
