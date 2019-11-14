@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="shield_url">
+        <item>jd.com</item>
+        <item>taobao.com</item>
+        <item>tb.cn</item>
+        <item>mi.com</item>
+        <item>taobao.com</item>
+        <item>xiaomiyoupin.com</item>
+        <item>vip.com</item>
+        <item>dangdang.com</item>
+        <item>yangkeduo.com</item>
+        <item>pinduoduo.com</item>
+    </string-array>
+</resources>

@@ -6,6 +6,9 @@ import android.text.TextUtils;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import cn.xylink.mting.MTing;
 import cn.xylink.mting.bean.UserInfo;
 import cn.xylink.mting.model.data.Const;
@@ -159,31 +162,31 @@ public class ContentManager {
         return FileCache.getInstance().getTextSize();
     }
 
-//    public void setCopyArray(List<String> stringList) {
-//        MemoryCache.getInstance().setCopyArray(stringList);
-//        FileUtil.writeFile(MTing.getInstance(), Const.FileName.COPY_ARRAY, new Gson().toJson(stringList));
-//    }
-//
-//    public List<String> getCopyArray() {
-//        List<String> stringList = MemoryCache.getInstance().getCopyArray();
-//        if (stringList == null) {
-//            String strings = FileUtil.readFile(MTing.getInstance(), Const.FileName.COPY_ARRAY);
-//            stringList = new Gson().fromJson(strings, new TypeToken<List<String>>() {
-//            }.getType());
-//        }
-//        return stringList;
-//    }
-//
-//    public void addCopyItem(String str) {
-//        if (!TextUtils.isEmpty(str)) {
-//            List<String> list = getCopyArray();
-//            if (list == null)
-//                list = new ArrayList<>();
-//            if (list.size() > 20)
-//                list.remove(0);
-//            list.add(str);
-//            setCopyArray(list);
-//        }
-//    }
+    public void setCopyArray(List<String> stringList) {
+        MemoryCache.getInstance().setCopyArray(stringList);
+        FileUtil.writeFile(MTing.getInstance(), Const.FileName.COPY_ARRAY, new Gson().toJson(stringList));
+    }
+
+    public List<String> getCopyArray() {
+        List<String> stringList = MemoryCache.getInstance().getCopyArray();
+        if (stringList == null) {
+            String strings = FileUtil.readFile(MTing.getInstance(), Const.FileName.COPY_ARRAY);
+            stringList = new Gson().fromJson(strings, new TypeToken<List<String>>() {
+            }.getType());
+        }
+        return stringList;
+    }
+
+    public void addCopyItem(String str) {
+        if (!TextUtils.isEmpty(str)) {
+            List<String> list = getCopyArray();
+            if (list == null)
+                list = new ArrayList<>();
+            if (list.size() > 20)
+                list.remove(0);
+            list.add(str);
+            setCopyArray(list);
+        }
+    }
 
 }

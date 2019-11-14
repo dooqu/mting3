@@ -257,11 +257,11 @@ public class SplashActivity extends BasePresenterActivity implements CheckTokenC
     public void onShareAddSuccess(BaseResponse<ArticleDetailInfo> info) {
         addLocalUnread(info.data);
         TCAgent.onLogin(ContentManager.getInstance().getUserInfo().getUserId(), TDAccount.AccountType.ANONYMOUS,"");
-       /* Intent intent = new Intent(this, MainActivity.class);
+        Intent intent = new Intent(this, MainActivity.class);
         intent.putExtra(MainActivity.ARTICLE_ID, info.data.getArticleId());
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
-        finish();*/
+        finish();
 
     }
 
