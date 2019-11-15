@@ -8,7 +8,7 @@ import android.widget.TextView;
 
 import cn.xylink.mting.R;
 
-/*
+/**
  *提示对话框
  *
  * -----------------------------------------------------------------

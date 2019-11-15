@@ -224,4 +224,11 @@ public class RemoteUrl {
     public static String getBroadcastlListUrl() {
         return URL_BASE + "/api/art/v1/broadcast/item/list";
     }
+
+    public static String getSetTopUrl() {
+        return URL_BASE + "/api/art/v1/broadcast/top";
+    }
+    public static String getSubscribeUrl() {
+        return URL_BASE + "/api/art/v1/broadcast/subscribe";
+    }
 }
