@@ -37,7 +37,7 @@ public class ContentManager {
         return sInstance;
     }
 
-//    public void startActivity(BaseActivity activity) {
+    //    public void startActivity(BaseActivity activity) {
 //        MemoryCache.getInstance().putActivity(activity);
 //    }
 //
@@ -60,6 +60,33 @@ public class ContentManager {
             loginToken = FileCache.getInstance().getLogintoken();
         }
         return loginToken;
+    }
+
+    //同步游客数据时需要游客token
+    public void setVisitorToken(String token) {
+        MemoryCache.getInstance().setVisitorToken(token);
+        FileCache.getInstance().setVisitorToken(token);
+    }
+
+    public String getVisitorToken() {
+        String visitorToken = MemoryCache.getInstance().getVisitorToken();
+        if (TextUtils.isEmpty(visitorToken)) {
+            visitorToken = FileCache.getInstance().getVisitorToken();
+        }
+        return visitorToken;
+    }
+
+    public void setVisitor(String visitor) {
+        MemoryCache.getInstance().setVisitor(visitor);
+        FileCache.getInstance().setVisitor(visitor);
+    }
+
+    public String getVisitor() {
+        String visitor = MemoryCache.getInstance().getVisitor();
+        if (TextUtils.isEmpty(visitor)) {
+            visitor = FileCache.getInstance().getVisitor();
+        }
+        return visitor;
     }
 //
 //    public void setExperience(int experience) {

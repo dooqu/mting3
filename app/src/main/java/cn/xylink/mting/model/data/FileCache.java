@@ -25,6 +25,8 @@ import cn.xylink.mting.utils.DesAlaorithm;
  */
 public class FileCache {
     private static final String LOGINTOKEN = "LOGINTOKEN";
+    private static final String VISITORTOKEN = "VISITORTOKEN";
+    private static final String VISITOR = "VISITOR";
     private static final String EXPERIENCE = "EXPERIENCE";
     private static final String PROMPTCLOSE_AT = "PROMPTCLOSE_AT";
     private static final String PROMPTCLOSE_FAVORITE = "PROMPTCLOSE_FAVORITE";
@@ -213,6 +215,26 @@ public class FileCache {
 
     public String getLogintoken() {
         return mPrefs.getString(LOGINTOKEN, "");
+    }
+
+    public void setVisitorToken(String token) {
+        Editor editor = mPrefs.edit();
+        editor.putString(VISITORTOKEN, token);
+        editor.commit();
+    }
+
+    public String getVisitorToken() {
+        return mPrefs.getString(VISITORTOKEN, "");
+    }
+
+    public void setVisitor(String visitor) {
+        Editor editor = mPrefs.edit();
+        editor.putString(VISITOR, visitor);
+        editor.commit();
+    }
+
+    public String getVisitor() {
+        return mPrefs.getString(VISITOR, "");
     }
 
     public void setExperience(int experience) {

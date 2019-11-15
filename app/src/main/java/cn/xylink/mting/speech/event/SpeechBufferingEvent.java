@@ -4,7 +4,7 @@ import java.util.List;
 
 import cn.xylink.mting.bean.Article;
 
-public class SpeechBufferingEvent extends RecycleEvent {
+public class SpeechBufferingEvent extends SpeechEvent {
     private int frameIndex;
     private List<String> textFragments;
 

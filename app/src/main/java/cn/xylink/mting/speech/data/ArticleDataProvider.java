@@ -141,13 +141,22 @@ public class ArticleDataProvider {
 
                     @Override
                     public void onSuccess(SpeechListResponse response) {
-                        List<Article> list = response.getData();
-                        for (Article article : list) {
-                            article.setBroadcastId(broadcastId);
-                        }
-                        if (callback != null) {
-                            callback.invoke(0, response.getData());
-                        }
+
+                        new Thread(()->{
+                            try {
+                                Thread.sleep(3000);
+
+                                List<Article> list = response.getData();
+                                for (Article article : list) {
+                                    article.setBroadcastId(broadcastId);
+                                }
+                                if (callback != null) {
+                                    callback.invoke(0, response.getData());
+                                }
+                            }
+                            catch (Exception ex) {}
+                        }).start();
+
                     }
 
                     @Override

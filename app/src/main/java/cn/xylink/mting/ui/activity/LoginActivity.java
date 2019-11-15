@@ -15,20 +15,26 @@ import org.greenrobot.eventbus.ThreadMode;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.UUID;
+
 import butterknife.OnClick;
 import cn.xylink.mting.MTing;
 import cn.xylink.mting.MainActivity;
 import cn.xylink.mting.R;
 import cn.xylink.mting.base.BaseResponse;
 import cn.xylink.mting.bean.UserInfo;
+import cn.xylink.mting.bean.VisitorRegisterInfo;
 import cn.xylink.mting.bean.WXQQDataBean;
 import cn.xylink.mting.common.Const;
 import cn.xylink.mting.contract.ThirdLoginContact;
+import cn.xylink.mting.contract.VisitorRegisterContact;
 import cn.xylink.mting.model.ThirdLoginRequset;
+import cn.xylink.mting.model.VisitorRegisterRequest;
 import cn.xylink.mting.model.data.HttpConst;
 import cn.xylink.mting.openapi.QQApi;
 import cn.xylink.mting.openapi.WXapi;
 import cn.xylink.mting.presenter.ThirdLoginPresenter;
+import cn.xylink.mting.presenter.VisitorRegisterPresenter;
 import cn.xylink.mting.utils.ContentManager;
 import cn.xylink.mting.utils.L;
 import cn.xylink.mting.utils.NetworkUtil;
@@ -38,10 +44,12 @@ import cn.xylink.mting.utils.SharedPreHelper;
  * @author wjn
  * @date 2019/10/21
  */
-public class LoginActivity extends BasePresenterActivity implements ThirdLoginContact.IThirdLoginView {
+public class LoginActivity extends BasePresenterActivity implements ThirdLoginContact.IThirdLoginView, VisitorRegisterContact.IVisitorRegisterView {
     private Tencent mTencent;
 
     private ThirdLoginPresenter thirdLoginPresenter;
+    private VisitorRegisterPresenter visitorRegisterPresenter;
+
     private String platform;
 
     @Override
@@ -80,6 +88,8 @@ public class LoginActivity extends BasePresenterActivity implements ThirdLoginCo
     protected void initData() {
         thirdLoginPresenter = (ThirdLoginPresenter) createPresenter(ThirdLoginPresenter.class);
         thirdLoginPresenter.attachView(this);
+        visitorRegisterPresenter = (VisitorRegisterPresenter) createPresenter(VisitorRegisterPresenter.class);
+        visitorRegisterPresenter.attachView(this);
     }
 
     @Override
@@ -93,7 +103,7 @@ public class LoginActivity extends BasePresenterActivity implements ThirdLoginCo
         EventBus.getDefault().unregister(this);
     }
 
-    @OnClick({R.id.imv_login_weChat, R.id.imv_login_qq, R.id.tv_phone, R.id.tv_user_protocol})
+    @OnClick({R.id.imv_login_weChat, R.id.imv_login_qq, R.id.tv_phone, R.id.tv_user_protocol, R.id.lv_top_view})
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.tv_user_protocol: {
@@ -104,7 +114,7 @@ public class LoginActivity extends BasePresenterActivity implements ThirdLoginCo
                 }
                 Intent mIntent = new Intent(this, PlayerActivity.class);
                 mIntent.putExtra(PlayerActivity.EXTRA_HTML, Const.USERPROTOCOL_URL);
-                mIntent.putExtra(PlayerActivity.EXTRA_TITLE,"用户使用协议");
+                mIntent.putExtra(PlayerActivity.EXTRA_TITLE, "用户使用协议");
                 startActivity(mIntent);
                 break;
             }
@@ -147,8 +157,20 @@ public class LoginActivity extends BasePresenterActivity implements ThirdLoginCo
                 }
                 startActivity(new Intent(LoginActivity.this, PhoneLoginActivity.class));
                 break;
+            case R.id.lv_top_view:
+                requestVisitorRegister();
+                break;
         }
 
+    }
+
+    private void requestVisitorRegister() {
+        VisitorRegisterRequest registerRequest = new VisitorRegisterRequest();
+        String random = UUID.randomUUID().toString().replace("-", "");
+        L.v(random, random.length());
+        registerRequest.random = random;
+        registerRequest.doSign();
+        visitorRegisterPresenter.onVisitorRegister(registerRequest);
     }
 
     @Override
@@ -206,6 +228,7 @@ public class LoginActivity extends BasePresenterActivity implements ThirdLoginCo
                 } else {
                     TCAgent.onLogin(ContentManager.getInstance().getUserInfo().getUserId(), TDAccount.AccountType.WEIXIN, "");
                 }
+                ContentManager.getInstance().setVisitor("1");//表示不是游客登录
                 ContentManager.getInstance().setLoginToken(loginInfoBaseResponse.data.getToken());
                 L.e("token" + ContentManager.getInstance().getLoginToken());
                 Intent mIntent = new Intent(this, MainActivity.class);
@@ -219,6 +242,36 @@ public class LoginActivity extends BasePresenterActivity implements ThirdLoginCo
 
     @Override
     public void onThirdLoginError(int code, String errorMsg) {
+        switch (code) {
+            case HttpConst.STATUS_910:
+                toastShort(errorMsg);
+                break;
+        }
+    }
+
+    @Override
+    public void onVisitorRegisterSuccess(BaseResponse<VisitorRegisterInfo> response) {
+        L.v(response.code);
+        if (null != response.data) {
+            String visitorToken = response.data.getToken();
+            //把游客登录的token存进去以便其他接口调用,因为接口里只会存在一个token
+            ContentManager.getInstance().setLoginToken(visitorToken);
+            //把游客登录的token存进去以便同步游客数据时使用
+            ContentManager.getInstance().setVisitorToken(visitorToken);
+            //表示游客登录
+            ContentManager.getInstance().setVisitor("0");
+        }
+        startActivity(new Intent(LoginActivity.this, MainActivity.class));
+        LoginActivity.this.finish();
+    }
+
+    @Override
+    public void onVisitorRegisterError(int code, String errorMsg) {
+        switch (code) {
+            case HttpConst.STATUS_910:
+                toastShort(errorMsg);
+                break;
+        }
 
     }
 

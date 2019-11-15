@@ -75,6 +75,20 @@ public class DynamicSpeechList implements SpeechList {
         return null;
     }
 
+
+    @Override
+    public Article find(String articleId) {
+        if (articleId == null) {
+            return null;
+        }
+        for (int i = 0, j = internalList.size(); i < j; i++) {
+            if (articleId.equals(internalList.get(i).getArticleId())) {
+                return internalList.get(i);
+            }
+        }
+        return null;
+    }
+
     @Override
     public Article selectFirst() {
         if (internalList.size() > 0) {
@@ -126,6 +140,7 @@ public class DynamicSpeechList implements SpeechList {
     public boolean removeAll() {
         int indexOfPrevious = currentIndex;
         internalList.clear();
+        currentIndex = -1;
         return indexOfPrevious != -1;
     }
 

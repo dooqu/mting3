@@ -36,6 +36,7 @@ import java.util.List;
 import java.util.Timer;
 
 import butterknife.ButterKnife;
+import cn.xylink.mting.bean.Article;
 import cn.xylink.mting.speech.SpeechService;
 import cn.xylink.mting.speech.SpeechServiceProxy;
 import cn.xylink.mting.speech.ui.PanelViewAdapter;
@@ -131,9 +132,17 @@ public abstract class BaseActivity extends AppCompatActivity {
                 if (connected) {
                     speechServiceConnected = connected;
                     speechService = service;
-                    onSpeechServiceAvailable();
+                    //绑定activity和service，创建ui组件
                     panelViewAdapter.attach(BaseActivity.this, speechService);
-                    panelViewAdapter.update();
+                    //如果当前正在播放某个文章，那么立即更新，不要等SpeechEvent
+                    if(speechService.getSelected() != null) {
+                        panelViewAdapter.update();
+                    }
+                    if(articleShouldPlayWhenServiceAvailable != null) {
+                        service.loadAndPlay(articleShouldPlayWhenServiceAvailable.getBroadcastId(), articleShouldPlayWhenServiceAvailable.getArticleId());
+                    }
+                    //相关资源就绪，ui就绪后，通知子类，可以开始使用SpeechService的相关调用
+                    onSpeechServiceAvailable();
                 }
             }
         };
@@ -144,12 +153,26 @@ public abstract class BaseActivity extends AppCompatActivity {
         return speechServiceConnected;
     }
 
-
     protected SpeechService getSpeechService() {
         if (isSpeechServiceAvailable()) {
             return speechService;
         }
         return null;
+    }
+
+    private Article articleShouldPlayWhenServiceAvailable = null;
+    protected void commitArticle(Article article) {
+        if(article == null || article.getBroadcastId() == null || article.getArticleId() == null) {
+            return;
+        }
+        if(enableSpeechService() == true) {
+            if(isSpeechServiceAvailable() == true) {
+                getSpeechService().loadAndPlay(article.getArticleId(), article.getBroadcastId());
+            }
+            else {
+                articleShouldPlayWhenServiceAvailable = article;
+            }
+        }
     }
 
 
