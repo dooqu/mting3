@@ -26,6 +26,7 @@ import cn.xylink.mting.speech.event.SpeechBufferingEvent;
 import cn.xylink.mting.speech.event.SpeechProgressEvent;
 import cn.xylink.mting.speech.event.SpeechSerieLoaddingEvent;
 import cn.xylink.mting.speech.event.SpeechStartEvent;
+import cn.xylink.mting.speech.event.SpeechStopEvent;
 
 public class SpeechPanelDialog extends Dialog {
     Context context;
@@ -97,6 +98,7 @@ public class SpeechPanelDialog extends Dialog {
         }
         switch (speechServiceWeakReference.get().getState()) {
             case Loadding:
+                setProgress(true);
             case Playing:
                 setPlayButton(true);
                 seekBar.setProgress((int)(100 * speechServiceWeakReference.get().getProgress()));
@@ -121,6 +123,7 @@ public class SpeechPanelDialog extends Dialog {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onSpeechEvent(SpeechEvent event) {
+        renderPanelView();
         if(event instanceof SpeechProgressEvent) {
             setProgress(false);
         }
@@ -134,7 +137,9 @@ public class SpeechPanelDialog extends Dialog {
         else if(event instanceof SpeechSerieLoaddingEvent) {
             setProgress(true);
         }
-        renderPanelView();
+        else if(event instanceof SpeechStopEvent) {
+
+        }
     }
 
     @Override

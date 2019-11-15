@@ -28,11 +28,17 @@ public class PanelViewAdapter {
 
     WeakReference<BaseActivity> contextRef;
     WeakReference<SpeechService> speechServiceWeakReference;
-    View speechPanelView;
+
     boolean isPlaying;
     boolean isAttached;
+    View speechPanelView;
+    ImageView statusIcon;
+    TextView articleTitle;
+    TextView broadcastTitle ;
+    ProgressBar progressBar;
+    ImageView closeIcon ;
 
-
+    @Deprecated
     public PanelViewAdapter(BaseActivity activity, SpeechService speechService) {
         attach(activity, speechService);
     }
@@ -47,7 +53,7 @@ public class PanelViewAdapter {
         }
         contextRef = new WeakReference<>(activity);
         speechServiceWeakReference = new WeakReference<>(speechService);
-        createPanelView();
+        onCreatePanelView();
         if(EventBus.getDefault().isRegistered(this) == false) {
             EventBus.getDefault().register(this);
         }
@@ -55,11 +61,17 @@ public class PanelViewAdapter {
         return true;
     }
 
-    protected void createPanelView() {
+    protected void onCreatePanelView() {
         speechPanelView = View.inflate(contextRef.get(), R.layout.view_control_panel, null);
         RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
         contextRef.get().addContentView(speechPanelView, layoutParams);
+        speechPanelView.setVisibility(View.INVISIBLE);
 
+        statusIcon = speechPanelView.findViewById(R.id.ico_panel_status);
+        articleTitle = speechPanelView.findViewById(R.id.tv_panel_title);
+        broadcastTitle = speechPanelView.findViewById(R.id.tv_panel_broadcast_title);
+        progressBar = speechPanelView.findViewById(R.id.progressbar_panel);
+        closeIcon = speechPanelView.findViewById(R.id.icon_panel_close);
         View icoPanelCollapse = speechPanelView.findViewById(R.id.ico_panel_collapse);
         icoPanelCollapse.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -68,9 +80,7 @@ public class PanelViewAdapter {
                 dialog.show();
             }
         });
-
-        View icoPanelStatus = speechPanelView.findViewById(R.id.btn_panel_status);
-        icoPanelStatus.setOnClickListener(new View.OnClickListener() {
+        statusIcon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if(contextRef.get() == null) {
@@ -85,8 +95,7 @@ public class PanelViewAdapter {
             }
         });
 
-        ImageView iconPanelClose = speechPanelView.findViewById(R.id.icon_panel_close);
-        iconPanelClose.setOnClickListener(new View.OnClickListener() {
+        closeIcon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 speechPanelView.setVisibility(View.INVISIBLE);
@@ -100,15 +109,14 @@ public class PanelViewAdapter {
         if(speechService == null) {
             return;
         }
+        SpeechEvent event = events.length > 0? events[0] : null;
+        if(event != null && event instanceof SpeechStopEvent) {
+            return;
+        }
+
         speechPanelView.setVisibility(View.VISIBLE);
-        ImageView statusIcon = speechPanelView.findViewById(R.id.ico_panel_status);
-        TextView articleTitle = speechPanelView.findViewById(R.id.tv_panel_title);
-        TextView broadcastTitle = speechPanelView.findViewById(R.id.tv_panel_broadcast_title);
-        ProgressBar progressBar = speechPanelView.findViewById(R.id.progressbar_panel);
-        ImageView closeIcon = speechPanelView.findViewById(R.id.icon_panel_close);
         closeIcon.setVisibility(speechService.getState() == SpeechService.SpeechServiceState.Paused? View.VISIBLE : View.GONE);
 
-        SpeechEvent event = events.length > 0? events[0] : null;
         Article article = speechService.getSelected();
         if(article != null) {
             articleTitle.setText(article.getTitle());
@@ -123,11 +131,9 @@ public class PanelViewAdapter {
             case Ready:
             case Playing:
                 isPlaying = true;
-                setProgressBar(false);
                 statusIcon.setImageResource(R.mipmap.panel_pause);
                 break;
             case Loadding:
-                setProgressBar(true);
                 statusIcon.setImageResource(R.mipmap.panel_pause);
                 isPlaying = true;
                 break;
@@ -143,18 +149,26 @@ public class PanelViewAdapter {
     public void detach() {
         contextRef = null;
         speechServiceWeakReference = null;
+        closeIcon = null;
         if(EventBus.getDefault().isRegistered(this)) {
             EventBus.getDefault().unregister(this);
         }
     }
 
     private void setProgressBar(boolean display) {
-        speechPanelView.findViewById(R.id.progressbar_panel).setVisibility(display? View.VISIBLE : View.INVISIBLE);
+        if(display) {
+            if(progressBar.getVisibility() != View.VISIBLE) {
+                progressBar.setVisibility(View.VISIBLE);
+            }
+        }
+        else {
+            progressBar.setVisibility(View.INVISIBLE);
+        }
     }
-
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onSpeechEvent(SpeechEvent event) {
+        update(event);
         if(event instanceof SpeechProgressEvent) {
             setProgressBar(false);
         }
@@ -168,6 +182,8 @@ public class PanelViewAdapter {
         else if(event instanceof SpeechSerieLoaddingEvent) {
             setProgressBar(true);
         }
-        update(event);
+        else if(event instanceof SpeechStopEvent) {
+            speechPanelView.setVisibility(View.INVISIBLE);
+        }
     }
 }

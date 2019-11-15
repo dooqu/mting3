@@ -131,9 +131,14 @@ public abstract class BaseActivity extends AppCompatActivity {
                 if (connected) {
                     speechServiceConnected = connected;
                     speechService = service;
-                    onSpeechServiceAvailable();
+                    //绑定activity和service，创建ui组件
                     panelViewAdapter.attach(BaseActivity.this, speechService);
-                    panelViewAdapter.update();
+                    //如果当前正在播放某个文章，那么立即更新，不要等SpeechEvent
+                    if(speechService.getSelected() != null) {
+                        panelViewAdapter.update();
+                    }
+                    //相关资源就绪，ui就绪后，通知子类，可以开始使用SpeechService的相关调用
+                    onSpeechServiceAvailable();
                 }
             }
         };
