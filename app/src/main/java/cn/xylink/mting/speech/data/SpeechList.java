@@ -13,6 +13,7 @@ import cn.xylink.mting.bean.Article;
 2、某个条目播放完成，使用moveNext，进行向下搜索，再调用current
 
 */
+@Deprecated
 public class SpeechList {
 
     LinkedList<Article> internalList;

@@ -107,6 +107,8 @@ public class SpeechService extends Service {
     long speechStartTimeOfArticle;
     String speechArticleIdOfArticle;
 
+    String serieId;
+
 
     public class SpeechBinder extends Binder {
         public SpeechService getService() {
@@ -247,6 +249,13 @@ public class SpeechService extends Service {
         registerReceiver(a2dpReceiver, a2dpIntent);
     }
 
+
+    private void onSpeechSerieLoadding(String articleTitle, String serieTitle) {
+        SpeechSerieLoaddingEvent event = new SpeechSerieLoaddingEvent();
+        event.setArticleTitle(articleTitle);
+        event.setSerieTitle(serieTitle);
+        EventBus.getDefault().post(event);
+    }
 
     private void onSpeechStart(Article article) {
         speechNotification.update();
@@ -474,53 +483,8 @@ public class SpeechService extends Service {
         return speechList.getCurrent();
     }
 
-    public synchronized void loadAndPlay(String broadcastId, String articleId) {
-        ArticleDataProvider articleDataProvider = new ArticleDataProvider(this);
-        if("-1".equals(broadcastId) == false) {
-            articleDataProvider.getSpeechList(broadcastId, articleId, new ArticleDataProvider.ArticleLoader<List<Article>>() {
-                @Override
-                public void invoke(int errorCode, List<Article> data) {
-                    if (errorCode == 0) {
-                        synchronized (SpeechService.this) {
-                            SpeechService.this.resetSpeechList(data, SpeechService.SpeechListType.Dynamic);
-                            SpeechService.this.play(articleId);
-                        }
-                    }
-                }
-            });
-        }
-        else {
-            articleDataProvider.getUnreadSpeechList(new ArticleDataProvider.ArticleLoader<List<Article>>() {
-                @Override
-                public void invoke(int errorCode, List<Article> data) {
-                    if (errorCode == 0) {
-                        synchronized (SpeechService.this) {
-                            SpeechService.this.resetSpeechList(data, SpeechListType.Unread);
-                            SpeechService.this.play(articleId);
-                        }
-                    }
-                }
-            });
-        }
-    }
+    private void endCurrentArticle(Article articleToSpeech) {
 
-
-    public synchronized Article play(String articleId) {
-        if (articleId == null || speechList == null) {
-            return null;
-        }
-        Article previousArt = this.speechList.getCurrent();
-        if (previousArt != null && articleId.equals(previousArt.getArticleId()) == false) {
-            if (previousArt.getProgress() != 1) {
-                this.onSpeechEnd(previousArt, previousArt.getProgress(), false);
-            }
-        }
-
-        Article article = this.speechList.select(articleId);
-        if (article != null) {
-            prepareArticle(article, false);
-        }
-        return article;
     }
 
 
@@ -531,16 +495,14 @@ public class SpeechService extends Service {
                 this.onSpeechEnd(previousArt, previousArt.getProgress(), false);
             }
         }
-
         List<Article> list = new ArrayList<>();
         list.add(article);
         this.speechList.pushFront(list);
-        Article artcleSelected = this.speechList.select(article.getArticleId());
-        if (artcleSelected != null) {
+        Article articleSelected = this.speechList.find(article.getArticleId());
+        if (articleSelected != null) {
             prepareArticle(article, false);
         }
-
-        return artcleSelected;
+        return articleSelected;
     }
 
 
@@ -557,11 +519,85 @@ public class SpeechService extends Service {
     }
 
 
+    ArticleDataProvider.ArticleLoader<List<Article>> dataProviderCallback = null;
+
+    public synchronized void loadAndPlay(String serieId, String articleId) {
+        if (serieId == null || articleId == null) {
+            return;
+        }
+
+        Article destArticle = this.speechList.find(articleId);
+        //如果要播放的目标文章，不是现存专辑的，也没有在现存专辑的列表中，那么重新加载列表
+        if (serieId.equals(this.serieId) == false || destArticle == null) {
+            Article currentArticle = getSelected();
+            if ((getState() == SpeechServiceState.Playing || getState() == SpeechServiceState.Paused)
+                    && currentArticle != null) {
+                //此时不能靠prepareArticle中的stop进行处理了， 这期间会有不定时长的加载列表时间，在这先stop掉
+                this.speechor.stop();
+                //这个期间是不是应该设置current = null?
+                if (currentArticle.getProgress() != 1) {
+                    this.onSpeechEnd(currentArticle, currentArticle.getProgress(), false);
+                }
+            }
+            ArticleDataProvider articleDataProvider = new ArticleDataProvider(this);
+            SpeechService.SpeechListType speechListType = ("-1".equals(serieId) ? SpeechListType.Unread : SpeechListType.Dynamic);
+            dataProviderCallback = new ArticleDataProvider.ArticleLoader<List<Article>>() {
+                @Override
+                public void invoke(int errorCode, List<Article> data) {
+                    //防止dataprovider在过程中被颠覆
+                    if (errorCode == 0 && this == dataProviderCallback) {
+                        synchronized (SpeechService.this) {
+                            SpeechService.this.resetSpeechList(data, speechListType);
+                            SpeechService.this.play(articleId);
+                        }
+                    }
+                }
+            };
+
+            if ("-1".equals(serieId) == false) {
+                articleDataProvider.getSpeechList(serieId, articleId, dataProviderCallback);
+            }
+            else {
+                articleDataProvider.getUnreadSpeechList(dataProviderCallback);
+            }
+            this.serviceState = SpeechServiceState.Loadding;
+            //清理列表
+            this.speechList.removeAll();
+            onSpeechSerieLoadding(articleId, serieId);
+        }
+        else {
+            play(articleId);
+        }
+    }
+
+
+    public synchronized Article play(String articleId) {
+        if (articleId == null || speechList == null) {
+            return null;
+        }
+        Article previousArt = this.speechList.getCurrent();
+        if (previousArt != null && articleId.equals(previousArt.getArticleId()) == false) {
+            if (previousArt.getProgress() != 1) {
+                this.onSpeechEnd(previousArt, previousArt.getProgress(), false);
+            }
+        }
+
+        //此时不要在外层select article，因为里面还要对stop current article
+        Article article = this.speechList.find(articleId);
+        if (article != null) {
+            prepareArticle(article, false);
+        }
+        return article;
+    }
+
+
     private void prepareArticle(final Article article, boolean needSourceEffect) {
-        if (speechList.getCurrent() != null && serviceState == SpeechServiceState.Playing) {
+        if (speechList.getCurrent() != null
+                && (getState() == SpeechServiceState.Playing || getState() == SpeechServiceState.Paused)) {
             this.speechor.stop();
         }
 
+        this.speechList.select(article.getArticleId());
         this.serviceState = SpeechServiceState.Loadding;
         this.onSpeechStart(article);
         boolean isFirst = (speechList instanceof DynamicSpeechList && speechList.getFirst() != null && speechList.getFirst() == article);
@@ -571,6 +607,7 @@ public class SpeechService extends Service {
 
             synchronized (this) {
 
+                //解决轮回问题
                 if (isReleased || serviceState != SpeechServiceState.Loadding || responseResult.article != this.speechList.getCurrent()) {
                     return;
                 }

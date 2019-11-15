@@ -15,7 +15,7 @@ import java.lang.ref.WeakReference;
 import cn.xylink.mting.R;
 import cn.xylink.mting.bean.Article;
 import cn.xylink.mting.speech.SpeechService;
-import cn.xylink.mting.speech.event.RecycleEvent;
+import cn.xylink.mting.speech.event.SpeechEvent;
 import cn.xylink.mting.speech.event.SpeechStopEvent;
 import cn.xylink.mting.ui.activity.BaseActivity;
 import cn.xylink.mting.ui.dialog.SpeechPanelDialog;
@@ -76,7 +76,7 @@ public class PanelViewAdapter {
     }
 
 
-    public void update(RecycleEvent... events) {
+    public void update(SpeechEvent... events) {
         SpeechService speechService = speechServiceWeakReference.get();
         if(speechService == null
             || speechService.getSelected() == null) {
@@ -94,7 +94,7 @@ public class PanelViewAdapter {
         articleTitle.setText(article.getTitle());
         broadcastTitle.setText(article.getBroadcastId());
 
-        RecycleEvent event = events.length > 0? events[0] : null;
+        SpeechEvent event = events.length > 0? events[0] : null;
 
         switch (speechService.getState()) {
             case Ready:
@@ -123,7 +123,7 @@ public class PanelViewAdapter {
 
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onSpeechEvent(RecycleEvent event) {
+    public void onSpeechEvent(SpeechEvent event) {
         update(event);
         if(event instanceof SpeechStopEvent) {
             speechPanelView.setVisibility(View.INVISIBLE);

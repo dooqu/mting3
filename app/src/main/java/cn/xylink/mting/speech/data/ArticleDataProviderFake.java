@@ -5,6 +5,8 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 
+import com.bumptech.glide.annotation.GlideModule;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -19,6 +21,7 @@ import cn.xylink.mting.utils.ContentManager;
 import cn.xylink.mting.utils.GsonUtil;
 import cn.xylink.mting.utils.OkGoUtils;
 
+@Deprecated
 public class ArticleDataProviderFake {
     @FunctionalInterface
     public static interface ArticleLoaderCallback {

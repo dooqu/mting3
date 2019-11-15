@@ -1,12 +1,14 @@
 package cn.xylink.mting.speech.event;
 
-import cn.xylink.mting.bean.Article;
-
-public class SpeechStopEvent extends  RecycleEvent{
+public class SpeechStopEvent extends SpeechEvent {
     public static enum StopReason {
         ListIsNull,
-        CountDownToZero
+        CountDownToZero,
+        Error
     }
+
+    public int errorCode;
+    public String message;
 
     public SpeechStopEvent() {
         this.stopReason = StopReason.ListIsNull;
@@ -24,5 +26,21 @@ public class SpeechStopEvent extends  RecycleEvent{
 
     public void setStopReason(StopReason stopReason) {
         this.stopReason = stopReason;
+    }
+
+    public int getErrorCode() {
+        return errorCode;
+    }
+
+    public void setErrorCode(int errorCode) {
+        this.errorCode = errorCode;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
     }
 }

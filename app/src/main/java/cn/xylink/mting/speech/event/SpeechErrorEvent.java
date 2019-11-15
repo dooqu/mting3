@@ -2,7 +2,7 @@ package cn.xylink.mting.speech.event;
 
 import cn.xylink.mting.bean.Article;
 
-public class SpeechErrorEvent extends RecycleEvent {
+public class SpeechErrorEvent extends SpeechEvent {
     private int errorCode;
     private String message;
 

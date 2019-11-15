@@ -11,6 +11,7 @@ public interface SpeechList {
     Article getCurrent();
     Article select(String articleId);
     Article selectFirst();
+    Article find(String articleId);
     boolean removeSome(List<String> removeIds);
     boolean removeAll();
     int size();

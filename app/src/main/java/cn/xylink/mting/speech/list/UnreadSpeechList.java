@@ -77,6 +77,26 @@ public class UnreadSpeechList implements SpeechList {
     }
 
 
+    @Override
+    public synchronized Article find(String articleId) {
+        if (articleId == null)
+            return null;
+
+        if (current != null && articleId.equals(current.getArticleId())) {
+            return current;
+        }
+
+        ListIterator<Article> it = internalList.listIterator();
+        while (it.hasNext()) {
+            Article currArt = it.next();
+            if (articleId.equals(currArt.getArticleId())) {
+                return current;
+            }
+        }
+        return null;
+    }
+
+
     public synchronized Article selectFirst() {
 
         if (this.internalList.size() <= 0)
@@ -256,6 +276,7 @@ public class UnreadSpeechList implements SpeechList {
         }
         return selectArticleIsDeleted;
     }
+
 
     public synchronized boolean removeAll() {
 
