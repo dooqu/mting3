@@ -33,6 +33,7 @@ public class BroadcastInfo {
     private String shareUrl;
     private Long createAt;
     private Long updateAt;
+    private Long lastAt;
 
     public String getItemId() {
         return itemId;
@@ -120,5 +121,21 @@ public class BroadcastInfo {
 
     public void setUpdateAt(long updateAt) {
         this.updateAt = updateAt;
+    }
+
+    public void setCreateAt(Long createAt) {
+        this.createAt = createAt;
+    }
+
+    public void setUpdateAt(Long updateAt) {
+        this.updateAt = updateAt;
+    }
+
+    public Long getLastAt() {
+        return lastAt;
+    }
+
+    public void setLastAt(Long lastAt) {
+        this.lastAt = lastAt;
     }
 }

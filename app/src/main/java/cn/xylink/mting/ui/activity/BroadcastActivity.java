@@ -78,7 +78,7 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
             refreshlayout.finishLoadMore(2000/*,false*/);//传入false表示加载失败
         });
         mRefreshLayout.setRefreshHeader(new TingHeaderView(this).setIsWrite(false));
-        mRefreshLayout.setRefreshFooter(new BallPulseFooter(this).setSpinnerStyle(SpinnerStyle.Scale));
+        mRefreshLayout.setRefreshFooter(new BallPulseFooter(this).setSpinnerStyle(SpinnerStyle.Scale).setAnimatingColor(getResources().getColor(R.color.c488def)));
         mRefreshLayout.setDragRate(2f);
         mTitleTextView.setText(getIntent().getStringExtra(EXTRA_TITLE));
         initList();

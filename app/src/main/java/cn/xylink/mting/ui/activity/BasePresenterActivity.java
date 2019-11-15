@@ -3,15 +3,20 @@ package cn.xylink.mting.ui.activity;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.text.TextUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import cn.xylink.mting.MainActivity;
 import cn.xylink.mting.contract.IBaseView;
+import cn.xylink.mting.ui.dialog.CopyAddDialog;
 import cn.xylink.mting.ui.dialog.LoadingDialog;
 import cn.xylink.mting.ui.dialog.TipDialog;
 import cn.xylink.mting.presenter.BasePresenter;
+import cn.xylink.mting.utils.ContentManager;
 import cn.xylink.mting.utils.L;
+import cn.xylink.mting.utils.StringUtil;
 
 
 public abstract class BasePresenterActivity<T extends BasePresenter> extends BaseActivity implements IBaseView<T> {
@@ -78,13 +83,13 @@ public abstract class BasePresenterActivity<T extends BasePresenter> extends Bas
         super.onResume();
         L.v();
         if (alertDialog == null || (alertDialog != null && !alertDialog.isShowing())) {
-//            showCopyDialog();
+            showCopyDialog();
         }
     }
 
     private TipDialog alertDialog;
 
- /*   protected void showShareResultDialog(int sucess, String shareUrl) {
+    protected void showShareResultDialog(int sucess, String shareUrl) {
         if (sucess >= 0) {
             String msg;
             if (sucess == 1) {
@@ -116,15 +121,12 @@ public abstract class BasePresenterActivity<T extends BasePresenter> extends Bas
             L.v();
         }
     }
-*/
-/*
+
     private CopyAddDialog mCopyAddDialog;
+
     private void showCopyDialog() {
-        if (this.getComponentName().getClassName().equals(MainActivity.class.getName())
-                || this.getComponentName().getClassName().equals(SearchActivity.class.getName())
-                || this.getComponentName().getClassName().equals(ArticleDetailActivity.class.getName())) {
+        if (this.getComponentName().getClassName().equals(MainActivity.class.getName())) {
             CharSequence copyStr = getCopy(this);
-//            if (!TextUtils.isEmpty(copy) && (copy.toString().startsWith("http://") || copy.toString().startsWith("https://"))) {
             if (!TextUtils.isEmpty(copyStr) && !TextUtils.isEmpty(StringUtil.matcherUrl(copyStr.toString()))
                     && !StringUtil.isShieldUrl(this, copyStr.toString())) {
                 copyStr = StringUtil.matcherUrl(copyStr.toString());
@@ -143,14 +145,13 @@ public abstract class BasePresenterActivity<T extends BasePresenter> extends Bas
                 ContentManager.getInstance().setCopyArray(tCopy);
 //                ContentManager.getInstance().addCopyItem(copy.toString());
 //                tCopy = ContentManager.getInstance().getCopyArray();
-                if (mCopyAddDialog!=null)
+                if (mCopyAddDialog != null)
                     mCopyAddDialog.dismiss();
                 mCopyAddDialog = new CopyAddDialog(this, tCopy.get(tCopy.size() - 1));
                 mCopyAddDialog.show();
             }
         }
     }
-*/
 
     private List<String> tCopy;
 

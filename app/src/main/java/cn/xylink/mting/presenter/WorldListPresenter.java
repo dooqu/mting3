@@ -18,35 +18,35 @@ import cn.xylink.mting.model.data.RemoteUrl;
  */
 public class WorldListPresenter extends BasePresenter<WorldListContact.IWorldListView> implements WorldListContact.Presenter {
     @Override
-    public void getWorldList(WorldRequest request) {
+    public void getWorldList(WorldRequest request, boolean isLoadMore) {
         OkGoUtils.getInstance().postData(mView, RemoteUrl.getWordlListUrl(), new Gson().toJson(request),
                 new TypeToken<BaseResponseArray<WorldInfo>>() {
 
-        }.getType(), new OkGoUtils.ICallback() {
-            @Override
-            public void onStart() {
-            }
+                }.getType(), new OkGoUtils.ICallback() {
+                    @Override
+                    public void onStart() {
+                    }
 
-            @Override
-            public void onSuccess(Object data) {
-                BaseResponseArray<WorldInfo> baseResponse = (BaseResponseArray<WorldInfo>) data;
-                int code = baseResponse.code;
-                if (code == 200) {
-                    mView.onWorldListSuccess(baseResponse.data);
-                } else {
-                    mView.onWorldListError(code, baseResponse.message);
-                }
-            }
+                    @Override
+                    public void onSuccess(Object data) {
+                        BaseResponseArray<WorldInfo> baseResponse = (BaseResponseArray<WorldInfo>) data;
+                        int code = baseResponse.code;
+                        if (code == 200) {
+                            mView.onWorldListSuccess(baseResponse.data, isLoadMore);
+                        } else {
+                            mView.onWorldListError(code, baseResponse.message, isLoadMore);
+                        }
+                    }
 
-            @Override
-            public void onFailure(int code, String errorMsg) {
-                mView.onWorldListError(code, errorMsg);
-            }
+                    @Override
+                    public void onFailure(int code, String errorMsg) {
+                        mView.onWorldListError(code, errorMsg, isLoadMore);
+                    }
 
-            @Override
-            public void onComplete() {
-            }
-        });
+                    @Override
+                    public void onComplete() {
+                    }
+                });
     }
 }
 

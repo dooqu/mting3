@@ -33,6 +33,7 @@ public class WorldInfo {
     private String name;
     private long createAt;
     private long updateAt;
+    private long lastAt;
 
     public String getArticleId() {
         return articleId;
@@ -120,5 +121,13 @@ public class WorldInfo {
 
     public void setUpdateAt(long updateAt) {
         this.updateAt = updateAt;
+    }
+
+    public long getLastAt() {
+        return lastAt;
+    }
+
+    public void setLastAt(long lastAt) {
+        this.lastAt = lastAt;
     }
 }

@@ -93,7 +93,7 @@ public class RemoteUrl {
 
     //链接创建文章接口
     public static String linkCreateUrl() {
-        return URL_BASE + "/api/sct/v2/article/push";
+        return URL_BASE + "/api/art/v1/article/push";
     }
 
     //检查链接文章接口

@@ -15,7 +15,11 @@ import java.lang.ref.WeakReference;
 import cn.xylink.mting.R;
 import cn.xylink.mting.bean.Article;
 import cn.xylink.mting.speech.SpeechService;
-import cn.xylink.mting.speech.event.RecycleEvent;
+import cn.xylink.mting.speech.event.SpeechBufferingEvent;
+import cn.xylink.mting.speech.event.SpeechEvent;
+import cn.xylink.mting.speech.event.SpeechProgressEvent;
+import cn.xylink.mting.speech.event.SpeechSerieLoaddingEvent;
+import cn.xylink.mting.speech.event.SpeechStartEvent;
 import cn.xylink.mting.speech.event.SpeechStopEvent;
 import cn.xylink.mting.ui.activity.BaseActivity;
 import cn.xylink.mting.ui.dialog.SpeechPanelDialog;
@@ -91,10 +95,9 @@ public class PanelViewAdapter {
     }
 
 
-    public void update(RecycleEvent... events) {
+    public void update(SpeechEvent... events) {
         SpeechService speechService = speechServiceWeakReference.get();
-        if(speechService == null
-                || speechService.getSelected() == null) {
+        if(speechService == null) {
             return;
         }
         speechPanelView.setVisibility(View.VISIBLE);
@@ -105,28 +108,33 @@ public class PanelViewAdapter {
         ImageView closeIcon = speechPanelView.findViewById(R.id.icon_panel_close);
         closeIcon.setVisibility(speechService.getState() == SpeechService.SpeechServiceState.Paused? View.VISIBLE : View.GONE);
 
+        SpeechEvent event = events.length > 0? events[0] : null;
         Article article = speechService.getSelected();
-        articleTitle.setText(article.getTitle());
-        broadcastTitle.setText(article.getBroadcastId());
-
-        RecycleEvent event = events.length > 0? events[0] : null;
+        if(article != null) {
+            articleTitle.setText(article.getTitle());
+            broadcastTitle.setText(article.getBroadcastId());
+        }
+        else if(event != null && event instanceof SpeechSerieLoaddingEvent) {
+            articleTitle.setText(((SpeechSerieLoaddingEvent) event).getArticleTitle());
+            broadcastTitle.setText(((SpeechSerieLoaddingEvent) event).getSerieTitle());
+        }
 
         switch (speechService.getState()) {
             case Ready:
             case Playing:
                 isPlaying = true;
-                progressBar.setVisibility(View.INVISIBLE);
+                setProgressBar(false);
                 statusIcon.setImageResource(R.mipmap.panel_pause);
                 break;
             case Loadding:
-                progressBar.setVisibility(View.VISIBLE);
+                setProgressBar(true);
                 statusIcon.setImageResource(R.mipmap.panel_pause);
                 isPlaying = true;
                 break;
             case Error:
             case Paused:
                 isPlaying = false;
-                progressBar.setVisibility(View.INVISIBLE);
+                setProgressBar(false);
                 statusIcon.setImageResource(R.mipmap.panel_play);
                 break;
         }
@@ -140,12 +148,26 @@ public class PanelViewAdapter {
         }
     }
 
+    private void setProgressBar(boolean display) {
+        speechPanelView.findViewById(R.id.progressbar_panel).setVisibility(display? View.VISIBLE : View.INVISIBLE);
+    }
+
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onSpeechEvent(RecycleEvent event) {
-        update(event);
-        if(event instanceof SpeechStopEvent) {
-            speechPanelView.setVisibility(View.INVISIBLE);
+    public void onSpeechEvent(SpeechEvent event) {
+        if(event instanceof SpeechProgressEvent) {
+            setProgressBar(false);
         }
+        else if(event instanceof SpeechBufferingEvent) {
+            //如果是SpeechStartEvent 或者 BufferEvent，就显示loadding
+            setProgressBar(true);
+        }
+        else if(event instanceof SpeechStartEvent) {
+            setProgressBar(true);
+        }
+        else if(event instanceof SpeechSerieLoaddingEvent) {
+            setProgressBar(true);
+        }
+        update(event);
     }
 }

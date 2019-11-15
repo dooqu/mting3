@@ -43,7 +43,7 @@ public class WorldFragment extends BasePresenterFragment implements WorldListCon
 
     @Override
     protected void initView(View view) {
-        view.setPadding(0, DensityUtil.getStatusBarHeight(getActivity()),0,0);
+        view.setPadding(0, DensityUtil.getStatusBarHeight(getActivity()), 0, 0);
         mWorldListPresenter = (WorldListPresenter) createPresenter(WorldListPresenter.class);
         mWorldListPresenter.attachView(this);
         mAdapter = new WorldAdapter(getActivity());
@@ -56,30 +56,50 @@ public class WorldFragment extends BasePresenterFragment implements WorldListCon
             initData();
         });
         mRefreshLayout.setOnLoadMoreListener(refreshlayout -> {
-            refreshlayout.finishLoadMore(2000/*,false*/);//传入false表示加载失败
+            loadMoreData();
         });
+        mRefreshLayout.setEnableAutoLoadMore(true);
+        mRefreshLayout.setEnableLoadMoreWhenContentNotFull(false);
         mRefreshLayout.setRefreshHeader(new TingHeaderView(getActivity()).setIsWrite(false));
-        mRefreshLayout.setRefreshFooter(new BallPulseFooter(getActivity()).setSpinnerStyle(SpinnerStyle.Scale));
+        mRefreshLayout.setRefreshFooter(new BallPulseFooter(getActivity()).setSpinnerStyle(SpinnerStyle.Scale).setAnimatingColor(getResources().getColor(R.color.c488def)));
+//        mRefreshLayout.setRefreshFooter(new ClassicsFooter(getActivity()));
     }
 
     @Override
     protected void initData() {
         WorldRequest request = new WorldRequest();
         request.doSign();
-        mWorldListPresenter.getWorldList(request);
+        mWorldListPresenter.getWorldList(request, false);
+    }
+
+    private void loadMoreData(){
+        WorldRequest request = new WorldRequest();
+        request.setEvent(WorldRequest.EVENT.NEW.name());
+        request.setLastAt(mAdapter.getArticleList().get(mAdapter.getArticleList().size()-1).getLastAt());
+        request.doSign();
+        mWorldListPresenter.getWorldList(request, true);
     }
 
     @Override
-    public void onWorldListSuccess(List<WorldInfo> data) {
-        mRefreshLayout.finishRefresh(true);
+    public void onWorldListSuccess(List<WorldInfo> data, boolean isLoadMore) {
+        if (isLoadMore) {
+            mRefreshLayout.finishLoadMore(false);
+            mRefreshLayout.autoLoadMoreAnimationOnly();
+            if (data.size()<20){
+                mRefreshLayout.finishLoadMoreWithNoMoreData();
+            }
+        } else {
+            mRefreshLayout.finishRefresh(true);
+        }
         if (data != null && data.size() > 0) {
-            mAdapter.clearData();
+            if (!isLoadMore) {
+                mAdapter.clearData();
+            }
             mAdapter.setData(data);
         }
     }
 
     @Override
-    public void onWorldListError(int code, String errorMsg) {
-
+    public void onWorldListError(int code, String errorMsg, boolean isLoadMore) {
     }
 }
