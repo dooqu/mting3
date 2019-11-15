@@ -38,7 +38,14 @@ public class SpeechService extends Service {
         Paused,
         /*播放完成*/
         //Stoped,
-        /*加载中*/
+        /*加载中
+         * State.Loadding != Event.Buffering
+         * Loaddin状态指示当前SpeechService在加载列表或者正文的远程数据筹备阶段中，并不代表播放器对audio的缓冲；
+         *
+         * 而Buffering事件说明当前Speechor在播放audio fregment中进行了缓冲处理，
+         * 即使收到了BufferEvent，调用getState()，收到的结果依然是Playing，ServiceState并不关心内部的buffer事件；
+         * 在缓冲成功，达到播放的缓冲区要求后， 会收到 一个ProgressEvent，指示缓冲状态结束
+         * */
         Loadding,
         /*发生错误*/
         Error
