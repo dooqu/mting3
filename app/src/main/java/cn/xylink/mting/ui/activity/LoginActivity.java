@@ -228,6 +228,7 @@ public class LoginActivity extends BasePresenterActivity implements ThirdLoginCo
                 } else {
                     TCAgent.onLogin(ContentManager.getInstance().getUserInfo().getUserId(), TDAccount.AccountType.WEIXIN, "");
                 }
+                ContentManager.getInstance().setVisitor("1");//表示不是游客登录
                 ContentManager.getInstance().setLoginToken(loginInfoBaseResponse.data.getToken());
                 L.e("token" + ContentManager.getInstance().getLoginToken());
                 Intent mIntent = new Intent(this, MainActivity.class);
@@ -257,9 +258,11 @@ public class LoginActivity extends BasePresenterActivity implements ThirdLoginCo
             ContentManager.getInstance().setLoginToken(visitorToken);
             //把游客登录的token存进去以便同步游客数据时使用
             ContentManager.getInstance().setVisitorToken(visitorToken);
+            //表示游客登录
+            ContentManager.getInstance().setVisitor("0");
         }
         startActivity(new Intent(LoginActivity.this, MainActivity.class));
-
+        LoginActivity.this.finish();
     }
 
     @Override

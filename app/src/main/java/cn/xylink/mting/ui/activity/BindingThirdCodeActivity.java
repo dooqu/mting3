@@ -281,6 +281,7 @@ public class BindingThirdCodeActivity extends BasePresenterActivity implements G
 
             TCAgent.onRegister(ContentManager.getInstance().getUserInfo().getUserId(), TDAccount.AccountType.ANONYMOUS, "");
             TCAgent.onLogin(ContentManager.getInstance().getUserInfo().getUserId(), TDAccount.AccountType.ANONYMOUS, "");
+            ContentManager.getInstance().setVisitor("1");//表示不是游客登录
             Intent mIntent = new Intent(this, MainActivity.class);
             mIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(mIntent);
