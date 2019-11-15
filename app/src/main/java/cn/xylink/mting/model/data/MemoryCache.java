@@ -19,6 +19,7 @@ public class MemoryCache {
     private List<BaseActivity> acts = new ArrayList<>();
     private static MemoryCache sInstance;
     private String loginToken;
+    private String VisitorToken;
     private int experience;
     private UserInfo userInfo;
     private String deviceUuid;
@@ -69,6 +70,13 @@ public class MemoryCache {
         return loginToken;
     }
 
+    public void setVisitorToken(String VisitorToken) {
+        this.VisitorToken = VisitorToken;
+    }
+
+    public String getVisitorToken() {
+        return VisitorToken;
+    }
     public void setExperience(int experience) {
         this.experience = experience;
     }

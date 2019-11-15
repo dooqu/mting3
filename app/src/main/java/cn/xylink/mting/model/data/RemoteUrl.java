@@ -224,4 +224,9 @@ public class RemoteUrl {
     public static String getBroadcastlListUrl() {
         return URL_BASE + "/api/art/v1/broadcast/item/list";
     }
+
+    //游客账号注册
+    public static String getVisitorRegisterUrl() {
+        return URL_BASE + "/api/user/v1/visitor/register";
+    }
 }
