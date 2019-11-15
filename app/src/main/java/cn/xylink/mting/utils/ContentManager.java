@@ -75,6 +75,19 @@ public class ContentManager {
         }
         return visitorToken;
     }
+
+    public void setVisitor(String visitor) {
+        MemoryCache.getInstance().setVisitor(visitor);
+        FileCache.getInstance().setVisitor(visitor);
+    }
+
+    public String getVisitor() {
+        String visitor = MemoryCache.getInstance().getVisitor();
+        if (TextUtils.isEmpty(visitor)) {
+            visitor = FileCache.getInstance().getVisitor();
+        }
+        return visitor;
+    }
 //
 //    public void setExperience(int experience) {
 //        MemoryCache.getInstance().setExperience(experience);
