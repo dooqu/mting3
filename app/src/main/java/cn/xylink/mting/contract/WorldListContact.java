@@ -16,12 +16,13 @@ import cn.xylink.mting.bean.WorldRequest;
  */
 public interface WorldListContact {
     interface IWorldListView extends IBaseView {
-        void onWorldListSuccess(List<WorldInfo> data);
-        void onWorldListError(int code, String errorMsg);
+        void onWorldListSuccess(List<WorldInfo> data, boolean isLoadMore);
+
+        void onWorldListError(int code, String errorMsg, boolean isLoadMore);
     }
 
     interface Presenter<T> {
-        void getWorldList(WorldRequest request);
+        void getWorldList(WorldRequest request, boolean isLoadMore);
     }
 
 }

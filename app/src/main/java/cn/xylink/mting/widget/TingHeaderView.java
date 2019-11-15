@@ -3,6 +3,7 @@ package cn.xylink.mting.widget;
 import android.content.Context;
 import android.graphics.drawable.AnimationDrawable;
 import android.support.annotation.NonNull;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
@@ -16,6 +17,8 @@ import com.scwang.smartrefresh.layout.constant.RefreshState;
 import com.scwang.smartrefresh.layout.constant.SpinnerStyle;
 
 import cn.xylink.mting.R;
+import cn.xylink.mting.ui.dialog.MainAddMenuPop;
+import cn.xylink.mting.utils.DensityUtil;
 import cn.xylink.mting.utils.L;
 
 
@@ -33,18 +36,19 @@ public class TingHeaderView extends LinearLayout implements RefreshHeader {
     public TingHeaderView(Context context) {
         super(context);
         mContext = context;
-        View view = LayoutInflater.from(context).inflate(R .layout.layout_list_refresh, this);
+        View view = LayoutInflater.from(context).inflate(R.layout.layout_list_refresh, this);
         imageView = view.findViewById(R.id.iv_refresh_view);
         textView = view.findViewById(R.id.tv_refresh_view);
-        loadingAnim = (AnimationDrawable) context.getResources().getDrawable(R.drawable.anim_ting_refresh,null);
+        loadingAnim = (AnimationDrawable) context.getResources().getDrawable(R.drawable.anim_ting_refresh, null);
         imageView.setImageDrawable(loadingAnim);
+        this.setMinimumHeight(1);
     }
 
     public TingHeaderView setIsWrite(boolean b) {
-        if (b){
-            loadingAnim = (AnimationDrawable) mContext.getResources().getDrawable(R.drawable.anim_ting_refresh,null);
-        }else {
-            loadingAnim = (AnimationDrawable) mContext.getResources().getDrawable(R.drawable.anim_world_refresh,null);
+        if (b) {
+            loadingAnim = (AnimationDrawable) mContext.getResources().getDrawable(R.drawable.anim_ting_refresh, null);
+        } else {
+            loadingAnim = (AnimationDrawable) mContext.getResources().getDrawable(R.drawable.anim_world_refresh, null);
         }
         imageView.setImageDrawable(loadingAnim);
         return this;
@@ -59,11 +63,21 @@ public class TingHeaderView extends LinearLayout implements RefreshHeader {
                 L.v();
                 break;
             case ReleaseToRefresh: //松开刷新
-                loadingAnim.stop();
-                loadingAnim.start();
                 L.v();
                 break;
             case Refreshing: //loading中
+
+                loadingAnim.start();
+                L.v();
+                break;
+            case RefreshFinish:
+//                refreshLayout.setHeaderHeight(25);
+                loadingAnim.stop();
+                textView.setVisibility(VISIBLE);
+                imageView.setVisibility(GONE);
+                L.v();
+                break;
+            case ReleaseToTwoLevel:
                 L.v();
                 break;
         }
@@ -93,7 +107,7 @@ public class TingHeaderView extends LinearLayout implements RefreshHeader {
 
     @Override
     public void onMoving(boolean isDragging, float percent, int offset, int height, int maxDragHeight) {
-        L.v();
+//        L.v("isDragging" + isDragging + "~~~~percent" + percent + "~~~~offset" + offset + "~~~~height" + height + "~~~~maxDragHeight" + maxDragHeight);
     }
 
     @Override
@@ -109,8 +123,6 @@ public class TingHeaderView extends LinearLayout implements RefreshHeader {
     @Override
     public int onFinish(@NonNull RefreshLayout layout, boolean success) {
         L.v();
-        textView.setVisibility(VISIBLE);
-        imageView.setVisibility(GONE);
         if (success) {
         } else {
         }
