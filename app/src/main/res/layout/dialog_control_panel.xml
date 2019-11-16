@@ -165,7 +165,7 @@
         android:layout_below="@+id/dialog_panel_options"
         android:layout_marginTop="50dp"
         android:max="100"
-        android:progress="20"
+        android:progress="0"
         android:progressBackgroundTint="#e8e8e8"
         android:progressTint="@color/c488def"
         android:thumb="@mipmap/ico_seek_point"></SeekBar>

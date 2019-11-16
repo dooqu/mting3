@@ -104,7 +104,7 @@ public class PanelViewAdapter {
     }
 
 
-    public void update(SpeechEvent... events) {
+    public void validatePanelView(SpeechEvent... events) {
         SpeechService speechService = speechServiceWeakReference.get();
         if(speechService == null) {
             return;
@@ -115,9 +115,12 @@ public class PanelViewAdapter {
         }
 
         speechPanelView.setVisibility(View.VISIBLE);
-        closeIcon.setVisibility(speechService.getState() == SpeechService.SpeechServiceState.Paused? View.VISIBLE : View.GONE);
-
+        /*
+        closeIcon.setVisibility(speechService.getState() == SpeechService.SpeechServiceState.Paused ||
+                speechService.getState() == SpeechService.SpeechServiceState.Error? View.VISIBLE : View.GONE);
+         */
         Article article = speechService.getSelected();
+        SpeechService.SpeechServiceState currentState = speechService.getState();
         if(article != null) {
             articleTitle.setText(article.getTitle());
             broadcastTitle.setText(article.getBroadcastId());
@@ -126,22 +129,26 @@ public class PanelViewAdapter {
             articleTitle.setText(((SpeechSerieLoaddingEvent) event).getArticleTitle());
             broadcastTitle.setText(((SpeechSerieLoaddingEvent) event).getSerieTitle());
         }
+        else {
+            articleTitle.setText("正在加载...");
+            broadcastTitle.setText("");
+        }
 
-        switch (speechService.getState()) {
-            case Ready:
-            case Playing:
-                isPlaying = true;
-                statusIcon.setImageResource(R.mipmap.panel_pause);
-                break;
+        switch (currentState) {
             case Loadding:
-                statusIcon.setImageResource(R.mipmap.panel_pause);
-                isPlaying = true;
+                displayLoaddingAnim(true);
+                //do not break.
+            case Playing:
+                closeIcon.setVisibility(View.GONE);
+                setPlayingState(true);
+                //ProgressEvent那里，消掉loadding，因为内部的buffering，也会调用该事件，但state == playing
                 break;
+            case Ready:
             case Error:
             case Paused:
-                isPlaying = false;
-                setProgressBar(false);
-                statusIcon.setImageResource(R.mipmap.panel_play);
+                closeIcon.setVisibility(View.VISIBLE);
+                displayLoaddingAnim(false);
+                setPlayingState(false);
                 break;
         }
     }
@@ -155,7 +162,12 @@ public class PanelViewAdapter {
         }
     }
 
-    private void setProgressBar(boolean display) {
+    private void setPlayingState(boolean isPlaying) {
+        this.isPlaying = isPlaying;
+        statusIcon.setImageResource(isPlaying? R.mipmap.panel_pause : R.mipmap.panel_play);
+    }
+
+    private void displayLoaddingAnim(boolean display) {
         if(display) {
             if(progressBar.getVisibility() != View.VISIBLE) {
                 progressBar.setVisibility(View.VISIBLE);
@@ -168,22 +180,25 @@ public class PanelViewAdapter {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onSpeechEvent(SpeechEvent event) {
-        update(event);
+        validatePanelView(event);
+
         if(event instanceof SpeechProgressEvent) {
-            setProgressBar(false);
+            displayLoaddingAnim(false);
         }
         else if(event instanceof SpeechBufferingEvent) {
             //如果是SpeechStartEvent 或者 BufferEvent，就显示loadding
-            setProgressBar(true);
+            displayLoaddingAnim(true);
         }
         else if(event instanceof SpeechStartEvent) {
-            setProgressBar(true);
+            //displayLoaddingAnim(true);
         }
         else if(event instanceof SpeechSerieLoaddingEvent) {
-            setProgressBar(true);
+            //displayLoaddingAnim(true);
         }
         else if(event instanceof SpeechStopEvent) {
-            speechPanelView.setVisibility(View.INVISIBLE);
+            if(((SpeechStopEvent) event).getStopReason() == SpeechStopEvent.StopReason.ListIsNull) {
+                speechPanelView.setVisibility(View.INVISIBLE);
+            }
         }
     }
 }

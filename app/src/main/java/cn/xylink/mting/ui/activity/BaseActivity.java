@@ -136,7 +136,7 @@ public abstract class BaseActivity extends AppCompatActivity {
                     panelViewAdapter.attach(BaseActivity.this, speechService);
                     //如果当前正在播放某个文章，那么立即更新，不要等SpeechEvent
                     if(speechService.getSelected() != null) {
-                        panelViewAdapter.update();
+                        //panelViewAdapter.update();
                     }
                     if(articleShouldPlayWhenServiceAvailable != null) {
                         service.loadAndPlay(articleShouldPlayWhenServiceAvailable.getBroadcastId(), articleShouldPlayWhenServiceAvailable.getArticleId());
@@ -161,17 +161,22 @@ public abstract class BaseActivity extends AppCompatActivity {
     }
 
     private Article articleShouldPlayWhenServiceAvailable = null;
-    protected void commitArticle(Article article) {
+    protected void postToSpeechService(Article article) {
         if(article == null || article.getBroadcastId() == null || article.getArticleId() == null) {
             return;
         }
         if(enableSpeechService() == true) {
             if(isSpeechServiceAvailable() == true) {
+                articleShouldPlayWhenServiceAvailable = null;
                 getSpeechService().loadAndPlay(article.getArticleId(), article.getBroadcastId());
             }
             else {
                 articleShouldPlayWhenServiceAvailable = article;
             }
+        }
+        else {
+            articleShouldPlayWhenServiceAvailable = article;
+            connectSpeechService();
         }
     }
 

@@ -71,6 +71,10 @@ public class MainActivity extends BasePresenterActivity implements ViewPager.OnP
         super.onNewIntent(intent);
     }
 
+    @Override
+    protected boolean enableSpeechService() {
+        return true;
+    }
 
     @Override
     protected void onSpeechServiceAvailable() {
