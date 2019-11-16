@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:id="@+id/ll_layout"
+        android:layout_alignParentBottom="true"
+        android:background="@drawable/corner_up"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="24dp"
+            android:text="更多操作"
+            android:textColor="@color/c333333"
+            android:textSize="18sp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp">
+
+            <TextView
+                android:id="@+id/tv_dialog_ting_1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:drawableTop="@mipmap/icon_set_top"
+                android:drawablePadding="8dp"
+                android:gravity="center"
+                android:text="置顶"
+                android:textColor="@color/c666666"
+                android:textSize="12sp"
+                android:visibility="invisible" />
+
+            <TextView
+                android:id="@+id/tv_dialog_ting_2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:drawableTop="@mipmap/icon_set_top"
+                android:drawablePadding="8dp"
+                android:gravity="center"
+                android:text="订阅"
+                android:textColor="@color/c666666"
+                android:textSize="12sp"
+                android:visibility="invisible" />
+
+            <TextView
+                android:id="@+id/tv_dialog_ting_3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:drawableTop="@mipmap/icon_set_top"
+                android:drawablePadding="8dp"
+                android:gravity="center"
+                android:text="订阅"
+                android:textColor="@color/c666666"
+                android:textSize="12sp"
+                android:visibility="invisible" />
+
+            <TextView
+                android:id="@+id/tv_dialog_ting_4"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:drawableTop="@mipmap/icon_set_top"
+                android:drawablePadding="8dp"
+                android:gravity="center"
+                android:text="订阅"
+                android:textColor="@color/c666666"
+                android:textSize="12sp"
+                android:visibility="invisible" />
+
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#e0e0e0" />
+
+        <TextView
+            android:id="@+id/tv_dialog_ting_cancel"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:gravity="center"
+            android:text="取消"
+            android:textColor="@color/c666666"
+            android:textSize="18sp" />
+
+    </LinearLayout>
+
+</RelativeLayout>

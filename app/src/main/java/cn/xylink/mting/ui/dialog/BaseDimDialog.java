@@ -8,7 +8,7 @@ import android.view.Window;
 import butterknife.ButterKnife;
 import cn.xylink.mting.R;
 
-/*
+/**
  *暗背景dialog基类
  *
  * -----------------------------------------------------------------

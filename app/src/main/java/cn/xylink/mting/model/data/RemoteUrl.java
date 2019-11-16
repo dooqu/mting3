@@ -225,6 +225,11 @@ public class RemoteUrl {
         return URL_BASE + "/api/art/v1/broadcast/item/list";
     }
 
+    public static String getSetTopUrl() {
+        return URL_BASE + "/api/art/v1/broadcast/top";
+    }
+    public static String getSubscribeUrl() {
+        return URL_BASE + "/api/art/v1/broadcast/subscribe";}
     //游客账号注册
     public static String getVisitorRegisterUrl() {
         return URL_BASE + "/api/user/v1/visitor/register";
