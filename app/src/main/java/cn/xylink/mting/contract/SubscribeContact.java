@@ -11,9 +11,9 @@ import cn.xylink.mting.bean.SubscribeRequest;
 public interface SubscribeContact {
 
     interface ISubscribeView extends IBaseView {
-        void onSubscribeSuccess(BaseResponse response);
+        void onSubscribeSuccess(BaseResponse response,String event);
 
-        void onSubscribeError(int code, String errorMsg);
+        void onSubscribeError(int code, String errorMsg,String event);
     }
 
     interface Presenter<T> {

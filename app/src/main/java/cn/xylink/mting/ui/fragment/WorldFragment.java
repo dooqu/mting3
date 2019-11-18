@@ -7,6 +7,7 @@ import android.view.View;
 import com.scwang.smartrefresh.layout.api.RefreshLayout;
 import com.scwang.smartrefresh.layout.constant.SpinnerStyle;
 import com.scwang.smartrefresh.layout.footer.BallPulseFooter;
+import com.scwang.smartrefresh.layout.footer.ClassicsFooter;
 
 import java.util.List;
 
@@ -83,8 +84,7 @@ public class WorldFragment extends BasePresenterFragment implements WorldListCon
     @Override
     public void onWorldListSuccess(List<WorldInfo> data, boolean isLoadMore) {
         if (isLoadMore) {
-            mRefreshLayout.finishLoadMore(false);
-            mRefreshLayout.autoLoadMoreAnimationOnly();
+            mRefreshLayout.finishLoadMore(true);
             if (data.size()<20){
                 mRefreshLayout.finishLoadMoreWithNoMoreData();
             }

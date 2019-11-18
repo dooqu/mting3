@@ -38,6 +38,8 @@ import cn.xylink.mting.ui.adapter.TingAdapter;
 import cn.xylink.mting.ui.dialog.BottomTingDialog;
 import cn.xylink.mting.ui.dialog.BottomTingItemModle;
 import cn.xylink.mting.ui.dialog.MainAddMenuPop;
+import cn.xylink.mting.ui.dialog.SubscribeTipDialog;
+import cn.xylink.mting.ui.dialog.TipDialog;
 import cn.xylink.mting.utils.DensityUtil;
 import cn.xylink.mting.widget.TingHeaderView;
 
@@ -45,7 +47,8 @@ import cn.xylink.mting.widget.TingHeaderView;
  * @author JoDragon
  */
 public class TingFragment extends BasePresenterFragment implements TingListContact.ITingListView, TingAdapter.OnItemClickListener,
-        MainAddMenuPop.OnMainAddMenuListener, BottomTingDialog.OnBottomTingListener, SetTopContact.ISetTopView, SubscribeContact.ISubscribeView {
+        MainAddMenuPop.OnMainAddMenuListener, BottomTingDialog.OnBottomTingListener, SetTopContact.ISetTopView, SubscribeContact.ISubscribeView
+        , SubscribeTipDialog.OnTipListener {
 
     @BindView(R.id.rv_tab_ting)
     RecyclerView mRecyclerView;
@@ -97,6 +100,8 @@ public class TingFragment extends BasePresenterFragment implements TingListConta
         mRefreshLayout.setRefreshFooter(new BallPulseFooter(getActivity()).setSpinnerStyle(SpinnerStyle.Scale));
         mRefreshLayout.setEnableLoadMore(false);
         mBottomTingDialog = new BottomTingDialog(getActivity(), this);
+        mSubscribeTipDialog = new SubscribeTipDialog(getActivity());
+        mSubscribeTipDialog.setMsg("不再订阅此播单？", "播单删除后，播单内的文章也会被删除。", this);
     }
 
     @Override
@@ -123,11 +128,15 @@ public class TingFragment extends BasePresenterFragment implements TingListConta
     }
 
     @Override
-    public void onItemClick(TingInfo article) {
+    public void onItemClick(TingInfo article,int position) {
         Intent intent = new Intent(getActivity(), BroadcastActivity.class);
         intent.putExtra(BroadcastActivity.EXTRA_BROADCASTID, article.getBroadcastId());
         intent.putExtra(BroadcastActivity.EXTRA_TITLE, article.getName());
         getActivity().startActivity(intent);
+        if (article.getNewMsg()>0){
+            article.setNewMsg(0);
+            mAdapter.notifyItemChanged(position);
+        }
     }
 
     @Override
@@ -180,33 +189,55 @@ public class TingFragment extends BasePresenterFragment implements TingListConta
 
     }
 
+    private SubscribeTipDialog mSubscribeTipDialog;
+
     @Override
     public void onBottomTingItemClick(BottomTingItemModle modle) {
         if ("置顶".equals(modle.getName())) {
             setTop(modle.getId(), modle.isTwo() ? SetTopRequest.EVENT.CANCEL.name().toLowerCase() : SetTopRequest.EVENT.TOP.name().toLowerCase());
-        } else if ("订阅".equals(modle.getName())) {
-
+        } else if ("取消订阅".equals(modle.getName())) {
+            mSubscribeTipDialog.show(modle);
         }
     }
 
     @Override
     public void onSetTopSuccess(BaseResponse response) {
         initData();
-        Toast.makeText(getActivity(),"置顶成功！",Toast.LENGTH_SHORT).show();
+        Toast.makeText(getActivity(), "置顶成功！", Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void onSetTopError(int code, String errorMsg) {
-        Toast.makeText(getActivity(),"置顶失败！",Toast.LENGTH_SHORT).show();
+        Toast.makeText(getActivity(), "置顶失败！", Toast.LENGTH_SHORT).show();
     }
 
     @Override
-    public void onSubscribeSuccess(BaseResponse response) {
-
+    public void onSubscribeSuccess(BaseResponse response, String event) {
+        initData();
+        if (event.equals(SubscribeRequest.EVENT.SUBSCRIBE.name().toLowerCase())) {
+            Toast.makeText(getActivity(), "订阅成功！", Toast.LENGTH_SHORT).show();
+        } else if (event.equals(SubscribeRequest.EVENT.SUBSCRIBE.name().toLowerCase())) {
+            Toast.makeText(getActivity(), "取消订阅成功！", Toast.LENGTH_SHORT).show();
+        }
     }
 
     @Override
-    public void onSubscribeError(int code, String errorMsg) {
+    public void onSubscribeError(int code, String errorMsg, String event) {
+        if (event.equals(SubscribeRequest.EVENT.SUBSCRIBE.name().toLowerCase())) {
+            Toast.makeText(getActivity(), "订阅失败！", Toast.LENGTH_SHORT).show();
+        } else if (event.equals(SubscribeRequest.EVENT.SUBSCRIBE.name().toLowerCase())) {
+            Toast.makeText(getActivity(), "取消订阅失败！", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    public void onLeftClick(Object tag) {
+    }
+
+    @Override
+    public void onRightClick(Object tag) {
+        BottomTingItemModle modle = (BottomTingItemModle) tag;
+        subscribe(modle.getId(), SubscribeRequest.EVENT.CANCEL.name().toLowerCase());
 
     }
 }
