@@ -114,7 +114,6 @@ public abstract class BaseActivity extends AppCompatActivity {
         IntentFilter filter=new IntentFilter();
         filter.addAction(EXITACTION);
         registerReceiver(exitReceiver,filter);
-
         TCAgent.onPageStart(this, this.getComponentName().getClassName());
     }
 
@@ -174,7 +173,6 @@ public abstract class BaseActivity extends AppCompatActivity {
                 return true;
             }
         }
-
         if(speechServiceWeakReference.get() != null) {
             articleShouldPlayWhenServiceAvailable = null;
             speechServiceWeakReference.get().loadAndPlay(article.getArticleId(), article.getBroadcastId());
