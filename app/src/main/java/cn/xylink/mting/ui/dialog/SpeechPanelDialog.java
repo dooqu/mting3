@@ -12,6 +12,8 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
@@ -63,6 +65,7 @@ public class SpeechPanelDialog extends Dialog implements SeekBar.OnSeekBarChange
     ImageView portraits[];
     ProgressBar portraitProgress[];
     View portraitButton[];
+    RadioButton vibrates[];
 
     public SpeechPanelDialog(@NonNull Context context, SpeechService speechService) {
         super(context, R.style.bottom_dialog);
@@ -175,6 +178,12 @@ public class SpeechPanelDialog extends Dialog implements SeekBar.OnSeekBarChange
         portraitButton[2] = soundSettingView.findViewById(R.id.portrait_button_2);
         portraitButton[3] = soundSettingView.findViewById(R.id.portrait_button_3);
 
+        vibrates = new RadioButton[4];
+        vibrates[0] = soundSettingView.findViewById(R.id.rb_sound_setting_vrbrate1);
+        vibrates[1] = soundSettingView.findViewById(R.id.rb_sound_setting_vrbrate2);
+        vibrates[2] = soundSettingView.findViewById(R.id.rb_sound_setting_vrbrate3);
+        vibrates[3] = soundSettingView.findViewById(R.id.rb_sound_setting_vrbrate4);
+
         for (int i = 0; i < portraitButton.length; i++) {
             portraitButton[i].setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -199,8 +208,51 @@ public class SpeechPanelDialog extends Dialog implements SeekBar.OnSeekBarChange
                 }
             });
         }
+
+        soundSettingView.findViewById(R.id.btn_sound_setting_close).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                viewPager.setCurrentItem(1);
+            }
+        });
+
+        RadioGroup radioGroup = soundSettingView.findViewById(R.id.rg_sound_setting_vibrate);
+        radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                SpeechService speechService = speechServiceWeakReference.get();
+                if (speechService == null) {
+                    return;
+                }
+
+                switch (checkedId) {
+                    case R.id.rb_sound_setting_vrbrate1:
+                        if(speechService.getSpeed() != Speechor.SpeechorSpeed.SPEECH_SPEED_HALF) {
+                            speechService.setSpeed(Speechor.SpeechorSpeed.SPEECH_SPEED_HALF);
+                        }
+                        break;
+                    case R.id.rb_sound_setting_vrbrate2:
+                        if(speechService.getSpeed() != Speechor.SpeechorSpeed.SPEECH_SPEED_NORMAL) {
+                            speechService.setSpeed(Speechor.SpeechorSpeed.SPEECH_SPEED_NORMAL);
+                        }
+                        break;
+                    case R.id.rb_sound_setting_vrbrate3:
+                        if(speechService.getSpeed() != Speechor.SpeechorSpeed.SPEECH_SPEED_MULTIPLE_1_POINT_5) {
+                            speechService.setSpeed(Speechor.SpeechorSpeed.SPEECH_SPEED_MULTIPLE_1_POINT_5);
+                        }
+                        break;
+                    case R.id.rb_sound_setting_vrbrate4:
+                        if(speechService.getSpeed() != Speechor.SpeechorSpeed.SPEECH_SPEED_MULTIPLE_2) {
+                            speechService.setSpeed(Speechor.SpeechorSpeed.SPEECH_SPEED_MULTIPLE_2);
+                        }
+                        break;
+                }
+            }
+        });
+
         renderPortraitFromServiceRole();
         renderPortraitLoaddingState();
+        renderSoundSpeechFromService();
     }
 
 
@@ -262,7 +314,7 @@ public class SpeechPanelDialog extends Dialog implements SeekBar.OnSeekBarChange
         }
     }
 
-    public void renderPortraitLoaddingState() {
+    protected void renderPortraitLoaddingState() {
         for (int i = 0; i < portraitMasks.length; i++) {
             portraitProgress[i].setVisibility(View.INVISIBLE);
         }
@@ -283,6 +335,28 @@ public class SpeechPanelDialog extends Dialog implements SeekBar.OnSeekBarChange
                 break;
             case XiaoYao:
                 portraitMasks[3].setVisibility(View.VISIBLE);
+                break;
+        }
+    }
+
+    protected void renderSoundSpeechFromService() {
+        SpeechService speechService = speechServiceWeakReference.get();
+        if (speechService == null) {
+            return;
+        }
+        RadioGroup radioGroup = soundSettingView.findViewById(R.id.rg_sound_setting_vibrate);
+        switch (speechService.getSpeed()) {
+            case SPEECH_SPEED_HALF:
+                vibrates[0].setChecked(true);
+                break;
+            case SPEECH_SPEED_NORMAL:
+                vibrates[1].setChecked(true);
+                break;
+            case SPEECH_SPEED_MULTIPLE_1_POINT_5:
+                vibrates[2].setChecked(true);
+                break;
+            case SPEECH_SPEED_MULTIPLE_2:
+                vibrates[3].setChecked(true);
                 break;
         }
     }
