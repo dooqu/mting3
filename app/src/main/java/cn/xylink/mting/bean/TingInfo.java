@@ -32,6 +32,15 @@ public class TingInfo {
     private int top;
     private int newMsg;
     private String message;
+    private String createUserId;
+
+    public String getCreateUserId() {
+        return createUserId;
+    }
+
+    public void setCreateUserId(String createUserId) {
+        this.createUserId = createUserId;
+    }
 
     public String getBroadcastId() {
         return broadcastId;

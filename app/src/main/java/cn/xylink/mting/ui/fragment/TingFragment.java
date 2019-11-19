@@ -40,6 +40,7 @@ import cn.xylink.mting.ui.dialog.BottomTingItemModle;
 import cn.xylink.mting.ui.dialog.MainAddMenuPop;
 import cn.xylink.mting.ui.dialog.SubscribeTipDialog;
 import cn.xylink.mting.ui.dialog.TipDialog;
+import cn.xylink.mting.utils.ContentManager;
 import cn.xylink.mting.utils.DensityUtil;
 import cn.xylink.mting.widget.TingHeaderView;
 
@@ -141,7 +142,8 @@ public class TingFragment extends BasePresenterFragment implements TingListConta
 
     @Override
     public void onItemLongClick(TingInfo article) {
-        if ("-1".equals(article.getBroadcastId())) {
+
+        if ("-1".equals(article.getBroadcastId())||ContentManager.getInstance().getUserInfo().getUserId().equals(article.getCreateUserId())) {
             mBottomTingDialog.setItemModle(new BottomTingItemModle("置顶", "取消置顶", getActivity().getResources().getDrawable(R.mipmap.icon_set_top),
                     getActivity().getResources().getDrawable(R.mipmap.icon_cancel_top), article.getTop() == 1, article.getBroadcastId()));
         } else {

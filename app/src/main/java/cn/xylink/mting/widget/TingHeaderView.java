@@ -17,6 +17,7 @@ import com.scwang.smartrefresh.layout.constant.RefreshState;
 import com.scwang.smartrefresh.layout.constant.SpinnerStyle;
 
 import cn.xylink.mting.R;
+import cn.xylink.mting.ui.dialog.HeaderRefreshTipPop;
 import cn.xylink.mting.ui.dialog.MainAddMenuPop;
 import cn.xylink.mting.utils.DensityUtil;
 import cn.xylink.mting.utils.L;
@@ -32,6 +33,7 @@ public class TingHeaderView extends LinearLayout implements RefreshHeader {
     private TextView textView;
     private AnimationDrawable loadingAnim;
     private Context mContext;
+    private HeaderRefreshTipPop mTipPop;
 
     public TingHeaderView(Context context) {
         super(context);
@@ -42,6 +44,7 @@ public class TingHeaderView extends LinearLayout implements RefreshHeader {
         loadingAnim = (AnimationDrawable) context.getResources().getDrawable(R.drawable.anim_ting_refresh, null);
         imageView.setImageDrawable(loadingAnim);
         this.setMinimumHeight(1);
+        mTipPop = new HeaderRefreshTipPop(mContext);
     }
 
     public TingHeaderView setIsWrite(boolean b) {
@@ -58,28 +61,31 @@ public class TingHeaderView extends LinearLayout implements RefreshHeader {
     public void onStateChanged(@NonNull RefreshLayout refreshLayout, @NonNull RefreshState oldState, @NonNull RefreshState newState) {
         switch (newState) {
             case PullDownToRefresh: //下拉过程
-                textView.setVisibility(INVISIBLE);
-                imageView.setVisibility(VISIBLE);
+//                textView.setVisibility(INVISIBLE);
+//                imageView.setVisibility(VISIBLE);
                 L.v();
                 break;
             case ReleaseToRefresh: //松开刷新
+                mTipPop.dismiss();
                 L.v();
                 break;
             case Refreshing: //loading中
-
                 loadingAnim.start();
                 L.v();
                 break;
             case RefreshFinish:
-//                refreshLayout.setHeaderHeight(25);
                 loadingAnim.stop();
-                textView.setVisibility(VISIBLE);
-                imageView.setVisibility(GONE);
+//                textView.setVisibility(VISIBLE);
+//                imageView.setVisibility(GONE);
+
+                mTipPop.showAsDropDown(textView, 0, -DensityUtil.dip2pxComm(mContext, 25f));
+                this.postDelayed(() -> mTipPop.dismiss(),1000);
                 L.v();
                 break;
             case ReleaseToTwoLevel:
                 L.v();
                 break;
+            default:
         }
     }
 
@@ -107,7 +113,8 @@ public class TingHeaderView extends LinearLayout implements RefreshHeader {
 
     @Override
     public void onMoving(boolean isDragging, float percent, int offset, int height, int maxDragHeight) {
-//        L.v("isDragging" + isDragging + "~~~~percent" + percent + "~~~~offset" + offset + "~~~~height" + height + "~~~~maxDragHeight" + maxDragHeight);
+//        L.v("isDragging" + isDragging + "~~~~percent" + percent + "~~~~offset" + offset + "~~~~height" + height + "~~~~maxDragHeight" +
+//        maxDragHeight);
     }
 
     @Override
@@ -126,7 +133,7 @@ public class TingHeaderView extends LinearLayout implements RefreshHeader {
         if (success) {
         } else {
         }
-        return 800;
+        return 0;
     }
 
     @Override

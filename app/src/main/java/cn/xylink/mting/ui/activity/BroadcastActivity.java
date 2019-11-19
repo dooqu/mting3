@@ -13,6 +13,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.scwang.smartrefresh.layout.api.RefreshLayout;
 import com.scwang.smartrefresh.layout.constant.SpinnerStyle;
 import com.scwang.smartrefresh.layout.footer.BallPulseFooter;
@@ -39,7 +40,7 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
     @BindView(R.id.ll_titlebar)
     LinearLayout mTitleBarLayout;
     @BindView(R.id.srl_refreshLayout)
-    RefreshLayout mRefreshLayout;
+    SmartRefreshLayout mRefreshLayout;
     @BindView(R.id.iv_titlebar_back)
     ImageView mBackImageView;
     @BindView(R.id.iv_titlebar_share)
@@ -70,7 +71,6 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         mRecyclerView.setLayoutManager(linearLayoutManager);
         mRecyclerView.setAdapter(mAdapter);
-//        mRecyclerView.setNestedScrollingEnabled(false);
         mRefreshLayout.setOnRefreshListener(refreshlayout -> {
             initList();
         });
@@ -80,12 +80,12 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
         mRefreshLayout.setRefreshHeader(new TingHeaderView(this).setIsWrite(false));
         mRefreshLayout.setRefreshFooter(new BallPulseFooter(this).setSpinnerStyle(SpinnerStyle.Scale).setAnimatingColor(getResources().getColor(R.color.c488def)));
         mRefreshLayout.setDragRate(2f);
+        mRefreshLayout.setEnableAutoLoadMore(false);
         mTitleTextView.setText(getIntent().getStringExtra(EXTRA_TITLE));
         initList();
         drawable = getResources().getDrawable(R.color.white);
         mScrollView.setOnScrollChangeListener((NestedScrollView.OnScrollChangeListener) (nestedScrollView, i, i1, i2, i3) -> {
             L.v(i1);
-            scrollY = i1;
             float pro = i1 / 358f;
             if (pro <= 1) {
                 drawable.setAlpha((int) (pro * 255));
@@ -110,27 +110,7 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
         });
     }
 
-    int scrollY = 0;
-    float oldRawY = 0;
     Drawable drawable;
-    @Override
-    public boolean dispatchTouchEvent(MotionEvent ev) {
-        if (ev.getAction() == MotionEvent.ACTION_DOWN) {
-            oldRawY = ev.getRawY();
-        }
-        if (ev.getAction() == MotionEvent.ACTION_MOVE) {
-            L.v(ev.getRawY());
-            if (scrollY == 0 & ev.getRawY() - oldRawY > 0) {
-//                mRecyclerView.setNestedScrollingEnabled(true);
-                mRefreshLayout.setEnableRefresh(true);
-            }
-            if (ev.getRawY() - oldRawY < 0) {
-//                mRecyclerView.setNestedScrollingEnabled(false);
-                mRefreshLayout.setEnableRefresh(false);
-            }
-        }
-        return super.dispatchTouchEvent(ev);
-    }
 
     private void initList() {
         BroadcastListRequest request = new BroadcastListRequest();

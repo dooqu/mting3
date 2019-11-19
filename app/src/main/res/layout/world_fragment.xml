@@ -28,6 +28,7 @@
             android:textSize="13.5sp" />
 
         <ImageView
+            android:id="@+id/iv_world_add"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:paddingLeft="16dp"
