@@ -83,7 +83,7 @@ public class MainActivity extends BasePresenterActivity implements ViewPager.OnP
         Article article = new Article();
         article.setBroadcastId("2019102211541422454428823");
         article.setArticleId("2019102118414971152446751");
-        postToSpeechService(article);
+        //postToSpeechService(article);
     }
 
     @Override
