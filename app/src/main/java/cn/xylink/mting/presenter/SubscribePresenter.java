@@ -30,15 +30,15 @@ public class SubscribePresenter extends BasePresenter<SubscribeContact.ISubscrib
                         BaseResponse baseResponse = (BaseResponse) data;
                         int code = baseResponse.code;
                         if (code == 200) {
-                            mView.onSubscribeSuccess(baseResponse);
+                            mView.onSubscribeSuccess(baseResponse, request.getEvent());
                         } else {
-                            mView.onSubscribeError(code, baseResponse.message);
+                            mView.onSubscribeError(code, baseResponse.message, request.getEvent());
                         }
                     }
 
                     @Override
                     public void onFailure(int code, String errorMsg) {
-                        mView.onSubscribeError(code, errorMsg);
+                        mView.onSubscribeError(code, errorMsg, request.getEvent());
                     }
 
                     @Override
