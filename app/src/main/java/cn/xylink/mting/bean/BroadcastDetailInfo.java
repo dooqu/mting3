@@ -1,38 +1,49 @@
 package cn.xylink.mting.bean;
 
 /**
- *享听列表实体
- *
  * -----------------------------------------------------------------
- * 2019/11/5 15:34 : Create TingInfo.java (JoDragon);
+ * 2019/11/19 17:23 : Create BroadcastDetailInfo.java (JoDragon);
  * -----------------------------------------------------------------
  */
-public class TingInfo {
+public class BroadcastDetailInfo {
 
     /**
-     * broadcastId : 2019102118414971152446751
-     * name : 1111
-     * info : 2222
-     * picture : http://download.test.xylink.cn/resource/M00/3D/4B/rBMAY12ti22ABZ7rAAAzeyKmeJY936.png
+     * broadcastId : 2019102115442314581536879
+     * createUserId : 1
+     * createName : 轩辕联
+     * name : 22
+     * info : 播单信息
+     * picture : http://download.test.xylink.cn/resource/M00/3D/4B/rBMAY12tYgOAG994AAAzeyKmeJY526.png
      * deleted : 0
-     * createAt : 1571654509986
-     * updateAt : 1571654509986
+     * share : 0
+     * createAt : 1571643863145
+     * updateAt : 1571643907723
+     * subscribeTotal : 0
      * top : 0
-     * newMsg : 0
-     * message : null
+     * subscribe : 0
      */
 
     private String broadcastId;
+    private String createUserId;
+    private String createName;
     private String name;
     private String info;
     private String picture;
     private int deleted;
+    private int share;
     private long createAt;
     private long updateAt;
+    private int subscribeTotal;
     private int top;
-    private int newMsg;
-    private String message;
-    private String createUserId;
+    private int subscribe;
+
+    public String getBroadcastId() {
+        return broadcastId;
+    }
+
+    public void setBroadcastId(String broadcastId) {
+        this.broadcastId = broadcastId;
+    }
 
     public String getCreateUserId() {
         return createUserId;
@@ -42,12 +53,12 @@ public class TingInfo {
         this.createUserId = createUserId;
     }
 
-    public String getBroadcastId() {
-        return broadcastId;
+    public String getCreateName() {
+        return createName;
     }
 
-    public void setBroadcastId(String broadcastId) {
-        this.broadcastId = broadcastId;
+    public void setCreateName(String createName) {
+        this.createName = createName;
     }
 
     public String getName() {
@@ -82,6 +93,14 @@ public class TingInfo {
         this.deleted = deleted;
     }
 
+    public int getShare() {
+        return share;
+    }
+
+    public void setShare(int share) {
+        this.share = share;
+    }
+
     public long getCreateAt() {
         return createAt;
     }
@@ -98,6 +117,14 @@ public class TingInfo {
         this.updateAt = updateAt;
     }
 
+    public int getSubscribeTotal() {
+        return subscribeTotal;
+    }
+
+    public void setSubscribeTotal(int subscribeTotal) {
+        this.subscribeTotal = subscribeTotal;
+    }
+
     public int getTop() {
         return top;
     }
@@ -106,19 +133,11 @@ public class TingInfo {
         this.top = top;
     }
 
-    public int getNewMsg() {
-        return newMsg;
+    public int getSubscribe() {
+        return subscribe;
     }
 
-    public void setNewMsg(int newMsg) {
-        this.newMsg = newMsg;
-    }
-
-    public String getMessage() {
-        return message;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
+    public void setSubscribe(int subscribe) {
+        this.subscribe = subscribe;
     }
 }

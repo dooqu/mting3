@@ -17,7 +17,7 @@ import cn.xylink.mting.model.data.RemoteUrl;
  */
 public class BroadcastListPresenter extends BasePresenter<BroadcastListContact.IBroadcastListView> implements BroadcastListContact.Presenter {
     @Override
-    public void getBroadcastList(BroadcastListRequest request) {
+    public void getBroadcastList(BroadcastListRequest request, boolean isLoadMore) {
         OkGoUtils.getInstance().postData(mView, RemoteUrl.getBroadcastlListUrl(), new Gson().toJson(request),
                 new TypeToken<BaseResponseArray<BroadcastInfo>>() {
 
@@ -31,15 +31,15 @@ public class BroadcastListPresenter extends BasePresenter<BroadcastListContact.I
                         BaseResponseArray<BroadcastInfo> baseResponse = (BaseResponseArray<BroadcastInfo>) data;
                         int code = baseResponse.code;
                         if (code == 200) {
-                            mView.onBroadcastListSuccess(baseResponse.data);
+                            mView.onBroadcastListSuccess(baseResponse.data, isLoadMore);
                         } else {
-                            mView.onBroadcastListError(code, baseResponse.message);
+                            mView.onBroadcastListError(code, baseResponse.message, isLoadMore);
                         }
                     }
 
                     @Override
                     public void onFailure(int code, String errorMsg) {
-                        mView.onBroadcastListError(code, errorMsg);
+                        mView.onBroadcastListError(code, errorMsg, isLoadMore);
                     }
 
                     @Override
@@ -47,4 +47,5 @@ public class BroadcastListPresenter extends BasePresenter<BroadcastListContact.I
                     }
                 });
     }
+
 }

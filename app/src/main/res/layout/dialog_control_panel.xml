@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:paddingLeft="12dp"
-    android:paddingRight="12dp">
-
+    android:paddingRight="12dp"
+    android:gravity="top">
     <LinearLayout
         android:id="@+id/dialog_panel_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="5dp"
         android:fitsSystemWindows="true"
         android:gravity="center"
         android:orientation="horizontal">
@@ -59,10 +59,12 @@
         android:id="@+id/dialog_panel_options"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="76dp"
+        android:layout_marginTop="30dp"
+        android:layout_below="@id/dialog_panel_title"
         android:orientation="horizontal">
 
         <LinearLayout
+            android:id="@+id/btn_control_panel_sound_setting"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -87,6 +89,7 @@
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/btn_control_panel_time_setting"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -163,9 +166,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/dialog_panel_options"
-        android:layout_marginTop="50dp"
+        android:layout_marginTop="35dp"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
         android:max="100"
-        android:progress="20"
+        android:progress="0"
         android:progressBackgroundTint="#e8e8e8"
         android:progressTint="@color/c488def"
         android:thumb="@mipmap/ico_seek_point"></SeekBar>
@@ -174,7 +179,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/dialog_panel_seekbar"
-        android:layout_marginTop="26dp"
+        android:layout_marginTop="16dp"
         android:layout_marginBottom="24dp">
 
         <FrameLayout

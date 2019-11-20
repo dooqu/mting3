@@ -32,6 +32,7 @@ import com.tendcloud.tenddata.TCAgent;
 
 
 import java.io.File;
+import java.lang.ref.WeakReference;
 import java.util.List;
 import java.util.Timer;
 
@@ -57,7 +58,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     protected Intent mUpdateIntent;
     protected Context context;
     protected Timer upgradeTimer;
-    protected SpeechService speechService;
+    protected WeakReference<SpeechService> speechServiceWeakReference;
     protected boolean speechServiceConnected;
     protected SpeechServiceProxy proxy;
     protected View speechPanelView;
@@ -113,7 +114,6 @@ public abstract class BaseActivity extends AppCompatActivity {
         IntentFilter filter=new IntentFilter();
         filter.addAction(EXITACTION);
         registerReceiver(exitReceiver,filter);
-
         TCAgent.onPageStart(this, this.getComponentName().getClassName());
     }
 
@@ -131,12 +131,12 @@ public abstract class BaseActivity extends AppCompatActivity {
             protected void onConnected(boolean connected, SpeechService service) {
                 if (connected) {
                     speechServiceConnected = connected;
-                    speechService = service;
+                    speechServiceWeakReference = new WeakReference<>(service);
                     //绑定activity和service，创建ui组件
-                    panelViewAdapter.attach(BaseActivity.this, speechService);
+                    panelViewAdapter.attach(BaseActivity.this, service);
                     //如果当前正在播放某个文章，那么立即更新，不要等SpeechEvent
-                    if(speechService.getSelected() != null) {
-                        panelViewAdapter.update();
+                    if(service.getSelected() != null) {
+                        //panelViewAdapter.update();
                     }
                     if(articleShouldPlayWhenServiceAvailable != null) {
                         service.loadAndPlay(articleShouldPlayWhenServiceAvailable.getBroadcastId(), articleShouldPlayWhenServiceAvailable.getArticleId());
@@ -144,35 +144,43 @@ public abstract class BaseActivity extends AppCompatActivity {
                     //相关资源就绪，ui就绪后，通知子类，可以开始使用SpeechService的相关调用
                     onSpeechServiceAvailable();
                 }
+                else {
+                    speechServiceWeakReference = null;
+                    speechServiceConnected = false;
+                }
             }
         };
         proxy.bind();
     }
 
     protected boolean isSpeechServiceAvailable() {
-        return speechServiceConnected;
+        return speechServiceConnected && speechServiceWeakReference.get() != null;
     }
 
-    protected SpeechService getSpeechService() {
-        if (isSpeechServiceAvailable()) {
-            return speechService;
-        }
-        return null;
-    }
 
     private Article articleShouldPlayWhenServiceAvailable = null;
-    protected void commitArticle(Article article) {
-        if(article == null || article.getBroadcastId() == null || article.getArticleId() == null) {
-            return;
+    public boolean postToSpeechService(Article article) {
+        if(article == null
+                || article.getBroadcastId() == null
+                || article.getArticleId() == null
+                || enableSpeechService() == false) {
+            return false;
         }
-        if(enableSpeechService() == true) {
-            if(isSpeechServiceAvailable() == true) {
-                getSpeechService().loadAndPlay(article.getArticleId(), article.getBroadcastId());
-            }
-            else {
+        //如果服务没有连接上， 可能在连接中，可能失败了
+        if(isSpeechServiceAvailable() == false) {
+            if(proxy.isBinding() == true) {
                 articleShouldPlayWhenServiceAvailable = article;
+                return true;
             }
         }
+        if(speechServiceWeakReference.get() != null) {
+            articleShouldPlayWhenServiceAvailable = null;
+            speechServiceWeakReference.get().loadAndPlay(article.getArticleId(), article.getBroadcastId());
+            return true;
+        }
+        articleShouldPlayWhenServiceAvailable = article;
+        connectSpeechService();
+        return true;
     }
 
 
@@ -230,7 +238,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         if (proxy != null) {
             proxy.unbind();
             speechServiceConnected = false;
-            speechService = null;
+            speechServiceWeakReference = null;
         }
         if (panelViewAdapter != null) {
             panelViewAdapter.detach();

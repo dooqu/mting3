@@ -88,7 +88,7 @@ public class SpeechService extends Service {
     ArticleDataProvider articleDataProvider;
 
 
-    SpeechNotification speechNotification;
+    SpeechForegroundServiceAdapter foregroundServiceAdapter;
 
     /*倒计时数值，可以表示倒计时的分钟数，也可以表示倒计时的播放数*/
     int countdownValue;
@@ -136,7 +136,7 @@ public class SpeechService extends Service {
         initService();
         initReceiver();
         setRole(Speechor.SpeechorRole.XiaoYao);
-        speechNotification = new SpeechNotification(this);
+        foregroundServiceAdapter = new SpeechForegroundServiceAdapter(this);
     }
 
 
@@ -159,7 +159,7 @@ public class SpeechService extends Service {
     public void onDestroy() {
         Log.d(TAG, "SpeechService.onDestroy");
         super.onDestroy();
-        unregisterReceiver(notifReceiver);
+
         unregisterReceiver(a2dpReceiver);
         isReleased = true;
         speechor.reset();
@@ -168,8 +168,7 @@ public class SpeechService extends Service {
         if (countdownTimer != null) {
             countdownTimer.cancel();
         }
-        //this.stopForeground(true);
-        speechNotification.stopAndRemove();
+        foregroundServiceAdapter.destroy();
     }
 
 
@@ -195,23 +194,19 @@ public class SpeechService extends Service {
                         Log.d(TAG, "SpeechService.onStateChanged:Ready");
 
                         currentArticle.setProgress(1);
-
                         SpeechService.this.onSpeechEnd(currentArticle, 1, true);
-
                         SpeechStopEvent.StopReason reason = SpeechStopEvent.StopReason.ListIsNull;
 
                         if (SpeechService.this.countDownMode == CountDownMode.NumberCount && --countdownValue == 0) {
                             SpeechService.this.cancelCountDown();
                             reason = SpeechStopEvent.StopReason.CountDownToZero;
                         }
-
                         else if (SpeechService.this.hasNext()) {
                             SpeechService.this.playNextInvokeByInternal();
                             return;
                         }
 
                         SpeechService.this.moveNext();
-
                         serviceState = SpeechServiceState.Ready;
                         onSpeechStoped(reason);
                     }
@@ -243,15 +238,6 @@ public class SpeechService extends Service {
     }
 
     private void initReceiver() {
-        IntentFilter notifIntent = new IntentFilter();
-        notifIntent.addAction("play");
-        notifIntent.addAction("pause");
-        notifIntent.addAction("next");
-        notifIntent.addAction("resume");
-        notifIntent.addAction("favorite");
-        notifIntent.addAction("unfavorite");
-        notifIntent.addAction("exit");
-        registerReceiver(notifReceiver, notifIntent);
         IntentFilter a2dpIntent = new IntentFilter(BluetoothA2dp.ACTION_CONNECTION_STATE_CHANGED);
         registerReceiver(a2dpReceiver, a2dpIntent);
     }
@@ -265,10 +251,8 @@ public class SpeechService extends Service {
     }
 
     private void onSpeechStart(Article article) {
-        speechNotification.update();
-        //initNotification();
+        foregroundServiceAdapter.retainForeground();
         EventBus.getDefault().post(new SpeechStartEvent(article));
-
     }
 
     private void onSpeechReady(Article article) {
@@ -282,7 +266,7 @@ public class SpeechService extends Service {
     private void onSpeechProgress(Article article, int fragmentIndex, List<String> fragments) {
         article.setProgress((float) fragmentIndex / (float) fragments.size());
         //if(fragmentIndex == 0) {
-        speechNotification.update();
+        foregroundServiceAdapter.retainForeground();
         // }
 
         EventBus.getDefault().post(new SpeechProgressEvent(fragmentIndex, fragments, article));
@@ -294,7 +278,7 @@ public class SpeechService extends Service {
 
     private void onSpeechError(int errorCode, String message, Article article) {
         EventBus.getDefault().post(new SpeechErrorEvent(errorCode, message, article));
-        speechNotification.update();
+        foregroundServiceAdapter.retainForeground();
     }
 
     private void onSpeechEnd(Article article, float progress, boolean deleteFromList) {
@@ -302,7 +286,6 @@ public class SpeechService extends Service {
         //articleDataProvider.readArticle(article, progress, deleteFromList, ((errorCode, articleResult) -> {
         //EventBus.getDefault().post(new SpeechArticleStatusSavedOnServerEvent(errorCode, "", articleResult));
         //}));
-
         if (progress == 1) {
             EventBus.getDefault().post(new SpeechEndEvent(article, progress));
         }
@@ -316,11 +299,13 @@ public class SpeechService extends Service {
         EventBus.getDefault().post(new SpeechPauseEvent(article));
         long duration = new java.util.Date().getTime() - speechStartTimeOfArticle;
         speechDurationOfArticle += (duration > 0) ? duration : 0;
+        foregroundServiceAdapter.retainForeground();
     }
 
     private void onSpeechResume(Article article) {
         EventBus.getDefault().post(new SpeechResumeEvent(article));
         speechStartTimeOfArticle = new java.util.Date().getTime();
+        foregroundServiceAdapter.retainForeground();
     }
 
 
@@ -329,10 +314,14 @@ public class SpeechService extends Service {
         //notificationManager.cancelAll();
         if (reason == SpeechStopEvent.StopReason.ListIsNull) {
             //this.stopForeground(true);
-            speechNotification.stopAndRemove();
+            foregroundServiceAdapter.stopForeground(true);
         }
     }
 
+    private void onSpeechArticleFavor(Article article) {
+        foregroundServiceAdapter.retainForeground();
+        EventBus.getDefault().post(new SpeechFavorArticleEvent(article));
+    }
 
     public synchronized SpeechServiceState getState() {
         return serviceState;
@@ -433,7 +422,6 @@ public class SpeechService extends Service {
             case Playing:
                 this.serviceState = SpeechServiceState.Paused;
                 result = this.speechor.pause();
-                speechNotification.update();
                 onSpeechPause(speechList.getCurrent());
                 return true;
         }
@@ -451,8 +439,6 @@ public class SpeechService extends Service {
 
             if (this.isSimulatePaused == true) {
                 playSelected();
-                speechNotification.update();
-                //initNotification();
                 onSpeechResume(speechList.getCurrent());
                 return true;
             }
@@ -460,14 +446,11 @@ public class SpeechService extends Service {
                 result = this.speechor.resume();
                 if (result) {
                     serviceState = SpeechServiceState.Playing;
-                    speechNotification.update();
-                    //initNotification();
                     onSpeechResume(speechList.getCurrent());
                 }
                 else {
                     result = seek(getProgress()) > 0;
-                    speechNotification.update();
-                    //onSpeechResume(speechList.getCurrent());
+                    //onSpeechResume(speechList.getCurrent());????
                 }
                 return result;
             }
@@ -613,7 +596,6 @@ public class SpeechService extends Service {
         this.articleDataProvider.loadArticleAndList(article, needSourceEffect, isFirst, isLast, (int errorcode, ArticleDataProvider.ArticleListArgument responseResult) -> {
 
             synchronized (this) {
-
                 //解决轮回问题
                 if (isReleased || serviceState != SpeechServiceState.Loadding || responseResult.article != this.speechList.getCurrent()) {
                     return;
@@ -778,85 +760,6 @@ public class SpeechService extends Service {
     public synchronized int getSpeechorFrameIndex() {
         return speechor.getFragmentIndex();
     }
-
-
-    private BroadcastReceiver notifReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            synchronized (SpeechService.this) {
-                final String action = intent.getAction();
-                Article currentArticle = getSelected();
-                if (currentArticle == null) {
-                    return;
-                }
-
-                switch (action) {
-                    case "play":
-                        if (getSelected() != null) {
-                            playSelected();
-                        }
-                        break;
-
-                    case "pause":
-                        pause();
-                        break;
-
-                    case "resume":
-                        resume();
-                        break;
-
-                    case "next":
-                        switch (serviceState) {
-                            case Ready:
-                                if (getSelected() != null) {
-                                    playSelected();
-                                }
-                                break;
-                            default:
-                                if (hasNext()) {
-                                    playNext();
-                                }
-                                break;
-                        }
-                        break;
-
-                    case "favorite":
-                        if (currentArticle.getStore() == 1) {
-                            break;
-                        }
-                        /*
-                        articleDataProvider.favorite(currentArticle, true, ((errorCode, article) -> {
-                            if (errorCode == 0) {
-                                initNotification();
-                                EventBus.getDefault().post(new FavoriteEvent(currentArticle));
-                            }
-                        }));
-                         */
-                    case "unfavorite":
-                        if (currentArticle.getStore() == 0) {
-                            break;
-                        }
-                        /*
-                        articleDataProvider.favorite(currentArticle, false, ((errorCode, article) -> {
-                            if (errorCode == 0) {
-                                initNotification();
-                                EventBus.getDefault().post(new FavoriteEvent(currentArticle));
-                            }
-                        }));
-
-                         */
-                        break;
-
-                    case "exit":
-                        pause();
-                        speechNotification.stopAndNotRemove();
-                        // stopForeground(false);
-                        // ((NotificationManager) SpeechService.this.getSystemService(Context.NOTIFICATION_SERVICE)).cancelAll();
-                        break;
-                } // end switch
-            } // end sychornized
-        } // end onReceive
-    }; // end class
 
     private BroadcastReceiver a2dpReceiver = new BroadcastReceiver() {
         @Override

@@ -80,7 +80,7 @@ public class TingAdapter extends RecyclerView.Adapter<TingAdapter.ViewHolder> {
         }
         holder.itemView.setOnClickListener(v -> {
             if (mOnItemClickListener != null) {
-                mOnItemClickListener.onItemClick(data);
+                mOnItemClickListener.onItemClick(data,position);
             }
         });
         holder.itemView.setOnLongClickListener(v -> {
@@ -117,7 +117,7 @@ public class TingAdapter extends RecyclerView.Adapter<TingAdapter.ViewHolder> {
     }
 
     public interface OnItemClickListener {
-        void onItemClick(TingInfo article);
+        void onItemClick(TingInfo article,int position);
 
         void onItemLongClick(TingInfo article);
     }

@@ -34,9 +34,10 @@ public class PanelViewAdapter {
     View speechPanelView;
     ImageView statusIcon;
     TextView articleTitle;
-    TextView broadcastTitle ;
+    TextView broadcastTitle;
     ProgressBar progressBar;
-    ImageView closeIcon ;
+    ImageView closeIcon;
+    Article currentArticle;
 
     @Deprecated
     public PanelViewAdapter(BaseActivity activity, SpeechService speechService) {
@@ -48,13 +49,13 @@ public class PanelViewAdapter {
     }
 
     public boolean attach(BaseActivity activity, SpeechService speechService) {
-        if(isAttached || contextRef != null) {
+        if (isAttached || contextRef != null) {
             return false;
         }
         contextRef = new WeakReference<>(activity);
         speechServiceWeakReference = new WeakReference<>(speechService);
         onCreatePanelView();
-        if(EventBus.getDefault().isRegistered(this) == false) {
+        if (EventBus.getDefault().isRegistered(this) == false) {
             EventBus.getDefault().register(this);
         }
         isAttached = true;
@@ -64,6 +65,7 @@ public class PanelViewAdapter {
     protected void onCreatePanelView() {
         speechPanelView = View.inflate(contextRef.get(), R.layout.view_control_panel, null);
         RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
+        //layoutParams.bottomMargin = 10;
         contextRef.get().addContentView(speechPanelView, layoutParams);
         speechPanelView.setVisibility(View.INVISIBLE);
 
@@ -83,10 +85,15 @@ public class PanelViewAdapter {
         statusIcon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(contextRef.get() == null) {
+                //如果服务SpeechService已经被回收掉， 那么重启服务，续播
+                if (speechServiceWeakReference.get() == null || contextRef.get() == null) {
+                    if (currentArticle != null) {
+                        contextRef.get().postToSpeechService(currentArticle);
+                    }
                     return;
                 }
-                if(isPlaying) {
+
+                if (isPlaying) {
                     speechServiceWeakReference.get().pause();
                 }
                 else {
@@ -104,44 +111,51 @@ public class PanelViewAdapter {
     }
 
 
-    public void update(SpeechEvent... events) {
+    public void validatePanelView(SpeechEvent... events) {
         SpeechService speechService = speechServiceWeakReference.get();
-        if(speechService == null) {
+        if (speechService == null) {
             return;
         }
-        SpeechEvent event = events.length > 0? events[0] : null;
-        if(event != null && event instanceof SpeechStopEvent) {
+        SpeechEvent event = events.length > 0 ? events[0] : null;
+        if (event != null && event instanceof SpeechStopEvent) {
             return;
         }
 
         speechPanelView.setVisibility(View.VISIBLE);
-        closeIcon.setVisibility(speechService.getState() == SpeechService.SpeechServiceState.Paused? View.VISIBLE : View.GONE);
-
+        /*
+        closeIcon.setVisibility(speechService.getState() == SpeechService.SpeechServiceState.Paused ||
+                speechService.getState() == SpeechService.SpeechServiceState.Error? View.VISIBLE : View.GONE);
+         */
         Article article = speechService.getSelected();
-        if(article != null) {
+        SpeechService.SpeechServiceState currentState = speechService.getState();
+        if (article != null) {
             articleTitle.setText(article.getTitle());
             broadcastTitle.setText(article.getBroadcastId());
         }
-        else if(event != null && event instanceof SpeechSerieLoaddingEvent) {
+        else if (event != null && event instanceof SpeechSerieLoaddingEvent) {
             articleTitle.setText(((SpeechSerieLoaddingEvent) event).getArticleTitle());
             broadcastTitle.setText(((SpeechSerieLoaddingEvent) event).getSerieTitle());
         }
+        else {
+            articleTitle.setText("正在加载...");
+            broadcastTitle.setText("");
+        }
 
-        switch (speechService.getState()) {
-            case Ready:
-            case Playing:
-                isPlaying = true;
-                statusIcon.setImageResource(R.mipmap.panel_pause);
-                break;
+        switch (currentState) {
             case Loadding:
-                statusIcon.setImageResource(R.mipmap.panel_pause);
-                isPlaying = true;
+                displayLoaddingAnim(true);
+                //do not break.
+            case Playing:
+                closeIcon.setVisibility(View.GONE);
+                setPlayingState(true);
+                //ProgressEvent那里，消掉loadding，因为内部的buffering，也会调用该事件，但state == playing
                 break;
+            case Ready:
             case Error:
             case Paused:
-                isPlaying = false;
-                setProgressBar(false);
-                statusIcon.setImageResource(R.mipmap.panel_play);
+                closeIcon.setVisibility(View.VISIBLE);
+                displayLoaddingAnim(false);
+                setPlayingState(false);
                 break;
         }
     }
@@ -150,14 +164,19 @@ public class PanelViewAdapter {
         contextRef = null;
         speechServiceWeakReference = null;
         closeIcon = null;
-        if(EventBus.getDefault().isRegistered(this)) {
+        if (EventBus.getDefault().isRegistered(this)) {
             EventBus.getDefault().unregister(this);
         }
     }
 
-    private void setProgressBar(boolean display) {
-        if(display) {
-            if(progressBar.getVisibility() != View.VISIBLE) {
+    private void setPlayingState(boolean isPlaying) {
+        this.isPlaying = isPlaying;
+        statusIcon.setImageResource(isPlaying ? R.mipmap.panel_pause : R.mipmap.panel_play);
+    }
+
+    private void displayLoaddingAnim(boolean display) {
+        if (display) {
+            if (progressBar.getVisibility() != View.VISIBLE) {
                 progressBar.setVisibility(View.VISIBLE);
             }
         }
@@ -168,22 +187,27 @@ public class PanelViewAdapter {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onSpeechEvent(SpeechEvent event) {
-        update(event);
-        if(event instanceof SpeechProgressEvent) {
-            setProgressBar(false);
+        validatePanelView(event);
+        if (event instanceof SpeechStartEvent) {
+            currentArticle = event.getArticle();
         }
-        else if(event instanceof SpeechBufferingEvent) {
+        if (event instanceof SpeechProgressEvent) {
+            displayLoaddingAnim(false);
+        }
+        else if (event instanceof SpeechBufferingEvent) {
             //如果是SpeechStartEvent 或者 BufferEvent，就显示loadding
-            setProgressBar(true);
+            displayLoaddingAnim(true);
         }
-        else if(event instanceof SpeechStartEvent) {
-            setProgressBar(true);
+        else if (event instanceof SpeechStartEvent) {
+            //displayLoaddingAnim(true);
         }
-        else if(event instanceof SpeechSerieLoaddingEvent) {
-            setProgressBar(true);
+        else if (event instanceof SpeechSerieLoaddingEvent) {
+            //displayLoaddingAnim(true);
         }
-        else if(event instanceof SpeechStopEvent) {
-            speechPanelView.setVisibility(View.INVISIBLE);
+        else if (event instanceof SpeechStopEvent) {
+            if (((SpeechStopEvent) event).getStopReason() == SpeechStopEvent.StopReason.ListIsNull) {
+                speechPanelView.setVisibility(View.INVISIBLE);
+            }
         }
     }
 }

@@ -50,6 +50,9 @@ public class BottomTingDialog extends BaseDimDialog {
      */
     public void setItemModle(BottomTingItemModle... modle) {
         ArrayList<View> list = new ArrayList<View>();
+        for (View v:mViewList){
+            v.setVisibility(View.INVISIBLE);
+        }
         for (int i = 0; i < (modle.length > 4 ? 4 : modle.length); i++) {
             setItemConent(mViewList.get(i), modle[i]);
         }
@@ -62,7 +65,8 @@ public class BottomTingDialog extends BaseDimDialog {
         view.setCompoundDrawablesWithIntrinsicBounds(null, modle.isTwo() ? modle.getDrawableTwo() : modle.getDrawable(), null, null);
     }
 
-    @OnClick({R.id.root,R.id.ll_layout, R.id.tv_dialog_ting_cancel, R.id.tv_dialog_ting_1, R.id.tv_dialog_ting_2, R.id.tv_dialog_ting_3, R.id.tv_dialog_ting_4})
+    @OnClick({R.id.root, R.id.ll_layout, R.id.tv_dialog_ting_cancel, R.id.tv_dialog_ting_1, R.id.tv_dialog_ting_2, R.id.tv_dialog_ting_3,
+            R.id.tv_dialog_ting_4})
     void onClick(View view) {
         switch (view.getId()) {
             case R.id.ll_layout:

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="bottom"
+    android:gravity="bottom"
+    android:background="@drawable/corner_up">
+    <cn.xylink.mting.speech.ui.PanelViewPager
+        android:id="@+id/dialog_control_panel_pager"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"></cn.xylink.mting.speech.ui.PanelViewPager>
+</RelativeLayout>
