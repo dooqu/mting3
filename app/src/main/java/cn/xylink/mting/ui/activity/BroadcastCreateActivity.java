@@ -23,6 +23,8 @@ import com.jph.takephoto.permission.PermissionManager;
 import com.jph.takephoto.permission.TakePhotoInvocationHandler;
 import com.yalantis.ucrop.UCrop;
 
+import org.greenrobot.eventbus.EventBus;
+
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
@@ -34,6 +36,7 @@ import cn.xylink.mting.base.BaseResponse;
 import cn.xylink.mting.bean.BroadcastCreateInfo;
 import cn.xylink.mting.bean.BroadcastCreateRequest;
 import cn.xylink.mting.contract.BroadcastCreateContact;
+import cn.xylink.mting.event.TingRefreshEvent;
 import cn.xylink.mting.presenter.BroadcastCreatePresenter;
 import cn.xylink.mting.utils.ImageUtils;
 import cn.xylink.mting.utils.L;
@@ -63,7 +66,7 @@ public class BroadcastCreateActivity extends BasePresenterActivity implements Br
 
     @Override
     protected void preView() {
-        setContentView(R.layout.activity_create_broadcast);
+        setContentView(R.layout.activity_broadcast_create);
     }
 
     @Override
@@ -131,7 +134,13 @@ public class BroadcastCreateActivity extends BasePresenterActivity implements Br
     @Override
     public void onSuccessCreateBroadcast(BaseResponse<BroadcastCreateInfo> baseResponse) {
         L.v(baseResponse);
-        toastShort("进入播单详情界面....");
+        EventBus.getDefault().post(new TingRefreshEvent());
+        if (null != baseResponse.data) {
+            Intent intent = new Intent(BroadcastCreateActivity.this, BroadcastActivity.class);
+            intent.putExtra(BroadcastActivity.EXTRA_BROADCASTID, baseResponse.data.getBroadcastId());
+            intent.putExtra(BroadcastActivity.EXTRA_TITLE, baseResponse.data.getName());
+            startActivity(intent);
+        }
         BroadcastCreateActivity.this.finish();
 
     }
