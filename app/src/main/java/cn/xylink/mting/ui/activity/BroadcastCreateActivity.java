@@ -66,7 +66,7 @@ public class BroadcastCreateActivity extends BasePresenterActivity implements Br
 
     @Override
     protected void preView() {
-        setContentView(R.layout.activity_create_broadcast);
+        setContentView(R.layout.activity_broadcast_create);
     }
 
     @Override
