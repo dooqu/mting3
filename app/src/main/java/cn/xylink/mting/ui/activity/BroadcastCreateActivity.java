@@ -32,7 +32,7 @@ import butterknife.OnClick;
 import cn.xylink.mting.R;
 import cn.xylink.mting.base.BaseResponse;
 import cn.xylink.mting.bean.BroadcastCreateInfo;
-import cn.xylink.mting.bean.CreateBroadcastRequest;
+import cn.xylink.mting.bean.BroadcastCreateRequest;
 import cn.xylink.mting.contract.BroadcastCreateContact;
 import cn.xylink.mting.presenter.BroadcastCreatePresenter;
 import cn.xylink.mting.utils.ImageUtils;
@@ -172,7 +172,7 @@ public class BroadcastCreateActivity extends BasePresenterActivity implements Br
     private void doCreateBroadcast() {
         if (!TextUtils.isEmpty(mTitle.getText().toString())) {
             Map<String, String> data = new HashMap<>();
-            CreateBroadcastRequest request = new CreateBroadcastRequest();
+            BroadcastCreateRequest request = new BroadcastCreateRequest();
             data.put("token", request.token);
             data.put("timestamp", request.timestamp + "");
             data.put("sign", request.sign);
