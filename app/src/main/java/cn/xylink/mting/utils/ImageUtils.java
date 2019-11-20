@@ -4,6 +4,9 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
@@ -11,7 +14,9 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.resource.bitmap.CircleCrop;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.bumptech.glide.request.RequestOptions;
+import com.bumptech.glide.request.target.CustomViewTarget;
 import com.bumptech.glide.request.target.SimpleTarget;
+import com.bumptech.glide.request.transition.Transition;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -248,6 +253,27 @@ public class ImageUtils {
                 .apply(requestOptions)
                 .into(iv);
     }
+  public void load(ViewGroup iv, String url) {
+        Glide.with(context)
+                .load(url)
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .into(new CustomViewTarget(iv) {
+                    @Override
+                    public void onLoadFailed(@Nullable Drawable errorDrawable) {
+
+                    }
+
+                    @Override
+                    public void onResourceReady(@NonNull Object resource, @Nullable Transition transition) {
+                        this.view.setBackground((Drawable) resource);
+                    }
+
+                    @Override
+                    protected void onResourceCleared(@Nullable Drawable placeholder) {
+
+                    }
+                });
+    }
 
 
     public void loadCircle(SimpleTarget<Drawable> target, int preimg, int errimg, String url) {
@@ -360,5 +386,7 @@ public class ImageUtils {
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .into(iv);
     }
+
+
 
 }

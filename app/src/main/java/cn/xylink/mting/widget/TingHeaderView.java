@@ -78,7 +78,7 @@ public class TingHeaderView extends LinearLayout implements RefreshHeader {
 //                textView.setVisibility(VISIBLE);
 //                imageView.setVisibility(GONE);
 
-                mTipPop.showAsDropDown(textView, 0, -DensityUtil.dip2pxComm(mContext, 25f));
+                mTipPop.showAsDropDown(textView, 0, -DensityUtil.dip2pxComm(mContext, 25f)-2);
                 this.postDelayed(() -> mTipPop.dismiss(),1000);
                 L.v();
                 break;

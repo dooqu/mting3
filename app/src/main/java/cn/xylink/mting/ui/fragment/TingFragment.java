@@ -145,7 +145,7 @@ public class TingFragment extends BasePresenterFragment implements TingListConta
         } else {
             mBottomTingDialog.setItemModle(new BottomTingItemModle("置顶", "取消置顶", getActivity().getResources().getDrawable(R.mipmap.icon_set_top),
                             getActivity().getResources().getDrawable(R.mipmap.icon_cancel_top), article.getTop() == 1, article.getBroadcastId())
-                    , new BottomTingItemModle("取消订阅", getActivity().getResources().getDrawable(R.mipmap.icon_cancel_top), article.getBroadcastId()));
+                    , new BottomTingItemModle("取消订阅", getActivity().getResources().getDrawable(R.mipmap.icon_cancel_subscibe), article.getBroadcastId()));
         }
         mBottomTingDialog.show();
     }

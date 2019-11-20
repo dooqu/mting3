@@ -1,7 +1,11 @@
 package cn.xylink.mting.ui.activity;
 
 
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -13,6 +17,10 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.target.CustomViewTarget;
+import com.bumptech.glide.request.target.SimpleTarget;
+import com.bumptech.glide.request.target.ViewTarget;
+import com.bumptech.glide.request.transition.Transition;
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.scwang.smartrefresh.layout.constant.SpinnerStyle;
 import com.scwang.smartrefresh.layout.footer.BallPulseFooter;
@@ -112,7 +120,11 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
         mRefreshLayout.setEnableAutoLoadMore(false);
         mTableBarTitleTextView.setText(getIntent().getStringExtra(EXTRA_TITLE));
         initList();
-        initDetail();
+        if (getIntent().getStringExtra(EXTRA_BROADCASTID).startsWith("-")) {
+            initSysBroadcast();
+        } else {
+            initDetail();
+        }
         drawable = getResources().getDrawable(R.color.white);
         mScrollView.setOnScrollChangeListener((NestedScrollView.OnScrollChangeListener) (nestedScrollView, i, i1, i2, i3) -> {
             L.v(i1);
@@ -138,6 +150,27 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
                 mTableBarTitleTextView.setTextColor(getResources().getColor(R.color.white));
             }
         });
+    }
+
+    /**
+     * 待读传-1，已读历史传-2，收藏传-3，我创建的传-4。
+     */
+    private void initSysBroadcast() {
+        String id = getIntent().getStringExtra(EXTRA_BROADCASTID);
+        mTitleTextView.setText("简介");
+        if ("-1".equals(id)) {
+            mImageView.setImageResource(R.mipmap.icon_head_unread);
+            mDesTextView.setText("待读会自动存放您添加到轩辕 听内的文章");
+        } else if ("-2".equals(id)) {
+            mImageView.setImageResource(R.mipmap.icon_head_readed);
+            mDesTextView.setText("这里显示您读过的所有文章");
+        } else if ("-3".equals(id)) {
+            mImageView.setImageResource(R.mipmap.icon_head_love);
+            mDesTextView.setText("这里显示您收藏的所有文章");
+        } else if ("-4".equals(id)) {
+            mImageView.setImageResource(R.mipmap.icon_head_mycreate);
+            mDesTextView.setText("这里显示您创建的所有文章");
+        }
     }
 
     Drawable drawable;
@@ -203,12 +236,7 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
         mTitleTextView.setText(data.getCreateName());
         mDesTextView.setText(data.getInfo());
         ImageUtils.get().load(mImageView, 0, 0, 8, data.getPicture());
-//        Glide.with(context)
-//                .load(data.getPicture())
-//                .diskCacheStrategy(DiskCacheStrategy.ALL)
-//                .error(0)
-//                .placeholder(0)
-//                .into(mTopLayout);
+        ImageUtils.get().load(mTopLayout, data.getPicture());
         if (data.getCreateName().equals(ContentManager.getInstance().getUserInfo().getUserId())) {
             if (data.getShare() == 0) {
                 mShare2worldTextView.setVisibility(View.VISIBLE);
