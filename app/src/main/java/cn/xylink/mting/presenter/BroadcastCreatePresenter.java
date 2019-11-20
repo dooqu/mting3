@@ -6,7 +6,7 @@ import java.io.File;
 import java.util.Map;
 
 import cn.xylink.mting.base.BaseResponse;
-import cn.xylink.mting.bean.CreateBroadcastInfo;
+import cn.xylink.mting.bean.BroadcastCreateInfo;
 import cn.xylink.mting.contract.BroadcastCreateContact;
 import cn.xylink.mting.model.data.RemoteUrl;
 import cn.xylink.mting.utils.OkGoUtils;
@@ -20,7 +20,7 @@ public class BroadcastCreatePresenter extends BasePresenter<BroadcastCreateConta
     @Override
     public void onCreateBroadcast(Map data, File file) {
         OkGoUtils.getInstance().postData(mView, RemoteUrl.getCreateBroadcastUrl(), data, file,
-                new TypeToken<BaseResponse<CreateBroadcastInfo>>() {
+                new TypeToken<BaseResponse<BroadcastCreateInfo>>() {
                 }.getType(), new OkGoUtils.ICallback() {
                     @Override
                     public void onStart() {
@@ -29,7 +29,7 @@ public class BroadcastCreatePresenter extends BasePresenter<BroadcastCreateConta
 
                     @Override
                     public void onSuccess(Object data) {
-                        BaseResponse<CreateBroadcastInfo> baseResponse = (BaseResponse<CreateBroadcastInfo>) data;
+                        BaseResponse<BroadcastCreateInfo> baseResponse = (BaseResponse<BroadcastCreateInfo>) data;
                         int code = baseResponse.code;
                         if (code == 200) {
                             mView.onSuccessCreateBroadcast(baseResponse);

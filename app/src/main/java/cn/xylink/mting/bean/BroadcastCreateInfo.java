@@ -6,7 +6,7 @@ import java.io.Serializable;
  * @author wjn
  * @date 2019/11/18
  */
-public class CreateBroadcastInfo implements Serializable {
+public class BroadcastCreateInfo implements Serializable {
 
     /**
      * createAt : 1571643943664

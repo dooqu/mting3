@@ -3,7 +3,7 @@ package cn.xylink.mting.contract;
 import java.io.File;
 import java.util.Map;
 
-import cn.xylink.mting.bean.CreateBroadcastInfo;
+import cn.xylink.mting.bean.BroadcastCreateInfo;
 import cn.xylink.mting.base.BaseResponse;
 
 /**
@@ -13,7 +13,7 @@ import cn.xylink.mting.base.BaseResponse;
 public interface BroadcastCreateContact {
     interface ICreateBroadcastView extends IBaseView {
 
-        void onSuccessCreateBroadcast(BaseResponse<CreateBroadcastInfo> baseResponse);
+        void onSuccessCreateBroadcast(BaseResponse<BroadcastCreateInfo> baseResponse);
 
         void onErrorCreateBroadcast(int code, String errorMsg);
     }

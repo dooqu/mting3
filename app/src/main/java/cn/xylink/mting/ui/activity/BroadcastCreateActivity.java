@@ -31,7 +31,7 @@ import butterknife.BindView;
 import butterknife.OnClick;
 import cn.xylink.mting.R;
 import cn.xylink.mting.base.BaseResponse;
-import cn.xylink.mting.bean.CreateBroadcastInfo;
+import cn.xylink.mting.bean.BroadcastCreateInfo;
 import cn.xylink.mting.bean.CreateBroadcastRequest;
 import cn.xylink.mting.contract.BroadcastCreateContact;
 import cn.xylink.mting.presenter.BroadcastCreatePresenter;
@@ -129,7 +129,7 @@ public class BroadcastCreateActivity extends BasePresenterActivity implements Br
     }
 
     @Override
-    public void onSuccessCreateBroadcast(BaseResponse<CreateBroadcastInfo> baseResponse) {
+    public void onSuccessCreateBroadcast(BaseResponse<BroadcastCreateInfo> baseResponse) {
         L.v(baseResponse);
         toastShort("进入播单详情界面....");
         BroadcastCreateActivity.this.finish();
