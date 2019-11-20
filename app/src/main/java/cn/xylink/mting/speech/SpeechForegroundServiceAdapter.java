@@ -4,10 +4,14 @@ import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+
+import java.lang.ref.WeakReference;
 
 import cn.xylink.mting.MainActivity;
 import cn.xylink.mting.R;
@@ -17,26 +21,47 @@ import cn.xylink.mting.speech.list.SpeechList;
 
 import static android.content.Context.NOTIFICATION_SERVICE;
 
-public class SpeechNotification {
+/*
+协助SpeechService完成两件事
+1、提升至优先级更高的ForegroundService，或者关闭优先级
+2、在适当的时候更新和关闭跟优先级服务绑定的Notification
 
-    SpeechService service;
+将该逻辑拆分成独立的对象，与SpeechService进行逻辑分离
+ */
+public class SpeechForegroundServiceAdapter {
+
+    static String TAG = SpeechForegroundServiceAdapter.class.getSimpleName();
+    WeakReference<SpeechService> speechServiceWeakReference;
     static int executeCode = 0;
 
-    public SpeechNotification(SpeechService service) {
-        this.service = service;
+    public SpeechForegroundServiceAdapter(SpeechService service) {
+        if(service != null) {
+            speechServiceWeakReference = new WeakReference<>(service);
+            IntentFilter notifIntent = new IntentFilter();
+            notifIntent.addAction("SPEECH_ACTION_PLAY");
+            notifIntent.addAction("SPEECH_ACTION_PAUSE");
+            notifIntent.addAction("SPEECH_ACTION_NEXT");
+            notifIntent.addAction("SPEECH_ACTION_RESUME");
+            notifIntent.addAction("SPEECH_ACTION_FAVOR");
+            notifIntent.addAction("SPEECH_ACTION_UNFAVOR");
+            notifIntent.addAction("SPEECH_ACTION_EXIT");
+            service.registerReceiver(notifReceiver, notifIntent);
+        }
     }
 
 
-    public void update() {
-        if (service == null || service.getSelected() == null) {
+    public void retainForeground() {
+        if (speechServiceWeakReference.get() == null) {
+            stopForeground(true);
             return;
         }
+        else if (speechServiceWeakReference.get().getSelected() == null) {
+            dismissNotif();
+        }
+
+        SpeechService service = speechServiceWeakReference.get();
 
         Article currentArticle = service.getSelected();
-        if (currentArticle == null) {
-            return;
-        }
-
         boolean hasNext = service.hasNext();
         Intent intentNotifOpen = new Intent(service, MainActivity.class);
         intentNotifOpen.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -71,14 +96,14 @@ public class SpeechNotification {
             builder.setChannelId(channelId);
         }
 
-        Intent playIntent = new Intent("play");
-        Intent resumeIntent = new Intent("resume");
-        Intent pauseIntent = new Intent("pause");
-        Intent favIntent = new Intent("favorite");
-        Intent unFavIntent = new Intent("unfavorite");
-        Intent nextIntent = new Intent("next");
-        Intent noneIntent = new Intent("null");
-        Intent exitIntent = new Intent("exit");
+        Intent playIntent = new Intent("SPEECH_ACTION_PLAY");
+        Intent resumeIntent = new Intent("SPEECH_ACTION_RESUME");
+        Intent pauseIntent = new Intent("SPEECH_ACTION_PAUSE");
+        Intent favIntent = new Intent("SPEECH_ACTION_FAVOR");
+        Intent unFavIntent = new Intent("SPEECH_ACTION_UNFAVOR");
+        Intent nextIntent = new Intent("SPEECH_ACTION_NEXT");
+        Intent noneIntent = new Intent("SPEECH_ACTION_NULL");
+        Intent exitIntent = new Intent("SPEECH_ACTION_EXIT");
 
         Notification.Action actionPlay = null, actionNext = null, actionFav = null, actionExit = null;
 
@@ -89,6 +114,7 @@ public class SpeechNotification {
                 SpeechList speechList = service.getSpeechList();
                 boolean isFirst = (speechList instanceof DynamicSpeechList && speechList.getFirst() != null && speechList.getFirst() == currentArticle);
                 boolean isLast = (speechList instanceof DynamicSpeechList && speechList.getLast() != null && speechList.getLast() == currentArticle);
+                boolean listIsNull = speechList.getCurrent() == null;
                 actionFav = new Notification.Action(favorited ? R.mipmap.icon_favorited : R.mipmap.icon_unfavorited, "", PendingIntent.getBroadcast(service, ++executeCode, favorited ? unFavIntent : favIntent, PendingIntent.FLAG_UPDATE_CURRENT));
                 actionPlay = new Notification.Action(R.mipmap.icon_pause, "", PendingIntent.getBroadcast(service, ++executeCode, pauseIntent, PendingIntent.FLAG_UPDATE_CURRENT));
                 actionNext = new Notification.Action(R.mipmap.next, "", PendingIntent.getBroadcast(service, ++executeCode, (hasNext && !isLast ? nextIntent : noneIntent), PendingIntent.FLAG_UPDATE_CURRENT));
@@ -138,17 +164,104 @@ public class SpeechNotification {
         service.startForeground(android.os.Process.myPid(), notification);
     }
 
-    public void stopAndNotRemove() {
+    public void destroy() {
+        this.stopForeground(true);
+        SpeechService service = speechServiceWeakReference.get();
+        if(service != null) {
+            service.unregisterReceiver(notifReceiver);
+        }
+    }
+
+    protected void dismissNotif() {
+        SpeechService service = speechServiceWeakReference.get();
         if (service != null) {
-            service.stopForeground(false);
             ((NotificationManager) service.getSystemService(Context.NOTIFICATION_SERVICE)).cancelAll();
         }
     }
 
-
-    public void stopAndRemove() {
+    public void stopForeground(boolean removeNotification) {
+        SpeechService service = speechServiceWeakReference.get();
         if (service != null) {
-            service.stopForeground(true);
+            service.stopForeground(removeNotification);
+            if (removeNotification == true) {
+                dismissNotif();
+            }
         }
     }
+
+
+    private BroadcastReceiver notifReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            SpeechService speechService = speechServiceWeakReference.get();
+            if(speechService == null) {
+                return;
+            }
+            synchronized (speechService) {
+                final String action = intent.getAction();
+                Article currentArticle = speechService.getSelected();
+                if (currentArticle == null) {
+                    return;
+                }
+
+                switch (action) {
+                    case "SPEECH_ACTION_PLAY":
+                        speechService.play(speechService.getSelected().getArticleId());
+                        break;
+                    case "SPEECH_ACTION_PAUSE":
+                        speechService.pause();
+                        break;
+                    case "SPEECH_ACTION_RESUME":
+                        speechService.resume();
+                        break;
+                    case "SPEECH_ACTION_NEXT":
+                        switch (speechService.getState()) {
+                            case Ready:
+                                if (speechService.getSelected() != null) {
+                                    speechService.play(speechService.getSelected().getArticleId());
+                                }
+                                break;
+                            default:
+                                if (speechService.hasNext()) {
+                                    speechService.playNext();
+                                }
+                                break;
+                        }
+                        break;
+
+                    case "SPEECH_ACTION_FAVOR":
+                        if (currentArticle.getStore() == 1) {
+                            break;
+                        }
+                        /*
+                        articleDataProvider.favorite(currentArticle, true, ((errorCode, article) -> {
+                            if (errorCode == 0) {
+                                initNotification();
+                                EventBus.getDefault().post(new FavoriteEvent(currentArticle));
+                            }
+                        }));
+                         */
+                        break;
+                    case "SPEECH_ACTION_UNFAVOR":
+                        if (currentArticle.getStore() == 0) {
+                            break;
+                        }
+                        /*
+                        articleDataProvider.favorite(currentArticle, false, ((errorCode, article) -> {
+                            if (errorCode == 0) {
+                                initNotification();
+                                EventBus.getDefault().post(new FavoriteEvent(currentArticle));
+                            }
+                        }));
+                         */
+                        break;
+                    case "SPEECH_ACTION_EXIT":
+                        speechService.pause();
+                        stopForeground(true);
+                        break;
+                } // end switch
+            } // end sychornized
+        } // end onReceive
+    }; // end class
+
 }
