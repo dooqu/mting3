@@ -33,8 +33,8 @@ import cn.xylink.mting.R;
 import cn.xylink.mting.base.BaseResponse;
 import cn.xylink.mting.bean.CreateBroadcastInfo;
 import cn.xylink.mting.bean.CreateBroadcastRequest;
-import cn.xylink.mting.contract.CreateBroadcastContact;
-import cn.xylink.mting.presenter.CreateBroadcastPresenter;
+import cn.xylink.mting.contract.BroadcastCreateContact;
+import cn.xylink.mting.presenter.BroadcastCreatePresenter;
 import cn.xylink.mting.utils.ImageUtils;
 import cn.xylink.mting.utils.L;
 import cn.xylink.mting.widget.EditTextWidthClear;
@@ -43,7 +43,7 @@ import cn.xylink.mting.widget.EditTextWidthClear;
  * @author wjn
  * @date 2019/11/18
  */
-public class CreateBroadcastActivity extends BasePresenterActivity implements CreateBroadcastContact.ICreateBroadcastView, TakePhoto.TakeResultListener, InvokeListener {
+public class BroadcastCreateActivity extends BasePresenterActivity implements BroadcastCreateContact.ICreateBroadcastView, TakePhoto.TakeResultListener, InvokeListener {
     @BindView(R.id.tv_include_title)
     TextView tvTitle;
     @BindView(R.id.tv_right)
@@ -56,7 +56,7 @@ public class CreateBroadcastActivity extends BasePresenterActivity implements Cr
     ImageView imgCover;
     @BindView(R.id.tv_change_cover)
     TextView mChangeCover;
-    private CreateBroadcastPresenter mCreateBroadcastPresenter;
+    private BroadcastCreatePresenter mBroadcastCreatePresenter;
     private TakePhoto takePhoto;
     private InvokeParam invokeParam;
     private File coverFile = null;
@@ -73,8 +73,8 @@ public class CreateBroadcastActivity extends BasePresenterActivity implements Cr
 
     @Override
     protected void initData() {
-        mCreateBroadcastPresenter = (CreateBroadcastPresenter) createPresenter(CreateBroadcastPresenter.class);
-        mCreateBroadcastPresenter.attachView(this);
+        mBroadcastCreatePresenter = (BroadcastCreatePresenter) createPresenter(BroadcastCreatePresenter.class);
+        mBroadcastCreatePresenter.attachView(this);
     }
 
     @Override
@@ -132,7 +132,7 @@ public class CreateBroadcastActivity extends BasePresenterActivity implements Cr
     public void onSuccessCreateBroadcast(BaseResponse<CreateBroadcastInfo> baseResponse) {
         L.v(baseResponse);
         toastShort("进入播单详情界面....");
-        CreateBroadcastActivity.this.finish();
+        BroadcastCreateActivity.this.finish();
 
     }
 
@@ -178,7 +178,7 @@ public class CreateBroadcastActivity extends BasePresenterActivity implements Cr
             data.put("sign", request.sign);
             data.put("name", mTitle.getText().toString());
             data.put("info", mIntro.getText().toString());
-            mCreateBroadcastPresenter.onCreateBroadcast(data, coverFile);
+            mBroadcastCreatePresenter.onCreateBroadcast(data, coverFile);
         } else {
             toastShort("创建的播单标题不能为空");
         }
@@ -189,7 +189,7 @@ public class CreateBroadcastActivity extends BasePresenterActivity implements Cr
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         //以下代码为处理Android6.0、7.0动态权限所需
         PermissionManager.TPermissionType type = PermissionManager.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        PermissionManager.handlePermissionsResult(CreateBroadcastActivity.this, type, invokeParam, this);
+        PermissionManager.handlePermissionsResult(BroadcastCreateActivity.this, type, invokeParam, this);
     }
 
     @Override

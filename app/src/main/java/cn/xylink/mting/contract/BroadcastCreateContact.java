@@ -10,7 +10,7 @@ import cn.xylink.mting.base.BaseResponse;
  * @author wjn
  * @date 2019/11/18
  */
-public interface CreateBroadcastContact {
+public interface BroadcastCreateContact {
     interface ICreateBroadcastView extends IBaseView {
 
         void onSuccessCreateBroadcast(BaseResponse<CreateBroadcastInfo> baseResponse);

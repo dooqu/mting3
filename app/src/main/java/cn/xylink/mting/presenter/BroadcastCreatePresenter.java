@@ -7,7 +7,7 @@ import java.util.Map;
 
 import cn.xylink.mting.base.BaseResponse;
 import cn.xylink.mting.bean.CreateBroadcastInfo;
-import cn.xylink.mting.contract.CreateBroadcastContact;
+import cn.xylink.mting.contract.BroadcastCreateContact;
 import cn.xylink.mting.model.data.RemoteUrl;
 import cn.xylink.mting.utils.OkGoUtils;
 
@@ -15,7 +15,7 @@ import cn.xylink.mting.utils.OkGoUtils;
  * @author wjn
  * @date 2019/11/18
  */
-public class CreateBroadcastPresenter extends BasePresenter<CreateBroadcastContact.ICreateBroadcastView> implements CreateBroadcastContact.Presenter {
+public class BroadcastCreatePresenter extends BasePresenter<BroadcastCreateContact.ICreateBroadcastView> implements BroadcastCreateContact.Presenter {
 
     @Override
     public void onCreateBroadcast(Map data, File file) {
