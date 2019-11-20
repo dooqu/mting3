@@ -11,6 +11,9 @@ import android.widget.Toast;
 
 import com.scwang.smartrefresh.layout.api.RefreshLayout;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+
 import java.util.List;
 
 import butterknife.BindView;
@@ -25,6 +28,7 @@ import cn.xylink.mting.bean.TingInfo;
 import cn.xylink.mting.contract.SetTopContact;
 import cn.xylink.mting.contract.SubscribeContact;
 import cn.xylink.mting.contract.TingListContact;
+import cn.xylink.mting.event.TingRefreshEvent;
 import cn.xylink.mting.presenter.SetTopPresenter;
 import cn.xylink.mting.presenter.SubscribePresenter;
 import cn.xylink.mting.presenter.TingListPresenter;
@@ -71,6 +75,7 @@ public class TingFragment extends BasePresenterFragment implements TingListConta
 
     @Override
     protected void initView(View view) {
+        EventBus.getDefault().register(this);
         RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) mTitleLayout.getLayoutParams();
         lp.topMargin = DensityUtil.getStatusBarHeight(getActivity());
         mTitleLayout.setLayoutParams(lp);
@@ -232,5 +237,16 @@ public class TingFragment extends BasePresenterFragment implements TingListConta
         BottomTingItemModle modle = (BottomTingItemModle) tag;
         subscribe(modle.getId(), SubscribeRequest.EVENT.CANCEL.name().toLowerCase());
 
+    }
+
+    @Subscribe
+    public void  eventRefresh(TingRefreshEvent event){
+        initData();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        EventBus.getDefault().unregister(this);
     }
 }
