@@ -80,7 +80,7 @@ public class WorldFragment extends BasePresenterFragment implements WorldListCon
 
     private void loadMoreData(){
         WorldRequest request = new WorldRequest();
-        request.setEvent(WorldRequest.EVENT.NEW.name());
+        request.setEvent(WorldRequest.EVENT.NEW.name().toLowerCase());
         request.setLastAt(mAdapter.getArticleList().get(mAdapter.getArticleList().size()-1).getLastAt());
         request.doSign();
         mWorldListPresenter.getWorldList(request, true);

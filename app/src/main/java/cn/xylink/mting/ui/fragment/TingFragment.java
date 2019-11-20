@@ -94,11 +94,7 @@ public class TingFragment extends BasePresenterFragment implements TingListConta
         mRefreshLayout.setOnRefreshListener(refreshlayout -> {
             initData();
         });
-        mRefreshLayout.setOnLoadMoreListener(refreshlayout -> {
-            refreshlayout.finishLoadMore(2000/*,false*/);//传入false表示加载失败
-        });
         mRefreshLayout.setRefreshHeader(new TingHeaderView(getActivity()).setIsWrite(true));
-        mRefreshLayout.setRefreshFooter(new BallPulseFooter(getActivity()).setSpinnerStyle(SpinnerStyle.Scale));
         mRefreshLayout.setEnableLoadMore(false);
         mBottomTingDialog = new BottomTingDialog(getActivity(), this);
         mSubscribeTipDialog = new SubscribeTipDialog(getActivity());

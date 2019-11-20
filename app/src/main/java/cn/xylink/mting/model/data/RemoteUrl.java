@@ -234,4 +234,7 @@ public class RemoteUrl {
     public static String getVisitorRegisterUrl() {
         return URL_BASE + "/api/user/v1/visitor/register";
     }
+   public static String getBroadcastDetailUrl() {
+        return URL_BASE + "/api/art/v1/broadcast/detail";
+    }
 }

@@ -12,12 +12,12 @@ import cn.xylink.mting.bean.BroadcastListRequest;
  */
 public interface BroadcastListContact {
     interface IBroadcastListView extends IBaseView {
-        void onBroadcastListSuccess(List<BroadcastInfo> data);
+        void onBroadcastListSuccess(List<BroadcastInfo> data, boolean isLoadMore);
 
-        void onBroadcastListError(int code, String errorMsg);
+        void onBroadcastListError(int code, String errorMsg, boolean isLoadMore);
     }
 
     interface Presenter<T> {
-        void getBroadcastList(BroadcastListRequest request);
+        void getBroadcastList(BroadcastListRequest request, boolean isLoadMore);
     }
 }
