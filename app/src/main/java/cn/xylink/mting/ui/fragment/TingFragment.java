@@ -34,6 +34,7 @@ import cn.xylink.mting.presenter.SetTopPresenter;
 import cn.xylink.mting.presenter.SubscribePresenter;
 import cn.xylink.mting.presenter.TingListPresenter;
 import cn.xylink.mting.ui.activity.BroadcastActivity;
+import cn.xylink.mting.ui.activity.CreateBroadcastActivity;
 import cn.xylink.mting.ui.adapter.TingAdapter;
 import cn.xylink.mting.ui.dialog.BottomTingDialog;
 import cn.xylink.mting.ui.dialog.BottomTingItemModle;
@@ -177,7 +178,7 @@ public class TingFragment extends BasePresenterFragment implements TingListConta
 
     @Override
     public void onCreateBroadcast() {
-
+        startActivity(new Intent(getActivity(), CreateBroadcastActivity.class));
     }
 
     @Override
@@ -192,12 +193,12 @@ public class TingFragment extends BasePresenterFragment implements TingListConta
     @Override
     public void onSetTopSuccess(BaseResponse response) {
         initData();
-        Toast.makeText(getActivity(),"置顶成功！",Toast.LENGTH_SHORT).show();
+        Toast.makeText(getActivity(), "置顶成功！", Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void onSetTopError(int code, String errorMsg) {
-        Toast.makeText(getActivity(),"置顶失败！",Toast.LENGTH_SHORT).show();
+        Toast.makeText(getActivity(), "置顶失败！", Toast.LENGTH_SHORT).show();
     }
 
     @Override
