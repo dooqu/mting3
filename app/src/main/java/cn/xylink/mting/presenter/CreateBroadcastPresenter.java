@@ -5,11 +5,11 @@ import com.google.gson.reflect.TypeToken;
 import java.io.File;
 import java.util.Map;
 
+import cn.xylink.mting.base.BaseResponse;
 import cn.xylink.mting.bean.CreateBroadcastInfo;
 import cn.xylink.mting.contract.CreateBroadcastContact;
 import cn.xylink.mting.model.data.RemoteUrl;
 import cn.xylink.mting.utils.OkGoUtils;
-import cn.xylink.mting.base.BaseResponse;
 
 /**
  * @author wjn
@@ -29,7 +29,7 @@ public class CreateBroadcastPresenter extends BasePresenter<CreateBroadcastConta
 
                     @Override
                     public void onSuccess(Object data) {
-                       BaseResponse<CreateBroadcastInfo> baseResponse = (BaseResponse<CreateBroadcastInfo>) data;
+                        BaseResponse<CreateBroadcastInfo> baseResponse = (BaseResponse<CreateBroadcastInfo>) data;
                         int code = baseResponse.code;
                         if (code == 200) {
                             mView.onSuccessCreateBroadcast(baseResponse);
