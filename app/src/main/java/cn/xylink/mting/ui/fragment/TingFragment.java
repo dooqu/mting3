@@ -4,17 +4,12 @@ import android.content.Intent;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
-import com.scwang.smartrefresh.layout.api.RefreshHeader;
 import com.scwang.smartrefresh.layout.api.RefreshLayout;
-import com.scwang.smartrefresh.layout.constant.SpinnerStyle;
-import com.scwang.smartrefresh.layout.footer.BallPulseFooter;
-import com.scwang.smartrefresh.layout.header.ClassicsHeader;
 
 import java.util.List;
 
@@ -34,12 +29,12 @@ import cn.xylink.mting.presenter.SetTopPresenter;
 import cn.xylink.mting.presenter.SubscribePresenter;
 import cn.xylink.mting.presenter.TingListPresenter;
 import cn.xylink.mting.ui.activity.BroadcastActivity;
+import cn.xylink.mting.ui.activity.BroadcastCreateActivity;
 import cn.xylink.mting.ui.adapter.TingAdapter;
 import cn.xylink.mting.ui.dialog.BottomTingDialog;
 import cn.xylink.mting.ui.dialog.BottomTingItemModle;
 import cn.xylink.mting.ui.dialog.MainAddMenuPop;
 import cn.xylink.mting.ui.dialog.SubscribeTipDialog;
-import cn.xylink.mting.ui.dialog.TipDialog;
 import cn.xylink.mting.utils.ContentManager;
 import cn.xylink.mting.utils.DensityUtil;
 import cn.xylink.mting.widget.TingHeaderView;
@@ -184,7 +179,7 @@ public class TingFragment extends BasePresenterFragment implements TingListConta
 
     @Override
     public void onCreateBroadcast() {
-
+        startActivity(new Intent(getActivity(), BroadcastCreateActivity.class));
     }
 
     private SubscribeTipDialog mSubscribeTipDialog;

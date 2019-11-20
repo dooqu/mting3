@@ -48,7 +48,7 @@
             android:drawablePadding="@dimen/title_bar_padding"
             android:gravity="center"
             android:singleLine="true"
-            android:textColor="@color/font_gray3"
+            android:textColor="@color/cccccc"
             android:textSize="@dimen/text_18" />
 
     </RelativeLayout>

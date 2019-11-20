@@ -47,4 +47,6 @@
     <dimen name="setting_dimen_32">32dp</dimen>
     <dimen name="setting_font_13">13sp</dimen>
     <dimen name="setting_dimen_7">7dp</dimen>
+    <dimen name="create_dimen_16">16dp</dimen>
+    <dimen name="create_dimen_12">12dp</dimen>
 </resources>

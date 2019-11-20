@@ -228,11 +228,19 @@ public class RemoteUrl {
     public static String getSetTopUrl() {
         return URL_BASE + "/api/art/v1/broadcast/top";
     }
+
     public static String getSubscribeUrl() {
-        return URL_BASE + "/api/art/v1/broadcast/subscribe";}
+        return URL_BASE + "/api/art/v1/broadcast/subscribe";
+    }
+
     //游客账号注册
     public static String getVisitorRegisterUrl() {
         return URL_BASE + "/api/user/v1/visitor/register";
+    }
+
+    //创建播单
+    public static String getCreateBroadcastUrl() {
+        return URL_BASE + "/api/art/v1/broadcast/create";
     }
    public static String getBroadcastDetailUrl() {
         return URL_BASE + "/api/art/v1/broadcast/detail";

@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:orientation="vertical">
+
+    <include layout="@layout/title_include" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="136dp"
+        android:background="#fff8f9fd"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/imv_cover"
+            android:layout_width="104dp"
+            android:layout_height="104dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="@dimen/create_dimen_16"
+            android:src="@mipmap/cjbd_img_fm_default" />
+
+        <TextView
+            android:id="@+id/tv_change_cover"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="32dp"
+            android:background="@mipmap/btn_ghfm"
+            android:gravity="center"
+            android:text="更换封面"
+            android:textColor="#488def"
+            android:textSize="15sp" />
+
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/create_dimen_16"
+        android:layout_marginTop="24dp"
+        android:text="标题"
+        android:textColor="#666666"
+        android:textSize="18sp" />
+
+    <cn.xylink.mting.widget.EditTextWidthClear
+        android:id="@+id/et_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="24dp"
+        android:layout_marginRight="16dp"
+        android:background="@null"
+        android:hint="请输入播单标题"
+        android:lineSpacingExtra="27dp"
+        android:maxLength="20"
+        android:textColorHint="#ff999999"
+        android:textCursorDrawable="@null" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginRight="16dp"
+        android:background="@color/cutting_line" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/create_dimen_16"
+        android:layout_marginTop="24dp"
+        android:text="简介"
+        android:textColor="#666666"
+        android:textSize="18sp" />
+
+    <cn.xylink.mting.widget.EditTextWidthClear
+        android:id="@+id/et_intro"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="24dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginBottom="24dp"
+        android:background="@null"
+        android:hint="请输入播单介绍"
+        android:lineSpacingExtra="23dp"
+        android:textColorHint="#ff999999"
+        android:textCursorDrawable="@null" />
+
+
+</LinearLayout>
