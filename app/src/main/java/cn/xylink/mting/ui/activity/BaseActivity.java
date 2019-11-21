@@ -136,10 +136,15 @@ public abstract class BaseActivity extends AppCompatActivity {
                     panelViewAdapter.attach(BaseActivity.this, service);
                     //如果当前正在播放某个文章，那么立即更新，不要等SpeechEvent
                     if(service.getSelected() != null) {
-                        //panelViewAdapter.update();
+                        panelViewAdapter.validatePanelView();
                     }
                     if(articleShouldPlayWhenServiceAvailable != null) {
-                        service.loadAndPlay(articleShouldPlayWhenServiceAvailable.getBroadcastId(), articleShouldPlayWhenServiceAvailable.getArticleId());
+                        try {
+                            service.loadAndPlay(articleShouldPlayWhenServiceAvailable);
+                        }
+                        catch (Exception ex) {
+                            Toast.makeText(BaseActivity.this, ex.getMessage(), Toast.LENGTH_SHORT).show();
+                        }
                     }
                     //相关资源就绪，ui就绪后，通知子类，可以开始使用SpeechService的相关调用
                     onSpeechServiceAvailable();
@@ -175,7 +180,12 @@ public abstract class BaseActivity extends AppCompatActivity {
         }
         if(speechServiceWeakReference.get() != null) {
             articleShouldPlayWhenServiceAvailable = null;
-            speechServiceWeakReference.get().loadAndPlay(article.getArticleId(), article.getBroadcastId());
+            try {
+                speechServiceWeakReference.get().loadAndPlay(article);
+            }
+            catch (Exception ex) {
+                Toast.makeText(BaseActivity.this, ex.getMessage(), Toast.LENGTH_SHORT).show();
+            }
             return true;
         }
         articleShouldPlayWhenServiceAvailable = article;

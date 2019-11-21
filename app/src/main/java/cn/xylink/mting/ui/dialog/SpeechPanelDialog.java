@@ -224,25 +224,24 @@ public class SpeechPanelDialog extends Dialog implements SeekBar.OnSeekBarChange
                 if (speechService == null) {
                     return;
                 }
-
                 switch (checkedId) {
                     case R.id.rb_sound_setting_vrbrate1:
-                        if(speechService.getSpeed() != Speechor.SpeechorSpeed.SPEECH_SPEED_HALF) {
+                        if (speechService.getSpeed() != Speechor.SpeechorSpeed.SPEECH_SPEED_HALF) {
                             speechService.setSpeed(Speechor.SpeechorSpeed.SPEECH_SPEED_HALF);
                         }
                         break;
                     case R.id.rb_sound_setting_vrbrate2:
-                        if(speechService.getSpeed() != Speechor.SpeechorSpeed.SPEECH_SPEED_NORMAL) {
+                        if (speechService.getSpeed() != Speechor.SpeechorSpeed.SPEECH_SPEED_NORMAL) {
                             speechService.setSpeed(Speechor.SpeechorSpeed.SPEECH_SPEED_NORMAL);
                         }
                         break;
                     case R.id.rb_sound_setting_vrbrate3:
-                        if(speechService.getSpeed() != Speechor.SpeechorSpeed.SPEECH_SPEED_MULTIPLE_1_POINT_5) {
+                        if (speechService.getSpeed() != Speechor.SpeechorSpeed.SPEECH_SPEED_MULTIPLE_1_POINT_5) {
                             speechService.setSpeed(Speechor.SpeechorSpeed.SPEECH_SPEED_MULTIPLE_1_POINT_5);
                         }
                         break;
                     case R.id.rb_sound_setting_vrbrate4:
-                        if(speechService.getSpeed() != Speechor.SpeechorSpeed.SPEECH_SPEED_MULTIPLE_2) {
+                        if (speechService.getSpeed() != Speechor.SpeechorSpeed.SPEECH_SPEED_MULTIPLE_2) {
                             speechService.setSpeed(Speechor.SpeechorSpeed.SPEECH_SPEED_MULTIPLE_2);
                         }
                         break;
@@ -257,7 +256,12 @@ public class SpeechPanelDialog extends Dialog implements SeekBar.OnSeekBarChange
 
 
     private void onInitTimeSettingView(View timeSettingView) {
-
+        timeSettingView.findViewById(R.id.btn_time_setting_close).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                viewPager.setCurrentItem(1, true);
+            }
+        });
     }
 
     @Override

@@ -55,6 +55,7 @@ public class PanelViewAdapter {
         contextRef = new WeakReference<>(activity);
         speechServiceWeakReference = new WeakReference<>(speechService);
         onCreatePanelView();
+        //create the panelView, and now do not display it until received the speech events.
         if (EventBus.getDefault().isRegistered(this) == false) {
             EventBus.getDefault().register(this);
         }
@@ -65,7 +66,6 @@ public class PanelViewAdapter {
     protected void onCreatePanelView() {
         speechPanelView = View.inflate(contextRef.get(), R.layout.view_control_panel, null);
         RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
-        //layoutParams.bottomMargin = 10;
         contextRef.get().addContentView(speechPanelView, layoutParams);
         speechPanelView.setVisibility(View.INVISIBLE);
 
@@ -92,7 +92,6 @@ public class PanelViewAdapter {
                     }
                     return;
                 }
-
                 if (isPlaying) {
                     speechServiceWeakReference.get().pause();
                 }
@@ -122,10 +121,6 @@ public class PanelViewAdapter {
         }
 
         speechPanelView.setVisibility(View.VISIBLE);
-        /*
-        closeIcon.setVisibility(speechService.getState() == SpeechService.SpeechServiceState.Paused ||
-                speechService.getState() == SpeechService.SpeechServiceState.Error? View.VISIBLE : View.GONE);
-         */
         Article article = speechService.getSelected();
         SpeechService.SpeechServiceState currentState = speechService.getState();
         if (article != null) {
@@ -134,7 +129,7 @@ public class PanelViewAdapter {
         }
         else if (event != null && event instanceof SpeechSerieLoaddingEvent) {
             articleTitle.setText(((SpeechSerieLoaddingEvent) event).getArticleTitle());
-            broadcastTitle.setText(((SpeechSerieLoaddingEvent) event).getSerieTitle());
+            //broadcastTitle.setText(((SpeechSerieLoaddingEvent) event).getSerieTitle());
         }
         else {
             articleTitle.setText("正在加载...");

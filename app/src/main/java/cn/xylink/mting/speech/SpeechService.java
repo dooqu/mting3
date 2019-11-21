@@ -243,10 +243,9 @@ public class SpeechService extends Service {
     }
 
 
-    private void onSpeechSerieLoadding(String articleTitle, String serieTitle) {
+    private void onSpeechSerieLoadding(Article article) {
         SpeechSerieLoaddingEvent event = new SpeechSerieLoaddingEvent();
-        event.setArticleTitle(articleTitle);
-        event.setSerieTitle(serieTitle);
+        event.setArticle(article);
         EventBus.getDefault().post(event);
     }
 
@@ -511,14 +510,15 @@ public class SpeechService extends Service {
 
     ArticleDataProvider.ArticleLoader<List<Article>> dataProviderCallback = null;
 
-    public synchronized void loadAndPlay(String serieId, String articleId) {
-        if (serieId == null || articleId == null) {
-            return;
+    public synchronized void loadAndPlay(Article article) throws Exception{
+        if (article.getArticleId() == null || article.getBroadcastId() == null) {
+            throw new Exception("The fields articleId or broadcastId can not be nullable.");
         }
 
-        Article destArticle = this.speechList.find(articleId);
+        Article destArticle = this.speechList.find(article.getArticleId());
         //如果要播放的目标文章，不是现存专辑的，也没有在现存专辑的列表中，那么重新加载列表
-        if (serieId.equals(this.serieId) == false || destArticle == null) {
+        if (article.getBroadcastId().equals(this.serieId) == false || destArticle == null) {
+            this.serieId = article.getBroadcastId();
             Article currentArticle = getSelected();
             if ((getState() == SpeechServiceState.Playing || getState() == SpeechServiceState.Paused)
                     && currentArticle != null) {
@@ -530,7 +530,7 @@ public class SpeechService extends Service {
                 }
             }
             ArticleDataProvider articleDataProvider = new ArticleDataProvider(this);
-            SpeechService.SpeechListType speechListType = ("-1".equals(serieId) ? SpeechListType.Unread : SpeechListType.Dynamic);
+            SpeechService.SpeechListType speechListType = ("-1".equals(article.getBroadcastId()) ? SpeechListType.Unread : SpeechListType.Dynamic);
             dataProviderCallback = new ArticleDataProvider.ArticleLoader<List<Article>>() {
                 @Override
                 public void invoke(int errorCode, List<Article> data) {
@@ -538,14 +538,14 @@ public class SpeechService extends Service {
                     if (errorCode == 0 && this == dataProviderCallback) {
                         synchronized (SpeechService.this) {
                             SpeechService.this.resetSpeechList(data, speechListType);
-                            SpeechService.this.play(articleId);
+                            SpeechService.this.play(article.getArticleId());
                         }
                     }
                 }
             };
 
             if ("-1".equals(serieId) == false) {
-                articleDataProvider.getSpeechList(serieId, articleId, dataProviderCallback);
+                articleDataProvider.getSpeechList(article.getBroadcastId(), article.getArticleId(), dataProviderCallback);
             }
             else {
                 articleDataProvider.getUnreadSpeechList(dataProviderCallback);
@@ -553,10 +553,10 @@ public class SpeechService extends Service {
             this.serviceState = SpeechServiceState.Loadding;
             //清理列表
             this.speechList.removeAll();
-            onSpeechSerieLoadding(articleId, serieId);
+            onSpeechSerieLoadding(article);
         }
         else {
-            play(articleId);
+            play(article.getArticleId());
         }
     }
 
