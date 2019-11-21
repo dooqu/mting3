@@ -187,7 +187,11 @@ public class BroadcastCreateActivity extends BasePresenterActivity implements Br
             data.put("sign", request.sign);
             data.put("name", mTitle.getText().toString());
             data.put("info", mIntro.getText().toString());
-            mBroadcastCreatePresenter.onCreateBroadcast(data, coverFile);
+            if (null != coverFile) {
+                mBroadcastCreatePresenter.onCreateBroadcast(data, coverFile);
+            }else {
+                mBroadcastCreatePresenter.onCreateBroadcast(data);
+            }
         } else {
             toastShort("创建的播单标题不能为空");
         }

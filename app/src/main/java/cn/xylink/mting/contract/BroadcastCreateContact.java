@@ -20,5 +20,6 @@ public interface BroadcastCreateContact {
 
     interface Presenter<T> {
         void onCreateBroadcast(Map<String, String> data, File file);
+        void onCreateBroadcast(Map<String, String> data);
     }
 }

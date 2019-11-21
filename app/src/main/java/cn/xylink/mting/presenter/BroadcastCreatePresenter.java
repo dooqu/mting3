@@ -50,4 +50,36 @@ public class BroadcastCreatePresenter extends BasePresenter<BroadcastCreateConta
                     }
                 });
     }
+
+    @Override
+    public void onCreateBroadcast(Map data) {
+        OkGoUtils.getInstance().postParamsData(RemoteUrl.getCreateBroadcastUrl(), data, new TypeToken<BaseResponse<BroadcastCreateInfo>>() {
+        }.getType(), new OkGoUtils.ICallback() {
+            @Override
+            public void onStart() {
+
+            }
+
+            @Override
+            public void onSuccess(Object data) {
+                BaseResponse<BroadcastCreateInfo> baseResponse = (BaseResponse<BroadcastCreateInfo>) data;
+                int code = baseResponse.code;
+                if (code == 200) {
+                    mView.onSuccessCreateBroadcast(baseResponse);
+                } else {
+                    mView.onErrorCreateBroadcast(code, baseResponse.message);
+                }
+            }
+
+            @Override
+            public void onFailure(int code, String errorMsg) {
+                mView.onErrorCreateBroadcast(code, errorMsg);
+            }
+
+            @Override
+            public void onComplete() {
+
+            }
+        });
+    }
 }

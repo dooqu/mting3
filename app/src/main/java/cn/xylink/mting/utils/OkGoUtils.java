@@ -135,7 +135,7 @@ public class OkGoUtils<T> {
                 .headers("sysVersion", "Android " + Build.VERSION.RELEASE)
                 .headers("User-Agent", HttpHeaders.getUserAgent()+";xyting-android-vname/" + BuildConfig.VERSION_NAME + "-vcode/" + BuildConfig.VERSION_CODE)
                 .params(data, true)
-                .params("file", file)
+                .params("picture", file)
                 .execute(new JsonBeanCallback<T>(type) {
 
                              @Override
