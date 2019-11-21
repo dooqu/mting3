@@ -55,8 +55,10 @@
         android:hint="请输入播单标题"
         android:lineSpacingExtra="27dp"
         android:maxLength="20"
+        android:textColor="#333333"
         android:textColorHint="#ff999999"
-        android:textCursorDrawable="@null" />
+        android:textCursorDrawable="@null"
+        android:textSize="18sp" />
 
     <TextView
         android:layout_width="match_parent"
@@ -86,8 +88,10 @@
         android:background="@null"
         android:hint="请输入播单介绍"
         android:lineSpacingExtra="23dp"
+        android:textColor="#666666"
         android:textColorHint="#ff999999"
-        android:textCursorDrawable="@null" />
+        android:textCursorDrawable="@null"
+        android:textSize="15sp" />
 
 
 </LinearLayout>
