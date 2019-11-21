@@ -1,29 +1,22 @@
 package cn.xylink.mting.ui.activity;
 
 
-import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.bumptech.glide.request.target.CustomViewTarget;
-import com.bumptech.glide.request.target.SimpleTarget;
-import com.bumptech.glide.request.target.ViewTarget;
-import com.bumptech.glide.request.transition.Transition;
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
+import com.scwang.smartrefresh.layout.api.ScrollBoundaryDecider;
 import com.scwang.smartrefresh.layout.constant.SpinnerStyle;
 import com.scwang.smartrefresh.layout.footer.BallPulseFooter;
+import com.scwang.smartrefresh.layout.util.DesignUtil;
 
 import java.util.List;
 
@@ -40,6 +33,7 @@ import cn.xylink.mting.presenter.BroadcastDetailPresenter;
 import cn.xylink.mting.presenter.BroadcastListPresenter;
 import cn.xylink.mting.ui.adapter.BroadcastAdapter;
 import cn.xylink.mting.utils.ContentManager;
+import cn.xylink.mting.utils.DensityUtil;
 import cn.xylink.mting.utils.ImageUtils;
 import cn.xylink.mting.utils.L;
 import cn.xylink.mting.widget.TingHeaderView;
@@ -48,7 +42,7 @@ import cn.xylink.mting.widget.TingHeaderView;
  * @author JoDragon
  */
 public class BroadcastActivity extends BasePresenterActivity implements BroadcastListContact.IBroadcastListView,
-        BroadcastDetailContact.IBroadcastDetailView {
+        BroadcastDetailContact.IBroadcastDetailView, NestedScrollView.OnScrollChangeListener {
 
     public static final String EXTRA_BROADCASTID = "extra_broadcast_id";
     public static final String EXTRA_TITLE = "extra_title";
@@ -126,30 +120,10 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
             initDetail();
         }
         drawable = getResources().getDrawable(R.color.white);
-        mScrollView.setOnScrollChangeListener((NestedScrollView.OnScrollChangeListener) (nestedScrollView, i, i1, i2, i3) -> {
-            L.v(i1);
-            float pro = i1 / 358f;
-            if (pro <= 1) {
-                drawable.setAlpha((int) (pro * 255));
-                mTitleBarLayout.setBackground(drawable);
-            } else {
-                drawable.setAlpha(255);
-                mTitleBarLayout.setBackground(drawable);
-            }
-            if (pro > 0.7) {
-                getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
-                mBackImageView.setImageResource(R.mipmap.icon_back_b);
-                mShareImageView.setImageResource(R.mipmap.icon_share_b);
-                mMenuImageView.setImageResource(R.mipmap.icon_menu_b);
-                mTableBarTitleTextView.setTextColor(getResources().getColor(R.color.c333333));
-            } else {
-                getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
-                mBackImageView.setImageResource(R.mipmap.icon_back_w);
-                mShareImageView.setImageResource(R.mipmap.icon_share_w);
-                mMenuImageView.setImageResource(R.mipmap.icon_menu_w);
-                mTableBarTitleTextView.setTextColor(getResources().getColor(R.color.white));
-            }
-        });
+        mScrollView.setOnScrollChangeListener(this);
+
+//        mRefreshLayout.setRefreshContent(this.getLayoutInflater().inflate(R.layout.dialog_tip,null));
+//        mRefreshLayout.setRefreshContent(mRecyclerView);
     }
 
     /**
@@ -190,12 +164,14 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
     }
 
     private void loadMoreData() {
-        BroadcastListRequest request = new BroadcastListRequest();
-        request.setBroadcastId(getIntent().getStringExtra(EXTRA_BROADCASTID));
-        request.setEvent(WorldRequest.EVENT.NEW.name().toLowerCase());
-        request.setLastAt(mAdapter.getArticleList().get(mAdapter.getArticleList().size() - 1).getLastAt());
-        request.doSign();
-        mPresenter.getBroadcastList(request, true);
+        if (mAdapter != null && mAdapter.getArticleList() != null && mAdapter.getArticleList().size() > 0) {
+            BroadcastListRequest request = new BroadcastListRequest();
+            request.setBroadcastId(getIntent().getStringExtra(EXTRA_BROADCASTID));
+            request.setEvent(WorldRequest.EVENT.NEW.name().toLowerCase());
+            request.setLastAt(mAdapter.getArticleList().get(mAdapter.getArticleList().size() - 1).getLastAt());
+            request.doSign();
+            mPresenter.getBroadcastList(request, true);
+        }
     }
 
     @Override
@@ -233,6 +209,9 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
 
     @Override
     public void onBroadcastDetailSuccess(BroadcastDetailInfo data) {
+        ViewGroup.LayoutParams lp = mTopLayout.getLayoutParams();
+        lp.height = DensityUtil.dip2pxComm(this, 253f);
+        mTopLayout.setLayoutParams(lp);
         mTitleTextView.setText(data.getCreateName());
         mDesTextView.setText(data.getInfo());
         ImageUtils.get().load(mImageView, 0, 0, 8, data.getPicture());
@@ -246,7 +225,7 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
             }
         } else {
             mSubscribedTextView.setVisibility(View.VISIBLE);
-            mSubscribedTextView.setText("已定阅：" + data.getSubscribeTotal());
+            mSubscribedTextView.setText("已定阅：" + getSubscribedNum(data.getSubscribeTotal()));
         }
     }
 
@@ -268,5 +247,31 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
             return "1万+";
         }
         return total + "";
+    }
+
+    @Override
+    public void onScrollChange(NestedScrollView nestedScrollView, int i, int i1, int i2, int i3) {
+        L.v(i1);
+        float pro = i1 / 358f;
+        if (pro <= 1) {
+            drawable.setAlpha((int) (pro * 255));
+            mTitleBarLayout.setBackground(drawable);
+        } else {
+            drawable.setAlpha(255);
+            mTitleBarLayout.setBackground(drawable);
+        }
+        if (pro > 0.7) {
+            getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
+            mBackImageView.setImageResource(R.mipmap.icon_back_b);
+            mShareImageView.setImageResource(R.mipmap.icon_share_b);
+            mMenuImageView.setImageResource(R.mipmap.icon_menu_b);
+            mTableBarTitleTextView.setTextColor(getResources().getColor(R.color.c333333));
+        } else {
+            getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
+            mBackImageView.setImageResource(R.mipmap.icon_back_w);
+            mShareImageView.setImageResource(R.mipmap.icon_share_w);
+            mMenuImageView.setImageResource(R.mipmap.icon_menu_w);
+            mTableBarTitleTextView.setTextColor(getResources().getColor(R.color.white));
+        }
     }
 }
