@@ -32,6 +32,7 @@ import cn.xylink.mting.event.TingRefreshEvent;
 import cn.xylink.mting.presenter.SetTopPresenter;
 import cn.xylink.mting.presenter.SubscribePresenter;
 import cn.xylink.mting.presenter.TingListPresenter;
+import cn.xylink.mting.ui.activity.ArticleCreateActivity;
 import cn.xylink.mting.ui.activity.BroadcastActivity;
 import cn.xylink.mting.ui.activity.BroadcastCreateActivity;
 import cn.xylink.mting.ui.adapter.TingAdapter;
@@ -125,12 +126,12 @@ public class TingFragment extends BasePresenterFragment implements TingListConta
     }
 
     @Override
-    public void onItemClick(TingInfo article,int position) {
+    public void onItemClick(TingInfo article, int position) {
         Intent intent = new Intent(getActivity(), BroadcastActivity.class);
         intent.putExtra(BroadcastActivity.EXTRA_BROADCASTID, article.getBroadcastId());
         intent.putExtra(BroadcastActivity.EXTRA_TITLE, article.getName());
         getActivity().startActivity(intent);
-        if (article.getNewMsg()>0){
+        if (article.getNewMsg() > 0) {
             article.setNewMsg(0);
             mAdapter.notifyItemChanged(position);
         }
@@ -139,7 +140,7 @@ public class TingFragment extends BasePresenterFragment implements TingListConta
     @Override
     public void onItemLongClick(TingInfo article) {
 
-        if ("-1".equals(article.getBroadcastId())||ContentManager.getInstance().getUserInfo().getUserId().equals(article.getCreateUserId())) {
+        if ("-1".equals(article.getBroadcastId()) || ContentManager.getInstance().getUserInfo().getUserId().equals(article.getCreateUserId())) {
             mBottomTingDialog.setItemModle(new BottomTingItemModle("置顶", "取消置顶", getActivity().getResources().getDrawable(R.mipmap.icon_set_top),
                     getActivity().getResources().getDrawable(R.mipmap.icon_cancel_top), article.getTop() == 1, article.getBroadcastId()));
         } else {
@@ -174,7 +175,7 @@ public class TingFragment extends BasePresenterFragment implements TingListConta
 
     @Override
     public void onCreateArticle() {
-
+        startActivity(new Intent(getActivity(), ArticleCreateActivity.class));
     }
 
     @Override
@@ -240,7 +241,7 @@ public class TingFragment extends BasePresenterFragment implements TingListConta
     }
 
     @Subscribe
-    public void  eventRefresh(TingRefreshEvent event){
+    public void eventRefresh(TingRefreshEvent event) {
         initData();
     }
 

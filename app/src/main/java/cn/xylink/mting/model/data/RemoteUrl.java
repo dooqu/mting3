@@ -242,11 +242,18 @@ public class RemoteUrl {
     public static String getCreateBroadcastUrl() {
         return URL_BASE + "/api/art/v1/broadcast/create";
     }
+
     //编辑播单
     public static String getEditBroadcastUrl() {
         return URL_BASE + "/api/art/v1/broadcast/update";
     }
-   public static String getBroadcastDetailUrl() {
+
+    //手动创建文章
+    public static String getArticleCreateInputUrl() {
+        return URL_BASE + "/api/art/v1/article/input_create";
+    }
+
+    public static String getBroadcastDetailUrl() {
         return URL_BASE + "/api/art/v1/broadcast/detail";
     }
 }
