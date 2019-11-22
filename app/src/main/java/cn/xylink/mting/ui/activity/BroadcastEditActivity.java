@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -33,6 +34,7 @@ import cn.xylink.mting.contract.BroadcastEditContact;
 import cn.xylink.mting.presenter.BroadcastEditPresenter;
 import cn.xylink.mting.utils.ImageUtils;
 import cn.xylink.mting.utils.L;
+import cn.xylink.mting.widget.EditTextWidthClear;
 
 /**
  * @author wjn
@@ -45,10 +47,20 @@ public class BroadcastEditActivity extends BasePresenterActivity implements Broa
     TextView tvRight;
     @BindView(R.id.imv_cover_edit)
     ImageView imgCover;
+    @BindView(R.id.et_title_edit)
+    EditTextWidthClear mTitle;
+    @BindView(R.id.et_intro_edit)
+    EditTextWidthClear mIntro;
     private BroadcastEditPresenter mEditPresenter;
     private TakePhoto takePhoto;
     private InvokeParam invokeParam;
     private File coverFile = null;
+    private String broadcastId = "201911201529147430620507";
+    private String name = "GGG";
+    private String intro = "";
+    public static String BROADCAST_ID = "BROADCAST_ID";
+    public static String BROADCAST_NAME = "BROADCAST_NAME";
+    public static String BROADCAST_INTRO = "BROADCAST_INTRO";
 
     @Override
     protected void preView() {
@@ -64,6 +76,9 @@ public class BroadcastEditActivity extends BasePresenterActivity implements Broa
     protected void initData() {
         mEditPresenter = (BroadcastEditPresenter) createPresenter(BroadcastEditPresenter.class);
         mEditPresenter.attachView(this);
+//        broadcastId=getIntent().getStringExtra("BROADCAST_ID")
+//        name=getIntent().getStringExtra("BROADCAST_NAME")
+//        intro=getIntent().getStringExtra("BROADCAST_INTRO")
     }
 
     @Override
@@ -88,12 +103,18 @@ public class BroadcastEditActivity extends BasePresenterActivity implements Broa
 
     @Override
     public void onSuccessBroadcastEdit(BaseResponse baseResponse) {
+        if (baseResponse.code == 200) {
+            toastShort(baseResponse.message);
+            BroadcastEditActivity.this.finish();
+        } else {
+            toastShort(baseResponse.message);
+        }
 
     }
 
     @Override
     public void onErrorBroadcastEdit(int code, String errorMsg) {
-
+        toastShort(errorMsg);
     }
 
     @Override
@@ -158,14 +179,28 @@ public class BroadcastEditActivity extends BasePresenterActivity implements Broa
     }
 
     private void doEditBroadcast() {
-        Map<String, String> data = new HashMap<>();
-        BroadcastCreateRequest request = new BroadcastCreateRequest();
-        data.put("token", request.token);
-        data.put("timestamp", request.timestamp + "");
-        data.put("sign", request.sign);
-//        data.put("name", mTitle.getText().toString());
-//        data.put("info", mIntro.getText().toString());
-//        mBroadcastCreatePresenter.onCreateBroadcast(data, coverFile);
+        if (!TextUtils.isEmpty(mTitle.getText().toString())) {
+            Map<String, String> data = new HashMap<>();
+            BroadcastCreateRequest request = new BroadcastCreateRequest();
+            data.put("token", request.token);
+            data.put("timestamp", request.timestamp + "");
+            data.put("sign", request.sign);
+            if (!mTitle.getText().toString().equals(name)) {
+                data.put("name", mTitle.getText().toString());
+            }
+            if (!mIntro.getText().toString().equals(intro)) {
+                data.put("info", mIntro.getText().toString());
+            }
+
+            data.put("broadcastId", broadcastId);
+            if (null != coverFile) {
+                mEditPresenter.onBroadcastEdit(data, coverFile);
+            } else {
+                mEditPresenter.onBroadcastEdit(data);
+            }
+        } else {
+            toastShort("播单标题不能为空");
+        }
     }
 
     @OnClick({R.id.btn_left, R.id.tv_right, R.id.imv_cover_edit, R.id.tv_change_cover_edit})
@@ -175,7 +210,7 @@ public class BroadcastEditActivity extends BasePresenterActivity implements Broa
                 finish();
                 break;
             case R.id.tv_right:
-//                doEditBroadcast();
+                doEditBroadcast();
                 break;
             case R.id.imv_cover:
             case R.id.tv_change_cover:

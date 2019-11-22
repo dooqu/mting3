@@ -45,7 +45,7 @@
         android:textSize="18sp" />
 
     <cn.xylink.mting.widget.EditTextWidthClear
-        android:id="@+id/et_title"
+        android:id="@+id/et_title_edit"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="16dp"
@@ -78,7 +78,7 @@
         android:textSize="18sp" />
 
     <cn.xylink.mting.widget.EditTextWidthClear
-        android:id="@+id/et_intro"
+        android:id="@+id/et_intro_edit"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="16dp"

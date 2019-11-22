@@ -19,5 +19,6 @@ public interface BroadcastEditContact {
 
     interface Presenter<T> {
         void onBroadcastEdit(Map<String, String> data, File file);
+        void onBroadcastEdit(Map<String, String> data);
     }
 }
