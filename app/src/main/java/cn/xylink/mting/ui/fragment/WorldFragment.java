@@ -5,10 +5,12 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
 
+import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.scwang.smartrefresh.layout.api.RefreshLayout;
 import com.scwang.smartrefresh.layout.constant.SpinnerStyle;
 import com.scwang.smartrefresh.layout.footer.BallPulseFooter;
 import com.scwang.smartrefresh.layout.footer.ClassicsFooter;
+import com.scwang.smartrefresh.layout.footer.FalsifyFooter;
 
 import java.util.List;
 
@@ -22,6 +24,7 @@ import cn.xylink.mting.presenter.WorldListPresenter;
 import cn.xylink.mting.ui.adapter.WorldAdapter;
 import cn.xylink.mting.ui.dialog.MainAddMenuPop;
 import cn.xylink.mting.utils.DensityUtil;
+import cn.xylink.mting.widget.EndlessRecyclerOnScrollListener;
 import cn.xylink.mting.widget.TingHeaderView;
 
 /**
@@ -34,7 +37,7 @@ public class WorldFragment extends BasePresenterFragment implements WorldListCon
     private WorldListPresenter mWorldListPresenter;
     private WorldAdapter mAdapter;
     @BindView(R.id.refreshLayout)
-    RefreshLayout mRefreshLayout;
+    SmartRefreshLayout mRefreshLayout;
     @BindView(R.id.iv_world_add)
     ImageView mMenuImageView;
 
@@ -54,10 +57,10 @@ public class WorldFragment extends BasePresenterFragment implements WorldListCon
         mWorldListPresenter.attachView(this);
         mAdapter = new WorldAdapter(getActivity());
         mRecyclerView.setItemAnimator(null);
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         mRecyclerView.setLayoutManager(linearLayoutManager);
         mRecyclerView.setAdapter(mAdapter);
+        mRecyclerView.addOnScrollListener(endlessScrollListener);
         mRefreshLayout.setOnRefreshListener(refreshlayout -> {
             initData();
         });
@@ -67,8 +70,8 @@ public class WorldFragment extends BasePresenterFragment implements WorldListCon
         mRefreshLayout.setEnableAutoLoadMore(true);
         mRefreshLayout.setEnableLoadMoreWhenContentNotFull(false);
         mRefreshLayout.setRefreshHeader(new TingHeaderView(getActivity()).setIsWrite(false));
-        mRefreshLayout.setRefreshFooter(new BallPulseFooter(getActivity()).setSpinnerStyle(SpinnerStyle.Scale).setAnimatingColor(getResources().getColor(R.color.c488def)));
-//        mRefreshLayout.setRefreshFooter(new ClassicsFooter(getActivity()));
+//        mRefreshLayout.setRefreshFooter(new BallPulseFooter(getActivity()).setSpinnerStyle(SpinnerStyle.Scale).setAnimatingColor(getResources().getColor(R.color.c488def)));
+        mRefreshLayout.setRefreshFooter(new ClassicsFooter(getActivity()));
     }
 
     @Override
@@ -76,6 +79,7 @@ public class WorldFragment extends BasePresenterFragment implements WorldListCon
         WorldRequest request = new WorldRequest();
         request.doSign();
         mWorldListPresenter.getWorldList(request, false);
+        mRefreshLayout.resetNoMoreData();
     }
 
     private void loadMoreData(){
@@ -112,6 +116,7 @@ public class WorldFragment extends BasePresenterFragment implements WorldListCon
 
     @Override
     public void onWorldListError(int code, String errorMsg, boolean isLoadMore) {
+        mRefreshLayout.finishLoadMore(false);
     }
 
     @Override
@@ -127,5 +132,21 @@ public class WorldFragment extends BasePresenterFragment implements WorldListCon
     @Override
     public void onCreateBroadcast() {
 
+    }
+
+    LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
+    EndlessRecyclerOnScrollListener endlessScrollListener=new EndlessRecyclerOnScrollListener(linearLayoutManager) {
+        @Override
+        public void onLoadMore(int current_page) {
+            loadMoreData();
+        }
+    };
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (mRecyclerView != null) {
+            mRecyclerView.removeOnScrollListener(endlessScrollListener);
+        }
     }
 }

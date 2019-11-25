@@ -8,13 +8,17 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import cn.xylink.mting.R;
+import cn.xylink.mting.bean.BroadcastDetailInfo;
 import cn.xylink.mting.bean.BroadcastInfo;
+import cn.xylink.mting.utils.ContentManager;
+import cn.xylink.mting.utils.DensityUtil;
 import cn.xylink.mting.utils.ImageUtils;
 
 /**
@@ -26,9 +30,18 @@ public class BroadcastAdapter extends RecyclerView.Adapter<BroadcastAdapter.View
     private Context mContext;
     private List<BroadcastInfo> mData = new ArrayList<>();
     private BroadcastAdapter.OnItemClickListener mOnItemClickListener;
+    private String mBroadcastid = "-1";
+    private BroadcastDetailInfo mDetailInfo;
 
     public BroadcastAdapter(Context context) {
         this.mContext = context;
+        mData.add(new BroadcastInfo());
+    }
+
+    public BroadcastAdapter(Context context, String id) {
+        this.mContext = context;
+        mData.add(new BroadcastInfo());
+        this.mBroadcastid = id;
     }
 
     public BroadcastAdapter(Context context, BroadcastAdapter.OnItemClickListener listener) {
@@ -36,10 +49,9 @@ public class BroadcastAdapter extends RecyclerView.Adapter<BroadcastAdapter.View
         this.mOnItemClickListener = listener;
     }
 
-    public BroadcastAdapter(Context context, List<BroadcastInfo> list, BroadcastAdapter.OnItemClickListener listener) {
-        this.mContext = context;
-        this.mData = list;
-        this.mOnItemClickListener = listener;
+    public void setDetailInfo(BroadcastDetailInfo detailInfo) {
+        mDetailInfo = detailInfo;
+        notifyItemChanged(0);
     }
 
     public void setData(List<BroadcastInfo> list) {
@@ -55,32 +67,107 @@ public class BroadcastAdapter extends RecyclerView.Adapter<BroadcastAdapter.View
         if (mData != null) {
             mData.clear();
         }
+        mData.add(new BroadcastInfo());
     }
 
     @NonNull
     @Override
     public BroadcastAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int position) {
-        View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.item_broadcast, viewGroup, false);
-        return new BroadcastAdapter.ViewHolder(view);
+        View view;
+        if (position == 0) {
+            view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.item_broadcast_header, viewGroup, false);
+        } else {
+            view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.item_broadcast, viewGroup, false);
+        }
+        return new BroadcastAdapter.ViewHolder(view, position);
     }
 
     @Override
     public void onBindViewHolder(@NonNull BroadcastAdapter.ViewHolder holder, int position) {
-        BroadcastInfo data = mData.get(position);
-        holder.tvTitle.setText(data.getTitle());
-        holder.tvSource.setText(data.getSourceName());
-        if (!TextUtils.isEmpty(data.getPicture())) {
-            holder.ivImg.setVisibility(View.VISIBLE);
-            ImageUtils.get().load(holder.ivImg, data.getPicture());
-        }else {
-            holder.ivImg.setVisibility(View.GONE);
-        }
-
-        holder.itemView.setOnClickListener(v -> {
-            if (mOnItemClickListener != null) {
-                mOnItemClickListener.onItemClick(data);
+        if (position == 0) {
+            if (mBroadcastid.startsWith("-")) {
+                initSysBroadcast(holder);
+            } else if (mDetailInfo != null) {
+                ViewGroup.LayoutParams lp = holder.mTopLayout.getLayoutParams();
+                lp.height = DensityUtil.dip2pxComm(mContext, 253f);
+                holder.mTopLayout.setLayoutParams(lp);
+                holder.mTitleTextView.setText(mDetailInfo.getCreateName());
+                holder.mDesTextView.setText(mDetailInfo.getInfo());
+                ImageUtils.get().load(holder.mImageView, 0, 0, 8, mDetailInfo.getPicture());
+                ImageUtils.get().load(holder.mTopLayout, mDetailInfo.getPicture());
+                if (mDetailInfo.getCreateName().equals(ContentManager.getInstance().getUserInfo().getUserId())) {
+                    if (mDetailInfo.getShare() == 0) {
+                        holder.mShare2worldTextView.setVisibility(View.VISIBLE);
+                    } else {
+                        holder.mSubscribedTextView.setVisibility(View.VISIBLE);
+                        holder.mSubscribedTextView.setText("已定阅：" + getSubscribedNum(mDetailInfo.getSubscribeTotal()));
+                    }
+                } else {
+                    holder.mSubscribedTextView.setVisibility(View.VISIBLE);
+                    holder.mSubscribedTextView.setText("已定阅：" + getSubscribedNum(mDetailInfo.getSubscribeTotal()));
+                }
             }
-        });
+        } else {
+            BroadcastInfo data = mData.get(position);
+            holder.tvTitle.setText(data.getTitle());
+            holder.tvSource.setText(data.getSourceName());
+            if (!TextUtils.isEmpty(data.getPicture())) {
+                holder.ivImg.setVisibility(View.VISIBLE);
+                ImageUtils.get().load(holder.ivImg, data.getPicture());
+            } else {
+                holder.ivImg.setVisibility(View.GONE);
+            }
+
+            holder.itemView.setOnClickListener(v -> {
+                if (mOnItemClickListener != null) {
+                    mOnItemClickListener.onItemClick(data);
+                }
+            });
+        }
+    }
+
+    /**
+     * 待读传-1，已读历史传-2，收藏传-3，我创建的传-4。
+     */
+    private void initSysBroadcast(BroadcastAdapter.ViewHolder holder) {
+        holder.mTitleTextView.setText("简介");
+        if ("-1".equals(mBroadcastid)) {
+            holder.mImageView.setImageResource(R.mipmap.icon_head_unread);
+            holder.mDesTextView.setText("待读会自动存放您添加到轩辕 听内的文章");
+        } else if ("-2".equals(mBroadcastid)) {
+            holder.mImageView.setImageResource(R.mipmap.icon_head_readed);
+            holder.mDesTextView.setText("这里显示您读过的所有文章");
+        } else if ("-3".equals(mBroadcastid)) {
+            holder.mImageView.setImageResource(R.mipmap.icon_head_love);
+            holder.mDesTextView.setText("这里显示您收藏的所有文章");
+        } else if ("-4".equals(mBroadcastid)) {
+            holder.mImageView.setImageResource(R.mipmap.icon_head_mycreate);
+            holder.mDesTextView.setText("这里显示您创建的所有文章");
+        }
+    }
+
+    /**
+     * 客户端显示的订阅数规则：
+     * 小于1000，<1千
+     * 1000-10000，显示具体数字，如：6725
+     * 10000以上，1万+
+     */
+    private String getSubscribedNum(int total) {
+        if (total < 1000) {
+            return "<1千";
+        } else if (total > 10000) {
+            return "1万+";
+        }
+        return total + "";
+    }
+
+
+    @Override
+    public int getItemViewType(int position) {
+        if (position == 0) {
+            return 0;
+        }
+        return 1;
     }
 
     public List<BroadcastInfo> getArticleList() {
@@ -98,13 +185,31 @@ public class BroadcastAdapter extends RecyclerView.Adapter<BroadcastAdapter.View
         TextView tvSource;
         TextView tvProgress;
         ImageView ivImg;
+        /**
+         * top
+         */
+        RelativeLayout mTopLayout;
+        ImageView mImageView;
+        TextView mTitleTextView;
+        TextView mDesTextView;
+        TextView mSubscribedTextView;
+        TextView mShare2worldTextView;
 
-        public ViewHolder(@NonNull View itemView) {
+        public ViewHolder(@NonNull View itemView, int position) {
             super(itemView);
-            tvTitle = itemView.findViewById(R.id.tv_broadcast_title);
-            tvSource = itemView.findViewById(R.id.tv_broadcast_source);
-            tvProgress = itemView.findViewById(R.id.tv_broadcast_progress);
-            ivImg = itemView.findViewById(R.id.iv_broadcast_img);
+            if (position == 0) {
+                mTopLayout = itemView.findViewById(R.id.rl_broadcast_top_layout);
+                mImageView = itemView.findViewById(R.id.iv_broadcast_img);
+                mTitleTextView = itemView.findViewById(R.id.tv_broadcast_title);
+                mDesTextView = itemView.findViewById(R.id.tv_broadcast_description);
+                mSubscribedTextView = itemView.findViewById(R.id.tv_broadcast_subscribed);
+                mShare2worldTextView = itemView.findViewById(R.id.tv_broadcast_share2world);
+            } else {
+                tvTitle = itemView.findViewById(R.id.tv_broadcast_title);
+                tvSource = itemView.findViewById(R.id.tv_broadcast_source);
+                tvProgress = itemView.findViewById(R.id.tv_broadcast_progress);
+                ivImg = itemView.findViewById(R.id.iv_broadcast_img);
+            }
         }
     }
 
