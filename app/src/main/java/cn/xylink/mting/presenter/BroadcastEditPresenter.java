@@ -49,4 +49,38 @@ public class BroadcastEditPresenter extends BasePresenter<BroadcastEditContact.I
                     }
                 });
     }
+
+    @Override
+    public void onBroadcastEdit(Map data) {
+        OkGoUtils.getInstance().postParamsData(RemoteUrl.getEditBroadcastUrl(), data,
+                new TypeToken<BaseResponse>() {
+                }.getType(), new OkGoUtils.ICallback() {
+                    @Override
+                    public void onStart() {
+
+                    }
+
+                    @Override
+                    public void onSuccess(Object data) {
+                        BaseResponse baseResponse = (BaseResponse) data;
+                        int code = baseResponse.code;
+                        if (code == 200) {
+                            mView.onSuccessBroadcastEdit(baseResponse);
+                        } else {
+                            mView.onErrorBroadcastEdit(code, baseResponse.message);
+                        }
+
+                    }
+
+                    @Override
+                    public void onFailure(int code, String errorMsg) {
+                        mView.onErrorBroadcastEdit(code, errorMsg);
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });
+    }
 }
