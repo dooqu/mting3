@@ -615,14 +615,16 @@ public class SpeechService extends Service {
         this.articleDataProvider.loadArticleAndList(article, needSourceEffect, isFirst, isLast, (int errorcode, ArticleDataProvider.ArticleListArgument responseResult) -> {
 
             synchronized (this) {
-                //解决轮回问题
-                if (isReleased || serviceState != SpeechServiceState.Loadding || responseResult.article != this.speechList.getCurrent()) {
-                    return;
-                }
-
                 if (errorcode != 0) {
                     this.serviceState = SpeechServiceState.Error;
                     this.onSpeechError(SpeechError.ARTICLE_LOAD_ERROR, "文章正文加载失败", article);
+                    return;
+                }
+                //解决轮回问题
+                if (isReleased
+                        || serviceState != SpeechServiceState.Loadding
+                        || responseResult == null
+                        || responseResult.article != this.speechList.getCurrent()) {
                     return;
                 }
 
