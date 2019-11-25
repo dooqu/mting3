@@ -15,6 +15,7 @@ import cn.xylink.mting.model.ArticleInfoResponse;
 import cn.xylink.mting.model.SpeechListRequest;
 import cn.xylink.mting.model.SpeechListResponse;
 import cn.xylink.mting.model.data.SpeechListNearByRequest;
+import cn.xylink.mting.utils.ContentManager;
 import cn.xylink.mting.utils.OkGoUtils;
 import cn.xylink.mting.model.data.RemoteUrl;
 import cn.xylink.mting.speech.SoundEffector;
@@ -65,7 +66,7 @@ public class ArticleDataProvider {
         request.setLastAt(createAt);
         request.setBroadcastId(broadcastId);
         request.setEvent(event);
-        request.setToken("1");
+        request.setToken(ContentManager.getInstance().getLoginToken());
         request.doSign();
         OkGoUtils.getInstance().postData(
                 new IBaseView() {
@@ -118,7 +119,7 @@ public class ArticleDataProvider {
         SpeechListRequest request = new SpeechListRequest();
         request.setBroadcastId(broadcastId);
         request.setArticleId(articleId);
-        request.setToken("1");
+        request.setToken(ContentManager.getInstance().getLoginToken());
         request.doSign();
         OkGoUtils.getInstance().postData(
                 new IBaseView() {
@@ -176,8 +177,9 @@ public class ArticleDataProvider {
 
 
     public void getUnreadSpeechList(ArticleLoader<List<Article>> callback) {
-        BaseRequest request = new BaseRequest();
-        request.setToken("1");
+        SpeechListRequest request = new SpeechListRequest();
+        request.setBroadcastId("-1");
+        request.setToken(ContentManager.getInstance().getLoginToken());
         request.doSign();
         OkGoUtils.getInstance().postData(
                 new IBaseView() {
@@ -189,7 +191,7 @@ public class ArticleDataProvider {
                     public void hideLoading() {
                     }
                 },
-                RemoteUrl.getUnreadListUrl(),
+                RemoteUrl.getBroadcastlListUrl(),
                 GsonUtil.GsonString(request), SpeechListResponse.class,
                 new OkGoUtils.ICallback<SpeechListResponse>() {
                     @Override
@@ -236,7 +238,7 @@ public class ArticleDataProvider {
         ArticleInfoRequest request = new ArticleInfoRequest();
         request.setArticleId(article.getArticleId());
         request.setBroadcastId(article.getBroadcastId());
-        request.setToken("1");
+        request.setToken(ContentManager.getInstance().getLoginToken());
         request.doSign();
 
         ArticleListArgument articleListArgument = new ArticleListArgument();
@@ -281,7 +283,7 @@ public class ArticleDataProvider {
 
                             ArticleListArgument argumentInner = articleListArgument;
 
-                            if (isFirst || isLast) {
+                            if (isFirst || isLast || "-1".equals(article.getBroadcastId()) == false) {
                                 getSpeechListNearBy(article.getBroadcastId(), article.getCreateAt(), (isFirst) ? "old" : "new", new ArticleLoader<List<Article>>() {
                                     @Override
                                     public void invoke(int errorCode, List<Article> data) {

@@ -281,7 +281,9 @@ public class SpeechService extends Service {
 
     private void onSpeechError(int errorCode, String message, Article article) {
         EventBus.getDefault().post(new SpeechErrorEvent(errorCode, message, article));
-        foregroundServiceAdapter.retainForeground();
+        if(getSelected() != null) {
+            foregroundServiceAdapter.retainForeground();
+        }
     }
 
     private void onSpeechEnd(Article article, float progress, boolean deleteFromList) {

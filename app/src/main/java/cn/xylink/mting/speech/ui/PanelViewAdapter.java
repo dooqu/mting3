@@ -13,6 +13,7 @@ import org.greenrobot.eventbus.ThreadMode;
 
 import java.lang.ref.WeakReference;
 
+import cn.xylink.mting.MainActivity;
 import cn.xylink.mting.R;
 import cn.xylink.mting.bean.Article;
 import cn.xylink.mting.speech.SpeechError;
@@ -20,6 +21,7 @@ import cn.xylink.mting.speech.SpeechService;
 import cn.xylink.mting.speech.event.SpeechBufferingEvent;
 import cn.xylink.mting.speech.event.SpeechErrorEvent;
 import cn.xylink.mting.speech.event.SpeechEvent;
+import cn.xylink.mting.speech.event.SpeechPanelClosedEvent;
 import cn.xylink.mting.speech.event.SpeechProgressEvent;
 import cn.xylink.mting.speech.event.SpeechSerieLoaddingEvent;
 import cn.xylink.mting.speech.event.SpeechStartEvent;
@@ -41,6 +43,8 @@ public class PanelViewAdapter {
     ProgressBar progressBar;
     ImageView closeIcon;
     Article currentArticle;
+
+    public static boolean isUserClosed;
 
     @Deprecated
     public PanelViewAdapter(BaseActivity activity, SpeechService speechService) {
@@ -69,6 +73,10 @@ public class PanelViewAdapter {
     protected void onCreatePanelView() {
         speechPanelView = View.inflate(contextRef.get(), R.layout.view_control_panel, null);
         RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
+        if(!(contextRef.get() instanceof MainActivity)) {
+            speechPanelView.setPadding(speechPanelView.getPaddingLeft(), speechPanelView.getPaddingTop(), speechPanelView.getPaddingRight(), speechPanelView.getPaddingRight());
+        }
+        speechPanelView.setLayoutParams(layoutParams);
         contextRef.get().addContentView(speechPanelView, layoutParams);
         speechPanelView.setVisibility(View.INVISIBLE);
 
@@ -108,6 +116,11 @@ public class PanelViewAdapter {
             @Override
             public void onClick(View v) {
                 speechPanelView.setVisibility(View.INVISIBLE);
+                SpeechPanelClosedEvent event = new SpeechPanelClosedEvent();
+                if(speechServiceWeakReference.get() != null) {
+                    event.setArticle(speechServiceWeakReference.get().getSelected());
+                }
+                EventBus.getDefault().post(event);
             }
         });
     }
@@ -123,17 +136,17 @@ public class PanelViewAdapter {
         if (event != null && event instanceof SpeechStopEvent) {
             return;
         }
-
+        isUserClosed = false;
         speechPanelView.setVisibility(View.VISIBLE);
         Article article = speechService.getSelected();
         SpeechService.SpeechServiceState currentState = speechService.getState();
         if (article != null) {
             articleTitle.setText(article.getTitle());
-            broadcastTitle.setText(article.getBroadcastId());
+            broadcastTitle.setText("-1".equals(article.getBroadcastId())? "待读播单" : (article.getBroadcastTitle() != null? article.getBroadcastTitle() : article.getBroadcastId()));
         }
         else if (event != null && event instanceof SpeechSerieLoaddingEvent && event.getArticle() != null) {
             articleTitle.setText(event.getArticle().getTitle() != null ? event.getArticle().getTitle() : event.getArticle().getArticleId());
-            broadcastTitle.setText(event.getArticle().getBroadcastTitle() != null ? event.getArticle().getBroadcastTitle() : event.getArticle().getBroadcastId());
+            broadcastTitle.setText("-1".equals(article.getBroadcastId())? "待读播单" : (article.getBroadcastTitle() != null? article.getBroadcastTitle() : article.getBroadcastId()));
         }
         else {
             articleTitle.setText("正在加载...");
@@ -211,6 +224,10 @@ public class PanelViewAdapter {
                 speechPanelView.setVisibility(View.INVISIBLE);
             }
             Toast.makeText(contextRef.get(), ((SpeechErrorEvent) event).getMessage(), Toast.LENGTH_SHORT).show();
+        }
+        else if(event instanceof SpeechPanelClosedEvent) {
+            isUserClosed = true;
+            speechPanelView.setVisibility(View.INVISIBLE);
         }
     }
 }
