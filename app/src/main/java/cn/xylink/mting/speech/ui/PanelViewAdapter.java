@@ -132,7 +132,7 @@ public class PanelViewAdapter {
             broadcastTitle.setText(article.getBroadcastId());
         }
         else if (event != null && event instanceof SpeechSerieLoaddingEvent && event.getArticle() != null) {
-            articleTitle.setText(event.getArticle().getTitle() != null? event.getArticle().getTitle() : event.getArticle().getArticleId());
+            articleTitle.setText(event.getArticle().getTitle() != null ? event.getArticle().getTitle() : event.getArticle().getArticleId());
             broadcastTitle.setText(event.getArticle().getBroadcastTitle() != null ? event.getArticle().getBroadcastTitle() : event.getArticle().getBroadcastId());
         }
         else {
@@ -206,8 +206,8 @@ public class PanelViewAdapter {
         else if (event instanceof SpeechStopEvent) {
             speechPanelView.setVisibility(View.INVISIBLE);
         }
-        else if(event instanceof SpeechErrorEvent) {
-            if(((SpeechErrorEvent) event).getErrorCode() == SpeechError.LIST_LOAD_ERROR) {
+        else if (event instanceof SpeechErrorEvent) {
+            if (((SpeechErrorEvent) event).getErrorCode() == SpeechError.LIST_LOAD_ERROR) {
                 speechPanelView.setVisibility(View.INVISIBLE);
             }
             Toast.makeText(contextRef.get(), ((SpeechErrorEvent) event).getMessage(), Toast.LENGTH_SHORT).show();

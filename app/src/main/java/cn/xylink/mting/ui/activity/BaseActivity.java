@@ -188,9 +188,8 @@ public abstract class BaseActivity extends AppCompatActivity {
             }
             return true;
         }
-        articleShouldPlayWhenServiceAvailable = article;
-        connectSpeechService();
-        return true;
+        articleShouldPlayWhenServiceAvailable = null;
+        return false;
     }
 
     public Article getPlayingArticle() {
@@ -198,6 +197,10 @@ public abstract class BaseActivity extends AppCompatActivity {
             return null;
         }
         return speechServiceWeakReference.get().getSelected();
+    }
+
+    public boolean isPlaying(String broadcastId, String articleId) {
+        return false;
     }
 
 
