@@ -70,6 +70,10 @@ public class BroadcastAdapter extends RecyclerView.Adapter<BroadcastAdapter.View
         mData.add(new BroadcastInfo());
     }
 
+    public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
+        mOnItemClickListener = onItemClickListener;
+    }
+
     @NonNull
     @Override
     public BroadcastAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int position) {

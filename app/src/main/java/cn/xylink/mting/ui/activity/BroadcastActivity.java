@@ -16,6 +16,7 @@ import java.util.List;
 
 import butterknife.BindView;
 import cn.xylink.mting.R;
+import cn.xylink.mting.bean.Article;
 import cn.xylink.mting.bean.BroadcastDetailInfo;
 import cn.xylink.mting.bean.BroadcastDetailRequest;
 import cn.xylink.mting.bean.BroadcastInfo;
@@ -33,7 +34,7 @@ import cn.xylink.mting.widget.EndlessRecyclerOnScrollListener;
  * @author JoDragon
  */
 public class BroadcastActivity extends BasePresenterActivity implements BroadcastListContact.IBroadcastListView,
-        BroadcastDetailContact.IBroadcastDetailView {
+        BroadcastDetailContact.IBroadcastDetailView ,BroadcastAdapter.OnItemClickListener{
 
     public static final String EXTRA_BROADCASTID = "extra_broadcast_id";
     public static final String EXTRA_TITLE = "extra_title";
@@ -69,6 +70,7 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
         mBroadcastDetailPresenter.attachView(this);
         mRecyclerView.setItemAnimator(null);
         mAdapter = new BroadcastAdapter(this, getIntent().getStringExtra(EXTRA_BROADCASTID));
+        mAdapter.setOnItemClickListener(this);
         mRecyclerView.setLayoutManager(linearLayoutManager);
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.addOnScrollListener(endlessScrollListener);
@@ -124,6 +126,11 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
     @Override
     protected void initTitleBar() {
 
+    }
+
+    @Override
+    protected boolean enableSpeechService() {
+        return true;
     }
 
     @Override
@@ -203,5 +210,15 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
         if (mRecyclerView != null) {
             mRecyclerView.removeOnScrollListener(endlessScrollListener);
         }
+    }
+
+    @Override
+    public void onItemClick(BroadcastInfo article) {
+        Article article1 =new Article();
+        article1.setTitle(article.getTitle());
+        article1.setArticleId(article.getArticleId());
+        article1.setBroadcastId(getIntent().getStringExtra(EXTRA_BROADCASTID));
+        article1.setBroadcastTitle(getIntent().getStringExtra(EXTRA_TITLE));
+        postToSpeechService(article1);
     }
 }
