@@ -14,6 +14,7 @@ import android.content.IntentFilter;
 import android.os.Binder;
 import android.os.IBinder;
 import android.util.Log;
+import android.widget.Toast;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -410,7 +411,9 @@ public class SpeechService extends Service {
      */
     public synchronized boolean pause() {
         if (speechList.getCurrent() == null) {
-            return false;
+            if (getState() != SpeechServiceState.Loadding) {
+                return false;
+            }
         }
 
         boolean result = false;
@@ -510,7 +513,7 @@ public class SpeechService extends Service {
 
     ArticleDataProvider.ArticleLoader<List<Article>> dataProviderCallback = null;
 
-    public synchronized void loadAndPlay(Article article) throws Exception{
+    public synchronized void loadAndPlay(Article article) throws Exception {
         if (article.getArticleId() == null || article.getBroadcastId() == null) {
             throw new Exception("The fields articleId or broadcastId can not be nullable.");
         }
@@ -534,11 +537,18 @@ public class SpeechService extends Service {
             dataProviderCallback = new ArticleDataProvider.ArticleLoader<List<Article>>() {
                 @Override
                 public void invoke(int errorCode, List<Article> data) {
-                    //防止dataprovider在过程中被颠覆
-                    if (errorCode == 0 && this == dataProviderCallback) {
-                        synchronized (SpeechService.this) {
-                            SpeechService.this.resetSpeechList(data, speechListType);
-                            SpeechService.this.play(article.getArticleId());
+                    synchronized (SpeechService.this) {
+                        if (errorCode != 0) {
+                            Toast.makeText(SpeechService.this, "加载错误", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+                        if (this == dataProviderCallback) {
+                            resetSpeechList(data, speechListType);
+                            speechList.select(article.getArticleId());
+                            //有可能这里被pause掉了
+                            if (getState() == SpeechServiceState.Loadding) {
+                                playSelected();
+                            }
                         }
                     }
                 }
