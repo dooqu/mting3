@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/rl_broadcast_top_layout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@mipmap/bg_default_bro"
+    android:minHeight="208dp">
+
+    <ImageView
+        android:id="@+id/iv_broadcast_img"
+        android:layout_width="104dp"
+        android:layout_height="104dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="85dp"
+        android:scaleType="fitXY"
+        android:src="@color/white" />
+
+    <TextView
+        android:id="@+id/tv_broadcast_title"
+        tools:text="待读"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="93dp"
+        android:layout_marginRight="16dp"
+        android:layout_toRightOf="@+id/iv_broadcast_img"
+        android:ellipsize="end"
+        android:lines="1"
+        android:textColor="@color/white"
+        android:textSize="18sp" />
+
+    <TextView
+        android:id="@+id/tv_broadcast_description"
+        tools:text="待读会自动存放您添加到轩辕 听内的文章"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tv_broadcast_title"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="15dp"
+        android:layout_marginRight="16dp"
+        android:layout_toRightOf="@+id/iv_broadcast_img"
+        android:ellipsize="end"
+        android:lines="2"
+        android:textColor="@color/white"
+        android:textSize="15sp" />
+
+    <TextView
+        android:id="@+id/tv_broadcast_subscribed"
+        tools:text="已订阅：1w+人"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="205dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginBottom="30dp"
+        android:textColor="@color/white"
+        android:textSize="15sp"
+        android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/tv_broadcast_share2world"
+        tools:text="分享到世界"
+        android:layout_width="120dp"
+        android:layout_height="36dp"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="205dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginBottom="30dp"
+        android:background="@drawable/bg_phone_click_btn"
+        android:gravity="center"
+        android:textColor="@color/white"
+        android:textSize="15sp"
+        android:visibility="gone" />
+
+</RelativeLayout>
+
