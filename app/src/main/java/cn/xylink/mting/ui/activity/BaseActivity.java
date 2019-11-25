@@ -193,6 +193,13 @@ public abstract class BaseActivity extends AppCompatActivity {
         return true;
     }
 
+    public Article getPlayingArticle() {
+        if(enableSpeechService() == false || isSpeechServiceAvailable() == false) {
+            return null;
+        }
+        return speechServiceWeakReference.get().getSelected();
+    }
+
 
     public boolean isShouldHideInput(View v, MotionEvent event) {
         if (v != null && (v instanceof EditText)) {
