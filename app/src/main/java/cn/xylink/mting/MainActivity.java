@@ -70,9 +70,9 @@ public class MainActivity extends BasePresenterActivity implements ViewPager.OnP
     protected void onSpeechServiceAvailable() {
         super.onSpeechServiceAvailable();
         Article article = new Article();
-        article.setBroadcastId("2019102211541422454428823");
-        article.setArticleId("2019102118414971152446751");
-        postToSpeechService(article);
+        article.setBroadcastId("201911181652361841031964");
+        article.setArticleId("2019111411493373493858111");
+        //postToSpeechService(article);
     }
 
     @Override

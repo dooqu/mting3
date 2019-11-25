@@ -94,6 +94,8 @@ public class SpeechService extends Service {
     /*倒计时数值，可以表示倒计时的分钟数，也可以表示倒计时的播放数*/
     int countdownValue;
 
+    int countdownValueThreshold;
+
     /*指示countdownValue的类型*/
     CountDownMode countDownMode;
 
@@ -177,6 +179,7 @@ public class SpeechService extends Service {
         isForegroundService = false;
         isReleased = false;
         serviceState = SpeechServiceState.Ready;
+        countDownMode = CountDownMode.None;
         articleDataProvider = new ArticleDataProvider(this);
 
         speechor = new SpeechEngineWrapper(this) {
@@ -312,10 +315,11 @@ public class SpeechService extends Service {
     private void onSpeechStoped(SpeechStopEvent.StopReason reason) {
         EventBus.getDefault().post(new SpeechStopEvent(reason));
         //notificationManager.cancelAll();
-        if (reason == SpeechStopEvent.StopReason.ListIsNull) {
+
+        //if (reason == SpeechStopEvent.StopReason.ListIsNull) {
             //this.stopForeground(true);
             foregroundServiceAdapter.stopForeground(true);
-        }
+        //}
     }
 
     private void onSpeechArticleFavor(Article article) {
@@ -337,6 +341,7 @@ public class SpeechService extends Service {
 
         this.countDownMode = mode;
         this.countdownValue = tickcountValue;
+        this.countdownValueThreshold = tickcountValue;
 
         if (mode == CountDownMode.MinuteCount) {
             countdownTimer = new Timer();
@@ -365,11 +370,16 @@ public class SpeechService extends Service {
         }
         this.countDownMode = CountDownMode.None;
         this.countdownValue = 0;
+        this.countdownValueThreshold = 0;
     }
 
 
     public synchronized CountDownMode getCountDownMode() {
         return this.countDownMode;
+    }
+
+    public synchronized int getCountdownThresholdValue() {
+        return this.countdownValueThreshold;
     }
 
 
@@ -380,12 +390,13 @@ public class SpeechService extends Service {
 
     public synchronized int seek(float percentage) {
         //如果当前播放不存在，那返回错误
-        if (speechList.getCurrent() == null) {
+        if (getSelected() == null) {
             return -SpeechError.NOTHING_TO_PLAY;
         }
-        SpeechServiceState preState = serviceState;
-
-        if (serviceState == SpeechServiceState.Ready && serviceState == SpeechServiceState.Loadding) {
+        SpeechServiceState preState = getState();
+        //disable seek action while in ready state or loading list.
+        if (getState() == SpeechServiceState.Ready
+                || (getState() == SpeechServiceState.Loadding && getSelected() == null)) {
             return -SpeechError.SEEK_NOT_ALLOW;
         }
         if (getSelected() == null || getSelected().getTextBody() == null) {
@@ -411,9 +422,8 @@ public class SpeechService extends Service {
      */
     public synchronized boolean pause() {
         if (speechList.getCurrent() == null) {
-            if (getState() != SpeechServiceState.Loadding) {
-                return false;
-            }
+            //Loadding list保护
+            return false;
         }
 
         boolean result = false;
@@ -461,22 +471,18 @@ public class SpeechService extends Service {
     }
 
     private synchronized boolean playSelected() {
-        if (speechList == null || speechList.getCurrent() == null)
+        if (getSelected() == null) {
             return false;
-
+        }
         prepareArticle(speechList.getCurrent(), false);
         return true;
     }
 
     public synchronized Article getSelected() {
-        if (speechList == null || speechList.getCurrent() == null) {
+        if (speechList == null) {
             return null;
         }
         return speechList.getCurrent();
-    }
-
-    private void endCurrentArticle(Article articleToSpeech) {
-
     }
 
 
@@ -540,6 +546,7 @@ public class SpeechService extends Service {
                     synchronized (SpeechService.this) {
                         if (errorCode != 0) {
                             Toast.makeText(SpeechService.this, "加载错误", Toast.LENGTH_SHORT).show();
+                            onSpeechError(SpeechError.LIST_LOAD_ERROR, "加载播单错误", article);
                             return;
                         }
                         if (this == dataProviderCallback) {
