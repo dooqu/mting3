@@ -14,7 +14,7 @@
         android:orientation="horizontal">
 
         <ImageView
-            android:id="@+id/imv_cover"
+            android:id="@+id/imv_cover_edit"
             android:layout_width="104dp"
             android:layout_height="104dp"
             android:layout_gravity="center_vertical"
@@ -22,7 +22,7 @@
             android:src="@mipmap/cjbd_img_fm_default" />
 
         <TextView
-            android:id="@+id/tv_change_cover"
+            android:id="@+id/tv_change_cover_edit"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
@@ -45,7 +45,7 @@
         android:textSize="18sp" />
 
     <cn.xylink.mting.widget.EditTextWidthClear
-        android:id="@+id/et_title"
+        android:id="@+id/et_title_edit"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="16dp"
@@ -78,7 +78,7 @@
         android:textSize="18sp" />
 
     <cn.xylink.mting.widget.EditTextWidthClear
-        android:id="@+id/et_intro"
+        android:id="@+id/et_intro_edit"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="16dp"

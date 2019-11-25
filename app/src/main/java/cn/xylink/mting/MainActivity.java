@@ -30,20 +30,9 @@ public class MainActivity extends BasePresenterActivity implements ViewPager.OnP
     @BindView(R.id.rb_tab_my)
     RadioButton mMyButton;
     private MainFragmentAdapter mTabAdapter;
-    SpeechServiceProxy proxy;
 
     @Override
     protected void initView() {
-        proxy = new SpeechServiceProxy(this) {
-            @Override
-            protected void onConnected(boolean connected, SpeechService service) {
-                if (connected) {
-//                    service.setRole(Speechor.SpeechorRole.XiaoIce);
-//                    onSpeechServiceReady(service);
-                }
-            }
-        };
-        proxy.bind();
     }
 
     @Override
@@ -81,17 +70,14 @@ public class MainActivity extends BasePresenterActivity implements ViewPager.OnP
     protected void onSpeechServiceAvailable() {
         super.onSpeechServiceAvailable();
         Article article = new Article();
-        article.setBroadcastId("2019102211541422454428823");
-        article.setArticleId("2019102118414971152446751");
+        article.setBroadcastId("201911181652361841031964");
+        article.setArticleId("2019111411493373493858111");
         //postToSpeechService(article);
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (proxy != null) {
-            proxy.unbind();
-        }
     }
 
     @Override

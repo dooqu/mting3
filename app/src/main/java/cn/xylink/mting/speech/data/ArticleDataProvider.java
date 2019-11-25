@@ -93,12 +93,17 @@ public class ArticleDataProvider {
 
                     @Override
                     public void onSuccess(SpeechListResponse response) {
-                        List<Article> list = response.getData();
-                        for(Article article : list) {
-                            article.setBroadcastId(broadcastId);
+                        if(response.getCode() == 200) {
+                            List<Article> list = response.getData();
+                            for (Article article : list) {
+                                article.setBroadcastId(broadcastId);
+                            }
+                            if (callback != null) {
+                                callback.invoke(0, response.getData());
+                            }
                         }
-                        if (callback != null) {
-                            callback.invoke(0, response.getData());
+                        else {
+                            onFailure(response.getCode(), response.getMessage());
                         }
                     }
 
@@ -141,22 +146,25 @@ public class ArticleDataProvider {
 
                     @Override
                     public void onSuccess(SpeechListResponse response) {
+                        if(response.getCode() == 200) {
+                            new Thread(()->{
+                                try {
+                                    Thread.sleep(3000);
 
-                        new Thread(()->{
-                            try {
-                                Thread.sleep(3000);
-
-                                List<Article> list = response.getData();
-                                for (Article article : list) {
-                                    article.setBroadcastId(broadcastId);
+                                    List<Article> list = response.getData();
+                                    for (Article article : list) {
+                                        article.setBroadcastId(broadcastId);
+                                    }
+                                    if (callback != null) {
+                                        callback.invoke(0, response.getData());
+                                    }
                                 }
-                                if (callback != null) {
-                                    callback.invoke(0, response.getData());
-                                }
-                            }
-                            catch (Exception ex) {}
-                        }).start();
-
+                                catch (Exception ex) {}
+                            }).start();
+                        }
+                        else {
+                            onFailure(response.getCode(), response.getMessage());
+                        }
                     }
 
                     @Override
@@ -197,12 +205,17 @@ public class ArticleDataProvider {
 
                     @Override
                     public void onSuccess(SpeechListResponse response) {
-                        List<Article> list = response.getData();
-                        for (Article article : list) {
-                            article.setBroadcastId("-1");
+                        if(response.getCode() == 200) {
+                            List<Article> list = response.getData();
+                            for (Article article : list) {
+                                article.setBroadcastId("-1");
+                            }
+                            if (callback != null) {
+                                callback.invoke(0, response.getData());
+                            }
                         }
-                        if (callback != null) {
-                            callback.invoke(0, response.getData());
+                        else {
+                            onFailure(response.getCode(), response.getMessage());
                         }
                     }
 
@@ -255,30 +268,37 @@ public class ArticleDataProvider {
 
                     @Override
                     public void onSuccess(ArticleInfoResponse response) {
-                        Article responseArt = response.getData();
-                        article.setContent(responseArt.getContent());
-                        article.setTitle(responseArt.getTitle());
-                        article.setUserId(responseArt.getUserId());
-                        article.setNickName(responseArt.getNickName());
-                        article.setSourceName(responseArt.getSourceName());
-                        article.setRead(responseArt.getRead());
-                        article.setShareUrl(responseArt.getShareUrl());
-                        article.setStore(responseArt.getStore());
+                        if(response.getCode() == 200) {
+                            Article responseArt = response.getData();
+                            article.setContent(responseArt.getContent());
+                            article.setTitle(responseArt.getTitle());
+                            article.setUserId(responseArt.getUserId());
+                            article.setNickName(responseArt.getNickName());
+                            article.setSourceName(responseArt.getSourceName());
+                            article.setRead(responseArt.getRead());
+                            article.setShareUrl(responseArt.getShareUrl());
+                            article.setStore(responseArt.getStore());
 
-                        ArticleListArgument argumentInner = articleListArgument;
+                            ArticleListArgument argumentInner = articleListArgument;
 
-                        if (isFirst || isLast) {
-                            getSpeechListNearBy(article.getBroadcastId(), article.getCreateAt(), (isFirst) ? "old" : "new", new ArticleLoader<List<Article>>() {
-                                @Override
-                                public void invoke(int errorCode, List<Article> data) {
-                                    argumentInner.list = data;
-                                    //不管列表成功失败，都返回0;
-                                    callback.invoke(0, argumentInner);
-                                }
-                            });
+                            if (isFirst || isLast) {
+                                getSpeechListNearBy(article.getBroadcastId(), article.getCreateAt(), (isFirst) ? "old" : "new", new ArticleLoader<List<Article>>() {
+                                    @Override
+                                    public void invoke(int errorCode, List<Article> data) {
+                                        if(errorCode == 0) {
+                                            argumentInner.list = data;
+                                        }
+                                        //不管列表成功失败，都返回0;
+                                        callback.invoke(0, argumentInner);
+                                    }
+                                });
+                            }
+                            else {
+                                callback.invoke(0, articleListArgument);
+                            }
                         }
                         else {
-                            callback.invoke(0, articleListArgument);
+                            onFailure(response.getCode(), response.getMessage());
                         }
                     }
 

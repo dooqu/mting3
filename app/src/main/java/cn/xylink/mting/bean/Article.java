@@ -5,6 +5,7 @@ public class Article
 {
     String articleId;
     String title;
+    String broadcastTitle;
     String broadcastId;
     String content;
     int inType;
@@ -222,6 +223,14 @@ public class Article
 
     public void setUserId(String userId) {
         this.userId = userId;
+    }
+
+    public String getBroadcastTitle() {
+        return broadcastTitle;
+    }
+
+    public void setBroadcastTitle(String broadcastTitle) {
+        this.broadcastTitle = broadcastTitle;
     }
 
     @Override
