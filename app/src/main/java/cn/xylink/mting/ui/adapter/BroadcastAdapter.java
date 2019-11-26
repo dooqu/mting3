@@ -44,11 +44,6 @@ public class BroadcastAdapter extends RecyclerView.Adapter<BroadcastAdapter.View
         this.mBroadcastid = id;
     }
 
-    public BroadcastAdapter(Context context, BroadcastAdapter.OnItemClickListener listener) {
-        this.mContext = context;
-        this.mOnItemClickListener = listener;
-    }
-
     public void setDetailInfo(BroadcastDetailInfo detailInfo) {
         mDetailInfo = detailInfo;
         notifyItemChanged(0);
@@ -126,6 +121,12 @@ public class BroadcastAdapter extends RecyclerView.Adapter<BroadcastAdapter.View
                 if (mOnItemClickListener != null) {
                     mOnItemClickListener.onItemClick(data);
                 }
+            });
+            holder.itemView.setOnLongClickListener(v -> {
+                if (mOnItemClickListener!=null){
+                    mOnItemClickListener.onItemLongClick(data);
+                }
+                return true;
             });
         }
     }
@@ -219,5 +220,6 @@ public class BroadcastAdapter extends RecyclerView.Adapter<BroadcastAdapter.View
 
     public interface OnItemClickListener {
         void onItemClick(BroadcastInfo article);
+        void onItemLongClick(BroadcastInfo article);
     }
 }

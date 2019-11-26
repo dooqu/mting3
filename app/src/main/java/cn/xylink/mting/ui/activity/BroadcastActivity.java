@@ -15,18 +15,28 @@ import com.scwang.smartrefresh.layout.footer.ClassicsFooter;
 import java.util.List;
 
 import butterknife.BindView;
+import butterknife.OnClick;
 import cn.xylink.mting.R;
+import cn.xylink.mting.base.BaseResponse;
+import cn.xylink.mting.bean.AddStoreRequest;
 import cn.xylink.mting.bean.Article;
 import cn.xylink.mting.bean.BroadcastDetailInfo;
 import cn.xylink.mting.bean.BroadcastDetailRequest;
 import cn.xylink.mting.bean.BroadcastInfo;
 import cn.xylink.mting.bean.BroadcastListRequest;
+import cn.xylink.mting.bean.DelStoreRequest;
 import cn.xylink.mting.bean.WorldRequest;
+import cn.xylink.mting.contract.AddStoreContact;
 import cn.xylink.mting.contract.BroadcastDetailContact;
 import cn.xylink.mting.contract.BroadcastListContact;
+import cn.xylink.mting.contract.DelStoreContact;
+import cn.xylink.mting.presenter.AddStorePresenter;
 import cn.xylink.mting.presenter.BroadcastDetailPresenter;
 import cn.xylink.mting.presenter.BroadcastListPresenter;
+import cn.xylink.mting.presenter.DelStorePreesenter;
 import cn.xylink.mting.ui.adapter.BroadcastAdapter;
+import cn.xylink.mting.ui.dialog.BroadcastItemMenuDialog;
+import cn.xylink.mting.utils.ContentManager;
 import cn.xylink.mting.utils.L;
 import cn.xylink.mting.widget.EndlessRecyclerOnScrollListener;
 
@@ -34,7 +44,8 @@ import cn.xylink.mting.widget.EndlessRecyclerOnScrollListener;
  * @author JoDragon
  */
 public class BroadcastActivity extends BasePresenterActivity implements BroadcastListContact.IBroadcastListView,
-        BroadcastDetailContact.IBroadcastDetailView ,BroadcastAdapter.OnItemClickListener{
+        BroadcastDetailContact.IBroadcastDetailView, BroadcastAdapter.OnItemClickListener, BroadcastItemMenuDialog.OnBroadcastItemMenuListener
+, AddStoreContact.IAddStoreView, DelStoreContact.IDelStoreView {
 
     public static final String EXTRA_BROADCASTID = "extra_broadcast_id";
     public static final String EXTRA_TITLE = "extra_title";
@@ -55,7 +66,8 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
     private BroadcastListPresenter mPresenter;
     private BroadcastAdapter mAdapter;
     private BroadcastDetailPresenter mBroadcastDetailPresenter;
-
+    private AddStorePresenter mAddStorePresenter;
+    private DelStorePreesenter mDelStorePreesenter;
 
     @Override
     protected void preView() {
@@ -68,6 +80,10 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
         mPresenter.attachView(this);
         mBroadcastDetailPresenter = (BroadcastDetailPresenter) createPresenter(BroadcastDetailPresenter.class);
         mBroadcastDetailPresenter.attachView(this);
+        mAddStorePresenter = (AddStorePresenter) createPresenter(AddStorePresenter.class);
+        mAddStorePresenter.attachView(this);
+        mDelStorePreesenter = (DelStorePreesenter) createPresenter(DelStorePreesenter.class);
+        mDelStorePreesenter.attachView(this);
         mRecyclerView.setItemAnimator(null);
         mAdapter = new BroadcastAdapter(this, getIntent().getStringExtra(EXTRA_BROADCASTID));
         mAdapter.setOnItemClickListener(this);
@@ -81,9 +97,11 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
         mRefreshLayout.setEnableLoadMoreWhenContentNotFull(false);
         mRefreshLayout.setRefreshFooter(new ClassicsFooter(this));
         mTableBarTitleTextView.setText(getIntent().getStringExtra(EXTRA_TITLE));
-        initList();
         if (!getIntent().getStringExtra(EXTRA_BROADCASTID).startsWith("-")) {
             initDetail();
+        } else {
+            mShareImageView.setVisibility(View.INVISIBLE);
+            initList();
         }
         drawable = getResources().getDrawable(R.color.white);
 
@@ -155,8 +173,12 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
     public void onBroadcastListError(int code, String errorMsg, boolean isLoadMore) {
     }
 
+    private BroadcastDetailInfo mDetailInfo;
+
     @Override
     public void onBroadcastDetailSuccess(BroadcastDetailInfo data) {
+        mDetailInfo = data;
+        initList();
         if (mAdapter != null) {
             mAdapter.setDetailInfo(data);
         }
@@ -214,11 +236,96 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
 
     @Override
     public void onItemClick(BroadcastInfo article) {
-        Article article1 =new Article();
+        Article article1 = new Article();
         article1.setTitle(article.getTitle());
         article1.setArticleId(article.getArticleId());
         article1.setBroadcastId(getIntent().getStringExtra(EXTRA_BROADCASTID));
         article1.setBroadcastTitle(getIntent().getStringExtra(EXTRA_TITLE));
         postToSpeechService(article1);
+    }
+
+    @Override
+    public void onItemLongClick(BroadcastInfo article) {
+        BroadcastItemMenuDialog dialog = new BroadcastItemMenuDialog(this);
+        dialog.setBroadcastInfo(article);
+        if (mDetailInfo != null && !mDetailInfo.getCreateUserId().equals(ContentManager.getInstance().getUserInfo().getUserId())) {
+            dialog.isShowDel(false);
+        }
+        if ("-3".equals(getIntent().getStringExtra(EXTRA_BROADCASTID))){
+            dialog.isShowDel(false);
+        }
+        dialog.setListener(this);
+        dialog.show();
+    }
+
+    @OnClick({R.id.iv_titlebar_share, R.id.iv_titlebar_menu, R.id.iv_titlebar_back})
+    void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.iv_titlebar_back:
+                this.finish();
+                break;
+            case R.id.iv_titlebar_share:
+                if (mDetailInfo != null) {
+                    BroadcastItemMenuDialog dialog = new BroadcastItemMenuDialog(this);
+                    dialog.setDetailInfo(mDetailInfo);
+                    dialog.show();
+                }
+                break;
+            case R.id.iv_titlebar_menu:
+                break;
+            default:
+        }
+    }
+
+    @Override
+    public void onItemCollect(BroadcastInfo info) {
+        if (info.getStore()==0){
+            addStore(info.getArticleId());
+        }else {
+            delStore(info.getArticleId());
+        }
+    }
+
+    @Override
+    public void onItemAddTO(BroadcastInfo info) {
+
+    }
+
+    private void addStore(String id){
+        AddStoreRequest request = new AddStoreRequest();
+        request.setArticleId(id);
+        request.doSign();
+        mAddStorePresenter.addStore(request);
+    }
+    private void delStore(String id){
+        DelStoreRequest request = new DelStoreRequest();
+        request.setArticleIds(id);
+        request.doSign();
+        mDelStorePreesenter.delStore(request);
+    }
+
+    @Override
+    public void onItemDel(BroadcastInfo info) {
+
+    }
+
+    @Override
+    public void onAddStoreSuccess(BaseResponse response) {
+        initList();
+    }
+
+    @Override
+    public void onAddStoreError(int code, String errorMsg) {
+
+    }
+
+    @Override
+    public void onDelStoreSuccess(BaseResponse response) {
+        initList();
+    }
+
+    @Override
+    public void onDelStoreError(int code, String errorMsg) {
+
     }
 }
