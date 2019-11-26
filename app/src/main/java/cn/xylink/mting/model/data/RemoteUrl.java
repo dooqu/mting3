@@ -58,7 +58,7 @@ public class RemoteUrl {
 
     //删除收藏
     public static String getDelStoreUrl() {
-        return URL_BASE + "/api/sct/v2/article/store/delete";
+        return URL_BASE + "/api/art/v1/article/store/delete";
     }
 
     //收藏列表
@@ -68,7 +68,7 @@ public class RemoteUrl {
 
     //添加收藏
     public static String getAddStoreUrl() {
-        return URL_BASE + "/api/sct/v2/article/store";
+        return URL_BASE + "/api/art/v1/article/store";
     }
 
     //第三方登录

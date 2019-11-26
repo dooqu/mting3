@@ -324,10 +324,12 @@ public class SpeechService extends Service {
         //}
     }
 
+    /*
     private void onSpeechArticleFavor(Article article) {
         foregroundServiceAdapter.retainForeground();
         EventBus.getDefault().post(new SpeechFavorArticleEvent(article));
     }
+     */
 
     public synchronized SpeechServiceState getState() {
         return serviceState;

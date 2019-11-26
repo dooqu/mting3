@@ -1,12 +1,26 @@
 package cn.xylink.mting.model;
 
-public class FavoriteArticleRequest extends BaseRequest {
-    String articleId;
-    String type;
+import cn.xylink.mting.base.BaseRequest;
 
-    public FavoriteArticleRequest(String articleId, boolean isStore) {
+public class FavoriteArticleRequest extends cn.xylink.mting.base.BaseRequest {
+    public static class UnfavorRequest extends BaseRequest {
+        String articleIds;
+
+        public UnfavorRequest(String articleIds) {
+            this.articleIds = articleIds;
+        }
+        public String getArticleIds() {
+            return articleIds;
+        }
+
+        public void setArticleIds(String articleIds) {
+            this.articleIds = articleIds;
+        }
+    }
+    String articleId;
+
+    public FavoriteArticleRequest(String articleId) {
         this.articleId = articleId;
-        this.type = (isStore)? "store" : "cancel";
     }
 
     public String getArticleId() {
@@ -17,11 +31,4 @@ public class FavoriteArticleRequest extends BaseRequest {
         this.articleId = articleId;
     }
 
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
 }
