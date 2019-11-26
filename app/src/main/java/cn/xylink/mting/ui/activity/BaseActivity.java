@@ -135,7 +135,7 @@ public abstract class BaseActivity extends AppCompatActivity {
                     //绑定activity和service，创建ui组件
                     panelViewAdapter.attach(BaseActivity.this, service);
                     //如果当前正在播放某个文章，那么立即更新，不要等SpeechEvent
-                    if(service.getSelected() != null) {
+                    if(service.getSelected() != null && !(service.getState() == SpeechService.SpeechServiceState.Paused && PanelViewAdapter.isUserClosed == true)) {
                         panelViewAdapter.validatePanelView();
                     }
                     if(articleShouldPlayWhenServiceAvailable != null) {
@@ -188,9 +188,8 @@ public abstract class BaseActivity extends AppCompatActivity {
             }
             return true;
         }
-        articleShouldPlayWhenServiceAvailable = article;
-        connectSpeechService();
-        return true;
+        articleShouldPlayWhenServiceAvailable = null;
+        return false;
     }
 
     public Article getPlayingArticle() {
@@ -198,6 +197,10 @@ public abstract class BaseActivity extends AppCompatActivity {
             return null;
         }
         return speechServiceWeakReference.get().getSelected();
+    }
+
+    public boolean isPlaying(String broadcastId, String articleId) {
+        return false;
     }
 
 

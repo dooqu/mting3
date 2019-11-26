@@ -10,12 +10,21 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.support.annotation.MainThread;
+import android.view.Display;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.lang.ref.WeakReference;
 
 import cn.xylink.mting.MainActivity;
 import cn.xylink.mting.R;
 import cn.xylink.mting.bean.Article;
+import cn.xylink.mting.speech.data.ArticleDataProvider;
+import cn.xylink.mting.speech.event.SpeechEvent;
+import cn.xylink.mting.speech.event.SpeechFavorArticleEvent;
 import cn.xylink.mting.speech.list.DynamicSpeechList;
 import cn.xylink.mting.speech.list.SpeechList;
 
@@ -35,7 +44,7 @@ public class SpeechForegroundServiceAdapter {
     static int executeCode = 0;
 
     public SpeechForegroundServiceAdapter(SpeechService service) {
-        if(service != null) {
+        if (service != null) {
             speechServiceWeakReference = new WeakReference<>(service);
             IntentFilter notifIntent = new IntentFilter();
             notifIntent.addAction("SPEECH_ACTION_PLAY");
@@ -46,6 +55,10 @@ public class SpeechForegroundServiceAdapter {
             notifIntent.addAction("SPEECH_ACTION_UNFAVOR");
             notifIntent.addAction("SPEECH_ACTION_EXIT");
             service.registerReceiver(notifReceiver, notifIntent);
+
+            if (EventBus.getDefault().isRegistered(this) == false) {
+                EventBus.getDefault().register(this);
+            }
         }
     }
 
@@ -167,9 +180,10 @@ public class SpeechForegroundServiceAdapter {
     public void destroy() {
         this.stopForeground(true);
         SpeechService service = speechServiceWeakReference.get();
-        if(service != null) {
+        if (service != null) {
             service.unregisterReceiver(notifReceiver);
         }
+        EventBus.getDefault().unregister(this);
     }
 
     protected void dismissNotif() {
@@ -189,12 +203,38 @@ public class SpeechForegroundServiceAdapter {
         }
     }
 
+    private ArticleDataProvider.ArticleLoader<Article> favorCallback = new ArticleDataProvider.ArticleLoader<Article>() {
+        @Override
+        public void invoke(int errorCode, Article data) {
+            if (errorCode == 0) {
+                SpeechFavorArticleEvent event = new SpeechFavorArticleEvent(data);
+                EventBus.getDefault().post(event);
+                retainForeground();
+            }
+        }
+    };
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onSpeechEvent(SpeechEvent event) {
+        if (event instanceof SpeechFavorArticleEvent
+                && speechServiceWeakReference.get() != null
+                && speechServiceWeakReference.get().getSelected() != null
+                && speechServiceWeakReference.get().getState() == SpeechService.SpeechServiceState.Playing
+                && event.getArticle() != null) {
+            if (speechServiceWeakReference.get().getSelected().getArticleId().equals(event.getArticle().getArticleId())) {
+                speechServiceWeakReference.get().getSelected().setStore(event.getArticle().getStore());
+                retainForeground();
+            }
+        }
+    }
+
+    private ArticleDataProvider articleDataProvider;
 
     private BroadcastReceiver notifReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             SpeechService speechService = speechServiceWeakReference.get();
-            if(speechService == null) {
+            if (speechService == null) {
                 return;
             }
             synchronized (speechService) {
@@ -233,27 +273,20 @@ public class SpeechForegroundServiceAdapter {
                         if (currentArticle.getStore() == 1) {
                             break;
                         }
-                        /*
-                        articleDataProvider.favorite(currentArticle, true, ((errorCode, article) -> {
-                            if (errorCode == 0) {
-                                initNotification();
-                                EventBus.getDefault().post(new FavoriteEvent(currentArticle));
-                            }
-                        }));
-                         */
+                        if (speechServiceWeakReference.get() != null) {
+                            articleDataProvider = new ArticleDataProvider(speechServiceWeakReference.get());
+                            articleDataProvider.favorArticle(currentArticle, favorCallback);
+                        }
                         break;
                     case "SPEECH_ACTION_UNFAVOR":
                         if (currentArticle.getStore() == 0) {
                             break;
                         }
-                        /*
-                        articleDataProvider.favorite(currentArticle, false, ((errorCode, article) -> {
-                            if (errorCode == 0) {
-                                initNotification();
-                                EventBus.getDefault().post(new FavoriteEvent(currentArticle));
-                            }
-                        }));
-                         */
+                        if (speechServiceWeakReference.get() != null) {
+                            articleDataProvider = new ArticleDataProvider(speechServiceWeakReference.get());
+                            articleDataProvider.unfavorArticle(currentArticle, favorCallback);
+                        }
+
                         break;
                     case "SPEECH_ACTION_EXIT":
                         speechService.pause();

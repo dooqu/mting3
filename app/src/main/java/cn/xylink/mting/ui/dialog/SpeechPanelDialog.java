@@ -3,13 +3,11 @@ package cn.xylink.mting.ui.dialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.view.ViewPager;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
@@ -31,8 +29,10 @@ import cn.xylink.mting.R;
 import cn.xylink.mting.bean.Article;
 import cn.xylink.mting.speech.SpeechService;
 import cn.xylink.mting.speech.Speechor;
+import cn.xylink.mting.speech.data.ArticleDataProvider;
 import cn.xylink.mting.speech.event.SpeechEvent;
 import cn.xylink.mting.speech.event.SpeechBufferingEvent;
+import cn.xylink.mting.speech.event.SpeechFavorArticleEvent;
 import cn.xylink.mting.speech.event.SpeechProgressEvent;
 import cn.xylink.mting.speech.event.SpeechStartEvent;
 import cn.xylink.mting.speech.event.SpeechStopEvent;
@@ -47,17 +47,21 @@ import static cn.xylink.mting.speech.Speechor.SpeechorRole.YaYa;
 public class SpeechPanelDialog extends Dialog implements SeekBar.OnSeekBarChangeListener, ViewPager.OnPageChangeListener {
     WeakReference<BaseActivity> contextWeakReference;
     WeakReference<SpeechService> speechServiceWeakReference;
-    SeekBar seekBar;
 
+    ViewPager viewPager;
+
+    SeekBar seekBar;
     TextView tvTitle;
     View buttonClose;
     View buttonPlay;
     ImageView icoPlay;
     ProgressBar progressBar;
+    View favorButton;
+    ImageView icoFavor;
     boolean isPlaying;
     boolean seekBarIsSlideByUser = false;
     Article currentArticle;
-    ViewPager viewPager;
+
 
     View controlView;
     View soundSettingView;
@@ -115,6 +119,16 @@ public class SpeechPanelDialog extends Dialog implements SeekBar.OnSeekBarChange
         }
     }
 
+    private ArticleDataProvider.ArticleLoader<Article> favorCallback = new ArticleDataProvider.ArticleLoader<Article>() {
+        @Override
+        public void invoke(int errorCode, Article data) {
+            if(errorCode == 0) {
+                SpeechFavorArticleEvent event = new SpeechFavorArticleEvent(data);
+                EventBus.getDefault().post(event);
+            }
+        }
+    };
+
     private void onInitControlView(View controlView) {
         Article articlePlaying = speechServiceWeakReference.get().getSelected();
         SpeechService.SpeechServiceState currentState = speechServiceWeakReference.get().getState();
@@ -152,6 +166,31 @@ public class SpeechPanelDialog extends Dialog implements SeekBar.OnSeekBarChange
             @Override
             public void onClick(View v) {
                 viewPager.setCurrentItem(2, true);
+            }
+        });
+
+        icoFavor = controlView.findViewById(R.id.ico_favor);
+        favorButton = controlView.findViewById(R.id.view_dialog_panel_favor);
+        favorButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(contextWeakReference.get() == null
+                        || speechServiceWeakReference.get() == null
+                        || speechServiceWeakReference.get().getSelected() == null
+                        || speechServiceWeakReference.get().getState() == SpeechService.SpeechServiceState.Loadding) {
+                    return;
+                }
+                Article article = speechServiceWeakReference.get().getSelected();
+                ArticleDataProvider provider = new ArticleDataProvider(contextWeakReference.get());
+
+                if(article.getStore() == 0) {
+                    icoFavor.setImageResource(R.mipmap.ico_dialog_favor);
+                    provider.favorArticle(article, favorCallback);
+                }
+                else {
+                    icoFavor.setImageResource(R.mipmap.ico_dialog_unfavor);
+                    provider.unfavorArticle(article, favorCallback);
+                }
             }
         });
     }
@@ -484,6 +523,9 @@ public class SpeechPanelDialog extends Dialog implements SeekBar.OnSeekBarChange
         Article article = speechService.getSelected();
         if (article != null) {
             tvTitle.setText(article.getTitle());
+            if(speechService.getState() != SpeechService.SpeechServiceState.Loadding) {
+                icoFavor.setImageResource(article.getStore() == 1 ? R.mipmap.ico_dialog_favor : R.mipmap.ico_dialog_unfavor);
+            }
         }
         else {
             tvTitle.setText("正在加载...");

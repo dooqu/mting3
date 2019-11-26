@@ -281,7 +281,9 @@ public class SpeechService extends Service {
 
     private void onSpeechError(int errorCode, String message, Article article) {
         EventBus.getDefault().post(new SpeechErrorEvent(errorCode, message, article));
-        foregroundServiceAdapter.retainForeground();
+        if(getSelected() != null) {
+            foregroundServiceAdapter.retainForeground();
+        }
     }
 
     private void onSpeechEnd(Article article, float progress, boolean deleteFromList) {
@@ -322,10 +324,12 @@ public class SpeechService extends Service {
         //}
     }
 
+    /*
     private void onSpeechArticleFavor(Article article) {
         foregroundServiceAdapter.retainForeground();
         EventBus.getDefault().post(new SpeechFavorArticleEvent(article));
     }
+     */
 
     public synchronized SpeechServiceState getState() {
         return serviceState;
@@ -613,14 +617,16 @@ public class SpeechService extends Service {
         this.articleDataProvider.loadArticleAndList(article, needSourceEffect, isFirst, isLast, (int errorcode, ArticleDataProvider.ArticleListArgument responseResult) -> {
 
             synchronized (this) {
-                //解决轮回问题
-                if (isReleased || serviceState != SpeechServiceState.Loadding || responseResult.article != this.speechList.getCurrent()) {
-                    return;
-                }
-
                 if (errorcode != 0) {
                     this.serviceState = SpeechServiceState.Error;
                     this.onSpeechError(SpeechError.ARTICLE_LOAD_ERROR, "文章正文加载失败", article);
+                    return;
+                }
+                //解决轮回问题
+                if (isReleased
+                        || serviceState != SpeechServiceState.Loadding
+                        || responseResult == null
+                        || responseResult.article != this.speechList.getCurrent()) {
                     return;
                 }
 
