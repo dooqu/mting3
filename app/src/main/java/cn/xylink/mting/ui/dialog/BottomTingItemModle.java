@@ -16,6 +16,7 @@ public class BottomTingItemModle {
     private boolean isTwo = false;
     private TextView view;
     private String id;
+    private Object tag;
 
     public BottomTingItemModle() {
     }
@@ -23,6 +24,12 @@ public class BottomTingItemModle {
     public BottomTingItemModle(String name, Drawable drawable) {
         this.name = name;
         this.drawable = drawable;
+    }
+
+    public BottomTingItemModle(String name, Drawable drawable, Object tag) {
+        this.name = name;
+        this.drawable = drawable;
+        this.tag = tag;
     }
 
     public BottomTingItemModle(String name, Drawable drawable, String id) {
@@ -109,5 +116,13 @@ public class BottomTingItemModle {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public Object getTag() {
+        return tag;
+    }
+
+    public void setTag(Object tag) {
+        this.tag = tag;
     }
 }

@@ -26,6 +26,7 @@ import cn.xylink.mting.bean.BroadcastInfo;
 import cn.xylink.mting.bean.BroadcastListRequest;
 import cn.xylink.mting.bean.DelStoreRequest;
 import cn.xylink.mting.bean.WorldRequest;
+import cn.xylink.mting.common.Const;
 import cn.xylink.mting.contract.AddStoreContact;
 import cn.xylink.mting.contract.BroadcastDetailContact;
 import cn.xylink.mting.contract.BroadcastListContact;
@@ -35,6 +36,8 @@ import cn.xylink.mting.presenter.BroadcastDetailPresenter;
 import cn.xylink.mting.presenter.BroadcastListPresenter;
 import cn.xylink.mting.presenter.DelStorePreesenter;
 import cn.xylink.mting.ui.adapter.BroadcastAdapter;
+import cn.xylink.mting.ui.dialog.BottomTingDialog;
+import cn.xylink.mting.ui.dialog.BottomTingItemModle;
 import cn.xylink.mting.ui.dialog.BroadcastItemMenuDialog;
 import cn.xylink.mting.utils.ContentManager;
 import cn.xylink.mting.utils.L;
@@ -45,7 +48,7 @@ import cn.xylink.mting.widget.EndlessRecyclerOnScrollListener;
  */
 public class BroadcastActivity extends BasePresenterActivity implements BroadcastListContact.IBroadcastListView,
         BroadcastDetailContact.IBroadcastDetailView, BroadcastAdapter.OnItemClickListener, BroadcastItemMenuDialog.OnBroadcastItemMenuListener
-, AddStoreContact.IAddStoreView, DelStoreContact.IDelStoreView {
+        , AddStoreContact.IAddStoreView, DelStoreContact.IDelStoreView, BottomTingDialog.OnBottomTingListener {
 
     public static final String EXTRA_BROADCASTID = "extra_broadcast_id";
     public static final String EXTRA_TITLE = "extra_title";
@@ -104,6 +107,7 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
             initList();
         }
         drawable = getResources().getDrawable(R.color.white);
+        mBottomTingDialog = new BottomTingDialog(this, this);
 
 //        mRefreshLayout.setRefreshContent(this.getLayoutInflater().inflate(R.layout.dialog_tip,null));
 //        mRefreshLayout.setRefreshContent(mRecyclerView);
@@ -251,12 +255,14 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
         if (mDetailInfo != null && !mDetailInfo.getCreateUserId().equals(ContentManager.getInstance().getUserInfo().getUserId())) {
             dialog.isShowDel(false);
         }
-        if ("-3".equals(getIntent().getStringExtra(EXTRA_BROADCASTID))){
+        if ("-3".equals(getIntent().getStringExtra(EXTRA_BROADCASTID))) {
             dialog.isShowDel(false);
         }
         dialog.setListener(this);
         dialog.show();
     }
+
+    private BottomTingDialog mBottomTingDialog;
 
     @OnClick({R.id.iv_titlebar_share, R.id.iv_titlebar_menu, R.id.iv_titlebar_back})
     void onClick(View view) {
@@ -272,6 +278,49 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
                 }
                 break;
             case R.id.iv_titlebar_menu:
+                /*是否是系统播单*/
+                if (getIntent().getStringExtra(EXTRA_BROADCASTID).startsWith("-")) {
+                    /*是否是待读*/
+                    if ("-1".equals(getIntent().getStringExtra(EXTRA_BROADCASTID))) {
+                        mBottomTingDialog.setItemModle(mDetailInfo.getTop() == 0 ? new BottomTingItemModle(Const.BottomDialogItem.SET_TOP,
+                                        getResources().getDrawable(R.mipmap.icon_set_top))
+                                        : new BottomTingItemModle(Const.BottomDialogItem.CANEL_TOP,
+                                        getResources().getDrawable(R.mipmap.icon_cancel_top))
+                                , new BottomTingItemModle(Const.BottomDialogItem.BATCH, getResources().getDrawable(R.mipmap.icon_batch)));
+                    } else {
+                        mBottomTingDialog.setItemModle(new BottomTingItemModle(Const.BottomDialogItem.BATCH,
+                                getResources().getDrawable(R.mipmap.icon_batch)));
+                    }
+                } else if (mDetailInfo != null) {
+                    /*是否是我自己的播单*/
+                    if (mDetailInfo.getCreateUserId().equals(ContentManager.getInstance().getUserInfo().getUserId())) {
+                        mBottomTingDialog.setItemModle(new BottomTingItemModle(Const.BottomDialogItem.EDIT_BROADCAST,
+                                        getResources().getDrawable(R.mipmap.icon_edit_broadcast))
+                                , mDetailInfo.getTop() == 0 ? new BottomTingItemModle(Const.BottomDialogItem.SET_TOP,
+                                        getResources().getDrawable(R.mipmap.icon_set_top)) :
+                                        new BottomTingItemModle(Const.BottomDialogItem.CANEL_TOP,
+                                                getResources().getDrawable(R.mipmap.icon_cancel_top))
+                                , new BottomTingItemModle(Const.BottomDialogItem.BATCH, getResources().getDrawable(R.mipmap.icon_batch))
+                                , new BottomTingItemModle(Const.BottomDialogItem.DELETE, getResources().getDrawable(R.mipmap.icon_del)));
+                    } else {
+                        if (mDetailInfo.getSubscribe() == 0) {
+                            mBottomTingDialog.setItemModle(new BottomTingItemModle(Const.BottomDialogItem.SUBSCRIBE,
+                                            getResources().getDrawable(R.mipmap.icon_subscibe))
+                                    , new BottomTingItemModle(Const.BottomDialogItem.BATCH, getResources().getDrawable(R.mipmap.icon_batch))
+                                    , new BottomTingItemModle(Const.BottomDialogItem.REPORT, getResources().getDrawable(R.mipmap.icon_report)));
+                        } else {
+                            mBottomTingDialog.setItemModle(mDetailInfo.getTop() == 0 ? new BottomTingItemModle(Const.BottomDialogItem.SET_TOP,
+                                            getResources().getDrawable(R.mipmap.icon_set_top)) :
+                                            new BottomTingItemModle(Const.BottomDialogItem.CANEL_TOP,
+                                                    getResources().getDrawable(R.mipmap.icon_cancel_top))
+                                    , new BottomTingItemModle(Const.BottomDialogItem.CANCEL_SUBSCRIBE,
+                                            getResources().getDrawable(R.mipmap.icon_cancel_subscibe))
+                                    , new BottomTingItemModle(Const.BottomDialogItem.BATCH, getResources().getDrawable(R.mipmap.icon_batch))
+                                    , new BottomTingItemModle(Const.BottomDialogItem.REPORT, getResources().getDrawable(R.mipmap.icon_report)));
+                        }
+                    }
+                }
+                mBottomTingDialog.show();
                 break;
             default:
         }
@@ -279,9 +328,9 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
 
     @Override
     public void onItemCollect(BroadcastInfo info) {
-        if (info.getStore()==0){
+        if (info.getStore() == 0) {
             addStore(info.getArticleId());
-        }else {
+        } else {
             delStore(info.getArticleId());
         }
     }
@@ -291,13 +340,14 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
 
     }
 
-    private void addStore(String id){
+    private void addStore(String id) {
         AddStoreRequest request = new AddStoreRequest();
         request.setArticleId(id);
         request.doSign();
         mAddStorePresenter.addStore(request);
     }
-    private void delStore(String id){
+
+    private void delStore(String id) {
         DelStoreRequest request = new DelStoreRequest();
         request.setArticleIds(id);
         request.doSign();
@@ -327,5 +377,28 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
     @Override
     public void onDelStoreError(int code, String errorMsg) {
 
+    }
+
+    @Override
+    public void onBottomTingItemClick(BottomTingItemModle modle) {
+        switch (modle.getName()) {
+            case Const.BottomDialogItem.SET_TOP:
+                break;
+            case Const.BottomDialogItem.CANEL_TOP:
+                break;
+            case Const.BottomDialogItem.SUBSCRIBE:
+                break;
+            case Const.BottomDialogItem.CANCEL_SUBSCRIBE:
+                break;
+            case Const.BottomDialogItem.EDIT_BROADCAST:
+                break;
+            case Const.BottomDialogItem.BATCH:
+                break;
+            case Const.BottomDialogItem.REPORT:
+                break;
+            case Const.BottomDialogItem.DELETE:
+                break;
+                default:
+        }
     }
 }
