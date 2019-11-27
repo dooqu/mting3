@@ -29,8 +29,10 @@ import cn.xylink.mting.R;
 import cn.xylink.mting.bean.Article;
 import cn.xylink.mting.speech.SpeechService;
 import cn.xylink.mting.speech.Speechor;
+import cn.xylink.mting.speech.data.ArticleDataProvider;
 import cn.xylink.mting.speech.event.SpeechEvent;
 import cn.xylink.mting.speech.event.SpeechBufferingEvent;
+import cn.xylink.mting.speech.event.SpeechFavorArticleEvent;
 import cn.xylink.mting.speech.event.SpeechProgressEvent;
 import cn.xylink.mting.speech.event.SpeechStartEvent;
 import cn.xylink.mting.speech.event.SpeechStopEvent;
@@ -45,17 +47,21 @@ import static cn.xylink.mting.speech.Speechor.SpeechorRole.YaYa;
 public class SpeechPanelDialog extends Dialog implements SeekBar.OnSeekBarChangeListener, ViewPager.OnPageChangeListener {
     WeakReference<BaseActivity> contextWeakReference;
     WeakReference<SpeechService> speechServiceWeakReference;
-    SeekBar seekBar;
 
+    ViewPager viewPager;
+
+    SeekBar seekBar;
     TextView tvTitle;
     View buttonClose;
     View buttonPlay;
     ImageView icoPlay;
     ProgressBar progressBar;
+    View favorButton;
+    ImageView icoFavor;
     boolean isPlaying;
     boolean seekBarIsSlideByUser = false;
     Article currentArticle;
-    ViewPager viewPager;
+
 
     View controlView;
     View soundSettingView;
@@ -66,6 +72,7 @@ public class SpeechPanelDialog extends Dialog implements SeekBar.OnSeekBarChange
     ProgressBar portraitProgress[];
     View portraitButton[];
     RadioButton vibrates[];
+    RadioButton countDowns[];
 
     public SpeechPanelDialog(@NonNull Context context, SpeechService speechService) {
         super(context, R.style.bottom_dialog);
@@ -112,6 +119,16 @@ public class SpeechPanelDialog extends Dialog implements SeekBar.OnSeekBarChange
         }
     }
 
+    private ArticleDataProvider.ArticleLoader<Article> favorCallback = new ArticleDataProvider.ArticleLoader<Article>() {
+        @Override
+        public void invoke(int errorCode, Article data) {
+            if(errorCode == 0) {
+                SpeechFavorArticleEvent event = new SpeechFavorArticleEvent(data);
+                EventBus.getDefault().post(event);
+            }
+        }
+    };
+
     private void onInitControlView(View controlView) {
         Article articlePlaying = speechServiceWeakReference.get().getSelected();
         SpeechService.SpeechServiceState currentState = speechServiceWeakReference.get().getState();
@@ -151,7 +168,33 @@ public class SpeechPanelDialog extends Dialog implements SeekBar.OnSeekBarChange
                 viewPager.setCurrentItem(2, true);
             }
         });
+
+        icoFavor = controlView.findViewById(R.id.ico_favor);
+        favorButton = controlView.findViewById(R.id.view_dialog_panel_favor);
+        favorButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(contextWeakReference.get() == null
+                        || speechServiceWeakReference.get() == null
+                        || speechServiceWeakReference.get().getSelected() == null
+                        || speechServiceWeakReference.get().getState() == SpeechService.SpeechServiceState.Loadding) {
+                    return;
+                }
+                Article article = speechServiceWeakReference.get().getSelected();
+                ArticleDataProvider provider = new ArticleDataProvider(contextWeakReference.get());
+
+                if(article.getStore() == 0) {
+                    icoFavor.setImageResource(R.mipmap.ico_dialog_favor);
+                    provider.favorArticle(article, favorCallback);
+                }
+                else {
+                    icoFavor.setImageResource(R.mipmap.ico_dialog_unfavor);
+                    provider.unfavorArticle(article, favorCallback);
+                }
+            }
+        });
     }
+
 
     private void onInitSoundSettingView(View soundSettingView) {
         portraits = new ImageView[4];
@@ -204,7 +247,8 @@ public class SpeechPanelDialog extends Dialog implements SeekBar.OnSeekBarChange
                             break;
                     }
                     speechServiceWeakReference.get().setRole(role);
-                    renderPortraitFromServiceRole();
+                    //更新界面
+                    renderRolePortraitFromService();
                 }
             });
         }
@@ -224,25 +268,24 @@ public class SpeechPanelDialog extends Dialog implements SeekBar.OnSeekBarChange
                 if (speechService == null) {
                     return;
                 }
-
                 switch (checkedId) {
                     case R.id.rb_sound_setting_vrbrate1:
-                        if(speechService.getSpeed() != Speechor.SpeechorSpeed.SPEECH_SPEED_HALF) {
+                        if (speechService.getSpeed() != Speechor.SpeechorSpeed.SPEECH_SPEED_HALF) {
                             speechService.setSpeed(Speechor.SpeechorSpeed.SPEECH_SPEED_HALF);
                         }
                         break;
                     case R.id.rb_sound_setting_vrbrate2:
-                        if(speechService.getSpeed() != Speechor.SpeechorSpeed.SPEECH_SPEED_NORMAL) {
+                        if (speechService.getSpeed() != Speechor.SpeechorSpeed.SPEECH_SPEED_NORMAL) {
                             speechService.setSpeed(Speechor.SpeechorSpeed.SPEECH_SPEED_NORMAL);
                         }
                         break;
                     case R.id.rb_sound_setting_vrbrate3:
-                        if(speechService.getSpeed() != Speechor.SpeechorSpeed.SPEECH_SPEED_MULTIPLE_1_POINT_5) {
+                        if (speechService.getSpeed() != Speechor.SpeechorSpeed.SPEECH_SPEED_MULTIPLE_1_POINT_5) {
                             speechService.setSpeed(Speechor.SpeechorSpeed.SPEECH_SPEED_MULTIPLE_1_POINT_5);
                         }
                         break;
                     case R.id.rb_sound_setting_vrbrate4:
-                        if(speechService.getSpeed() != Speechor.SpeechorSpeed.SPEECH_SPEED_MULTIPLE_2) {
+                        if (speechService.getSpeed() != Speechor.SpeechorSpeed.SPEECH_SPEED_MULTIPLE_2) {
                             speechService.setSpeed(Speechor.SpeechorSpeed.SPEECH_SPEED_MULTIPLE_2);
                         }
                         break;
@@ -250,14 +293,59 @@ public class SpeechPanelDialog extends Dialog implements SeekBar.OnSeekBarChange
             }
         });
 
-        renderPortraitFromServiceRole();
-        renderPortraitLoaddingState();
+        renderRolePortraitFromService();
         renderSoundSpeechFromService();
+        renderPortraitLoaddingState(true);
     }
 
 
     private void onInitTimeSettingView(View timeSettingView) {
+        SpeechService speechService = speechServiceWeakReference.get();
+        if(speechService == null) {
+            return;
+        }
+        countDowns = new RadioButton[5];
+        countDowns[0] = timeSettingView.findViewById(R.id.rb_count_down_0);
+        countDowns[1] = timeSettingView.findViewById(R.id.rb_count_down_1);
+        countDowns[2] = timeSettingView.findViewById(R.id.rb_count_down_2);
+        countDowns[3] = timeSettingView.findViewById(R.id.rb_count_down_3);
+        countDowns[4] = timeSettingView.findViewById(R.id.rb_count_down_4);
+        timeSettingView.findViewById(R.id.btn_time_setting_close).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                viewPager.setCurrentItem(1, true);
+            }
+        });
 
+        //set countdown options's onchecked event.
+        ((RadioGroup)timeSettingView.findViewById(R.id.rg_time_setting_options)).setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                SpeechService speechService = speechServiceWeakReference.get();
+                if(speechService == null) {
+                    return;
+                }
+                switch (checkedId) {
+                    case R.id.rb_count_down_0:
+                        speechService.cancelCountDown();
+                        break;
+                    case R.id.rb_count_down_1:
+                        speechService.setCountDown(SpeechService.CountDownMode.NumberCount, 1);
+                        break;
+                    case R.id.rb_count_down_2:
+                        speechService.setCountDown(SpeechService.CountDownMode.MinuteCount, 10);
+                        break;
+                    case R.id.rb_count_down_3:
+                        speechService.setCountDown(SpeechService.CountDownMode.MinuteCount, 20);
+                        break;
+                    case R.id.rb_count_down_4:
+                        speechService.setCountDown(SpeechService.CountDownMode.MinuteCount, 30);
+                        break;
+                }
+            }
+        });
+
+        renderCountDownOptionsFromService();
     }
 
     @Override
@@ -290,7 +378,7 @@ public class SpeechPanelDialog extends Dialog implements SeekBar.OnSeekBarChange
         }
     }
 
-    public void renderPortraitFromServiceRole() {
+    public void renderRolePortraitFromService() {
         for (int i = 0; i < portraitMasks.length; i++) {
             portraitMasks[i].setVisibility(View.INVISIBLE);
         }
@@ -314,27 +402,33 @@ public class SpeechPanelDialog extends Dialog implements SeekBar.OnSeekBarChange
         }
     }
 
-    protected void renderPortraitLoaddingState() {
+    protected void resetAllPortaitLoaddingState() {
         for (int i = 0; i < portraitMasks.length; i++) {
             portraitProgress[i].setVisibility(View.INVISIBLE);
         }
+    }
 
+    /*
+
+     */
+    protected void renderPortraitLoaddingState(boolean isInit) {
+        resetAllPortaitLoaddingState();
         SpeechService speechService = speechServiceWeakReference.get();
-        if (speechService == null || speechService.getState() != SpeechService.SpeechServiceState.Loadding) {
+        if (speechService == null || (isInit && speechService.getState() != SpeechService.SpeechServiceState.Loadding)) {
             return;
         }
         switch (speechService.getRole()) {
             case XiaoIce:
-                portraitMasks[0].setVisibility(View.VISIBLE);
+                portraitProgress[0].setVisibility(View.VISIBLE);
                 break;
             case YaYa:
-                portraitMasks[1].setVisibility(View.VISIBLE);
+                portraitProgress[1].setVisibility(View.VISIBLE);
                 break;
             case XiaoYu:
-                portraitMasks[2].setVisibility(View.VISIBLE);
+                portraitProgress[2].setVisibility(View.VISIBLE);
                 break;
             case XiaoYao:
-                portraitMasks[3].setVisibility(View.VISIBLE);
+                portraitProgress[3].setVisibility(View.VISIBLE);
                 break;
         }
     }
@@ -361,6 +455,34 @@ public class SpeechPanelDialog extends Dialog implements SeekBar.OnSeekBarChange
         }
     }
 
+
+    protected void renderCountDownOptionsFromService() {
+        SpeechService speechService = speechServiceWeakReference.get();
+        if(speechService == null) {
+            return;
+        }
+        switch (speechService.getCountDownMode()) {
+            case None:
+                countDowns[0].setChecked(true);
+                break;
+            case NumberCount:
+                countDowns[1].setChecked(true);
+                break;
+            case MinuteCount:
+                switch (speechService.getCountdownThresholdValue()) {
+                    case 10:
+                        countDowns[2].setChecked(true);
+                        break;
+                    case 20:
+                        countDowns[3].setChecked(true);
+                        break;
+                    case 30:
+                        countDowns[4].setChecked(true);
+                        break;
+                }
+                break;
+        }
+    }
 
     @Override
     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -401,6 +523,9 @@ public class SpeechPanelDialog extends Dialog implements SeekBar.OnSeekBarChange
         Article article = speechService.getSelected();
         if (article != null) {
             tvTitle.setText(article.getTitle());
+            if(speechService.getState() != SpeechService.SpeechServiceState.Loadding) {
+                icoFavor.setImageResource(article.getStore() == 1 ? R.mipmap.ico_dialog_favor : R.mipmap.ico_dialog_unfavor);
+            }
         }
         else {
             tvTitle.setText("正在加载...");
@@ -456,10 +581,12 @@ public class SpeechPanelDialog extends Dialog implements SeekBar.OnSeekBarChange
         }
         if (event instanceof SpeechProgressEvent) {
             displayLoaddingAnim(false);
+            resetAllPortaitLoaddingState();
             seekBar.setEnabled(true);
         }
         else if (event instanceof SpeechBufferingEvent) {
             //如果是SpeechStartEvent 或者 BufferEvent，就显示loadding
+            renderPortraitLoaddingState(false);
             displayLoaddingAnim(true);
         }
         else if (event instanceof SpeechStopEvent) {
@@ -467,6 +594,10 @@ public class SpeechPanelDialog extends Dialog implements SeekBar.OnSeekBarChange
                 seekBar.setProgress(0);
                 seekBar.setEnabled(false);
             }
+            else if(((SpeechStopEvent) event).getStopReason() == SpeechStopEvent.StopReason.CountDownToZero) {
+                renderCountDownOptionsFromService();
+            }
+            this.dismiss();
         }
     }
 

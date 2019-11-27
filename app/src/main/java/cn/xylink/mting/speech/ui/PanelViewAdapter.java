@@ -5,6 +5,7 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -12,11 +13,15 @@ import org.greenrobot.eventbus.ThreadMode;
 
 import java.lang.ref.WeakReference;
 
+import cn.xylink.mting.MainActivity;
 import cn.xylink.mting.R;
 import cn.xylink.mting.bean.Article;
+import cn.xylink.mting.speech.SpeechError;
 import cn.xylink.mting.speech.SpeechService;
 import cn.xylink.mting.speech.event.SpeechBufferingEvent;
+import cn.xylink.mting.speech.event.SpeechErrorEvent;
 import cn.xylink.mting.speech.event.SpeechEvent;
+import cn.xylink.mting.speech.event.SpeechPanelClosedEvent;
 import cn.xylink.mting.speech.event.SpeechProgressEvent;
 import cn.xylink.mting.speech.event.SpeechSerieLoaddingEvent;
 import cn.xylink.mting.speech.event.SpeechStartEvent;
@@ -39,6 +44,8 @@ public class PanelViewAdapter {
     ImageView closeIcon;
     Article currentArticle;
 
+    public static boolean isUserClosed;
+
     @Deprecated
     public PanelViewAdapter(BaseActivity activity, SpeechService speechService) {
         attach(activity, speechService);
@@ -55,6 +62,7 @@ public class PanelViewAdapter {
         contextRef = new WeakReference<>(activity);
         speechServiceWeakReference = new WeakReference<>(speechService);
         onCreatePanelView();
+        //create the panelView, and now do not display it until received the speech events.
         if (EventBus.getDefault().isRegistered(this) == false) {
             EventBus.getDefault().register(this);
         }
@@ -65,7 +73,10 @@ public class PanelViewAdapter {
     protected void onCreatePanelView() {
         speechPanelView = View.inflate(contextRef.get(), R.layout.view_control_panel, null);
         RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
-        //layoutParams.bottomMargin = 10;
+        if(!(contextRef.get() instanceof MainActivity)) {
+            speechPanelView.setPadding(speechPanelView.getPaddingLeft(), speechPanelView.getPaddingTop(), speechPanelView.getPaddingRight(), speechPanelView.getPaddingRight());
+        }
+        speechPanelView.setLayoutParams(layoutParams);
         contextRef.get().addContentView(speechPanelView, layoutParams);
         speechPanelView.setVisibility(View.INVISIBLE);
 
@@ -92,7 +103,6 @@ public class PanelViewAdapter {
                     }
                     return;
                 }
-
                 if (isPlaying) {
                     speechServiceWeakReference.get().pause();
                 }
@@ -106,6 +116,11 @@ public class PanelViewAdapter {
             @Override
             public void onClick(View v) {
                 speechPanelView.setVisibility(View.INVISIBLE);
+                SpeechPanelClosedEvent event = new SpeechPanelClosedEvent();
+                if(speechServiceWeakReference.get() != null) {
+                    event.setArticle(speechServiceWeakReference.get().getSelected());
+                }
+                EventBus.getDefault().post(event);
             }
         });
     }
@@ -116,25 +131,22 @@ public class PanelViewAdapter {
         if (speechService == null) {
             return;
         }
+
         SpeechEvent event = events.length > 0 ? events[0] : null;
         if (event != null && event instanceof SpeechStopEvent) {
             return;
         }
-
+        isUserClosed = false;
         speechPanelView.setVisibility(View.VISIBLE);
-        /*
-        closeIcon.setVisibility(speechService.getState() == SpeechService.SpeechServiceState.Paused ||
-                speechService.getState() == SpeechService.SpeechServiceState.Error? View.VISIBLE : View.GONE);
-         */
         Article article = speechService.getSelected();
         SpeechService.SpeechServiceState currentState = speechService.getState();
         if (article != null) {
             articleTitle.setText(article.getTitle());
-            broadcastTitle.setText(article.getBroadcastId());
+            broadcastTitle.setText("-1".equals(article.getBroadcastId())? "待读播单" : (article.getBroadcastTitle() != null? article.getBroadcastTitle() : article.getBroadcastId()));
         }
-        else if (event != null && event instanceof SpeechSerieLoaddingEvent) {
-            articleTitle.setText(((SpeechSerieLoaddingEvent) event).getArticleTitle());
-            broadcastTitle.setText(((SpeechSerieLoaddingEvent) event).getSerieTitle());
+        else if (event != null && event instanceof SpeechSerieLoaddingEvent && event.getArticle() != null) {
+            articleTitle.setText(event.getArticle().getTitle() != null ? event.getArticle().getTitle() : event.getArticle().getArticleId());
+            broadcastTitle.setText("-1".equals(article.getBroadcastId())? "待读播单" : (article.getBroadcastTitle() != null? article.getBroadcastTitle() : article.getBroadcastId()));
         }
         else {
             articleTitle.setText("正在加载...");
@@ -205,9 +217,17 @@ public class PanelViewAdapter {
             //displayLoaddingAnim(true);
         }
         else if (event instanceof SpeechStopEvent) {
-            if (((SpeechStopEvent) event).getStopReason() == SpeechStopEvent.StopReason.ListIsNull) {
+            speechPanelView.setVisibility(View.INVISIBLE);
+        }
+        else if (event instanceof SpeechErrorEvent) {
+            if (((SpeechErrorEvent) event).getErrorCode() == SpeechError.LIST_LOAD_ERROR) {
                 speechPanelView.setVisibility(View.INVISIBLE);
             }
+            Toast.makeText(contextRef.get(), ((SpeechErrorEvent) event).getMessage(), Toast.LENGTH_SHORT).show();
+        }
+        else if(event instanceof SpeechPanelClosedEvent) {
+            isUserClosed = true;
+            speechPanelView.setVisibility(View.INVISIBLE);
         }
     }
 }

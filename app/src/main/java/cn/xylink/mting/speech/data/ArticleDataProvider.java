@@ -5,20 +5,25 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 
+import java.util.FormatFlagsConversionMismatchException;
 import java.util.List;
 
 import cn.xylink.mting.base.BaseRequest;
+import cn.xylink.mting.base.BaseResponse;
 import cn.xylink.mting.bean.Article;
 import cn.xylink.mting.contract.IBaseView;
 import cn.xylink.mting.model.ArticleInfoRequest;
 import cn.xylink.mting.model.ArticleInfoResponse;
+import cn.xylink.mting.model.FavoriteArticleRequest;
 import cn.xylink.mting.model.SpeechListRequest;
 import cn.xylink.mting.model.SpeechListResponse;
 import cn.xylink.mting.model.data.SpeechListNearByRequest;
+import cn.xylink.mting.utils.ContentManager;
 import cn.xylink.mting.utils.OkGoUtils;
 import cn.xylink.mting.model.data.RemoteUrl;
 import cn.xylink.mting.speech.SoundEffector;
 import cn.xylink.mting.utils.GsonUtil;
+import cn.xylink.mting.utils.T;
 
 
 /*
@@ -65,7 +70,7 @@ public class ArticleDataProvider {
         request.setLastAt(createAt);
         request.setBroadcastId(broadcastId);
         request.setEvent(event);
-        request.setToken("1");
+        request.setToken(ContentManager.getInstance().getLoginToken());
         request.doSign();
         OkGoUtils.getInstance().postData(
                 new IBaseView() {
@@ -93,12 +98,17 @@ public class ArticleDataProvider {
 
                     @Override
                     public void onSuccess(SpeechListResponse response) {
-                        List<Article> list = response.getData();
-                        for(Article article : list) {
-                            article.setBroadcastId(broadcastId);
+                        if (response.getCode() == 200) {
+                            List<Article> list = response.getData();
+                            for (Article article : list) {
+                                article.setBroadcastId(broadcastId);
+                            }
+                            if (callback != null) {
+                                callback.invoke(0, response.getData());
+                            }
                         }
-                        if (callback != null) {
-                            callback.invoke(0, response.getData());
+                        else {
+                            onFailure(response.getCode(), response.getMessage());
                         }
                     }
 
@@ -113,7 +123,7 @@ public class ArticleDataProvider {
         SpeechListRequest request = new SpeechListRequest();
         request.setBroadcastId(broadcastId);
         request.setArticleId(articleId);
-        request.setToken("1");
+        request.setToken(ContentManager.getInstance().getLoginToken());
         request.doSign();
         OkGoUtils.getInstance().postData(
                 new IBaseView() {
@@ -141,22 +151,26 @@ public class ArticleDataProvider {
 
                     @Override
                     public void onSuccess(SpeechListResponse response) {
+                        if (response.getCode() == 200) {
+                            new Thread(() -> {
+                                try {
+                                    Thread.sleep(3000);
 
-                        new Thread(()->{
-                            try {
-                                Thread.sleep(3000);
-
-                                List<Article> list = response.getData();
-                                for (Article article : list) {
-                                    article.setBroadcastId(broadcastId);
+                                    List<Article> list = response.getData();
+                                    for (Article article : list) {
+                                        article.setBroadcastId(broadcastId);
+                                    }
+                                    if (callback != null) {
+                                        callback.invoke(0, response.getData());
+                                    }
                                 }
-                                if (callback != null) {
-                                    callback.invoke(0, response.getData());
+                                catch (Exception ex) {
                                 }
-                            }
-                            catch (Exception ex) {}
-                        }).start();
-
+                            }).start();
+                        }
+                        else {
+                            onFailure(response.getCode(), response.getMessage());
+                        }
                     }
 
                     @Override
@@ -168,8 +182,9 @@ public class ArticleDataProvider {
 
 
     public void getUnreadSpeechList(ArticleLoader<List<Article>> callback) {
-        BaseRequest request = new BaseRequest();
-        request.setToken("1");
+        SpeechListRequest request = new SpeechListRequest();
+        request.setBroadcastId("-1");
+        request.setToken(ContentManager.getInstance().getLoginToken());
         request.doSign();
         OkGoUtils.getInstance().postData(
                 new IBaseView() {
@@ -181,7 +196,7 @@ public class ArticleDataProvider {
                     public void hideLoading() {
                     }
                 },
-                RemoteUrl.getUnreadListUrl(),
+                RemoteUrl.getBroadcastlListUrl(),
                 GsonUtil.GsonString(request), SpeechListResponse.class,
                 new OkGoUtils.ICallback<SpeechListResponse>() {
                     @Override
@@ -197,12 +212,113 @@ public class ArticleDataProvider {
 
                     @Override
                     public void onSuccess(SpeechListResponse response) {
-                        List<Article> list = response.getData();
-                        for (Article article : list) {
-                            article.setBroadcastId("-1");
+                        if (response.getCode() == 200) {
+                            List<Article> list = response.getData();
+                            for (Article article : list) {
+                                article.setBroadcastId("-1");
+                            }
+                            if (callback != null) {
+                                callback.invoke(0, response.getData());
+                            }
                         }
+                        else {
+                            onFailure(response.getCode(), response.getMessage());
+                        }
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        Log.d("xylink", "onComplete");
+                    }
+                });
+    }
+
+    public void favorArticle(Article article, ArticleLoader<Article> callback) {
+        FavoriteArticleRequest request = new FavoriteArticleRequest(article.getArticleId());
+        request.setToken(ContentManager.getInstance().getLoginToken());
+        request.doSign();
+
+        OkGoUtils.getInstance().postData(
+                new IBaseView() {
+                    @Override
+                    public void showLoading() {
+                    }
+
+                    @Override
+                    public void hideLoading() {
+                    }
+                },
+                RemoteUrl.getAddStoreUrl(),
+                GsonUtil.GsonString(request), BaseResponse.class,
+                new OkGoUtils.ICallback<BaseResponse>() {
+                    @Override
+                    public void onStart() {
+                    }
+
+                    @Override
+                    public void onFailure(int code, String errorMsg) {
                         if (callback != null) {
-                            callback.invoke(0, response.getData());
+                            callback.invoke(code, null);
+                        }
+                    }
+
+                    @Override
+                    public void onSuccess(BaseResponse response) {
+                        if (response.getCode() == 200) {
+                            article.setStore(1);
+                            callback.invoke(0, article);
+                        }
+                        else {
+                            onFailure(response.getCode(), response.getMessage());
+                        }
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        Log.d("xylink", "onComplete");
+                    }
+                });
+    }
+
+
+
+    public void unfavorArticle(Article article, ArticleLoader<Article> callback) {
+        FavoriteArticleRequest.UnfavorRequest request = new FavoriteArticleRequest.UnfavorRequest(article.getArticleId());
+        request.setToken(ContentManager.getInstance().getLoginToken());
+        request.doSign();
+
+        OkGoUtils.getInstance().postData(
+                new IBaseView() {
+                    @Override
+                    public void showLoading() {
+                    }
+
+                    @Override
+                    public void hideLoading() {
+                    }
+                },
+                RemoteUrl.getDelStoreUrl(),
+                GsonUtil.GsonString(request), BaseResponse.class,
+                new OkGoUtils.ICallback<BaseResponse>() {
+                    @Override
+                    public void onStart() {
+                    }
+
+                    @Override
+                    public void onFailure(int code, String errorMsg) {
+                        if (callback != null) {
+                            callback.invoke(code, null);
+                        }
+                    }
+
+                    @Override
+                    public void onSuccess(BaseResponse response) {
+                        if (response.getCode() == 200) {
+                            article.setStore(0);
+                            callback.invoke(0, article);
+                        }
+                        else {
+                            onFailure(response.getCode(), response.getMessage());
                         }
                     }
 
@@ -223,7 +339,7 @@ public class ArticleDataProvider {
         ArticleInfoRequest request = new ArticleInfoRequest();
         request.setArticleId(article.getArticleId());
         request.setBroadcastId(article.getBroadcastId());
-        request.setToken("1");
+        request.setToken(ContentManager.getInstance().getLoginToken());
         request.doSign();
 
         ArticleListArgument articleListArgument = new ArticleListArgument();
@@ -255,30 +371,37 @@ public class ArticleDataProvider {
 
                     @Override
                     public void onSuccess(ArticleInfoResponse response) {
-                        Article responseArt = response.getData();
-                        article.setContent(responseArt.getContent());
-                        article.setTitle(responseArt.getTitle());
-                        article.setUserId(responseArt.getUserId());
-                        article.setNickName(responseArt.getNickName());
-                        article.setSourceName(responseArt.getSourceName());
-                        article.setRead(responseArt.getRead());
-                        article.setShareUrl(responseArt.getShareUrl());
-                        article.setStore(responseArt.getStore());
+                        if (response.getCode() == 200) {
+                            Article responseArt = response.getData();
+                            article.setContent(responseArt.getContent());
+                            article.setTitle(responseArt.getTitle());
+                            article.setUserId(responseArt.getUserId());
+                            article.setNickName(responseArt.getNickName());
+                            article.setSourceName(responseArt.getSourceName());
+                            article.setRead(responseArt.getRead());
+                            article.setShareUrl(responseArt.getShareUrl());
+                            article.setStore(responseArt.getStore());
 
-                        ArticleListArgument argumentInner = articleListArgument;
+                            ArticleListArgument argumentInner = articleListArgument;
 
-                        if (isFirst || isLast) {
-                            getSpeechListNearBy(article.getBroadcastId(), article.getCreateAt(), (isFirst) ? "old" : "new", new ArticleLoader<List<Article>>() {
-                                @Override
-                                public void invoke(int errorCode, List<Article> data) {
-                                    argumentInner.list = data;
-                                    //不管列表成功失败，都返回0;
-                                    callback.invoke(0, argumentInner);
-                                }
-                            });
+                            if (isFirst || isLast || "-1".equals(article.getBroadcastId()) == false) {
+                                getSpeechListNearBy(article.getBroadcastId(), article.getCreateAt(), (isFirst) ? "old" : "new", new ArticleLoader<List<Article>>() {
+                                    @Override
+                                    public void invoke(int errorCode, List<Article> data) {
+                                        if (errorCode == 0) {
+                                            argumentInner.list = data;
+                                        }
+                                        //不管列表成功失败，都返回0;
+                                        callback.invoke(0, argumentInner);
+                                    }
+                                });
+                            }
+                            else {
+                                callback.invoke(0, articleListArgument);
+                            }
                         }
                         else {
-                            callback.invoke(0, articleListArgument);
+                            onFailure(response.getCode(), response.getMessage());
                         }
                     }
 

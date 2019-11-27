@@ -36,6 +36,15 @@ public class BroadcastDetailInfo {
     private int subscribeTotal;
     private int top;
     private int subscribe;
+    private String shareUrl;
+
+    public String getShareUrl() {
+        return shareUrl;
+    }
+
+    public void setShareUrl(String shareUrl) {
+        this.shareUrl = shareUrl;
+    }
 
     public String getBroadcastId() {
         return broadcastId;

@@ -14,6 +14,7 @@ import android.content.IntentFilter;
 import android.os.Binder;
 import android.os.IBinder;
 import android.util.Log;
+import android.widget.Toast;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -92,6 +93,8 @@ public class SpeechService extends Service {
 
     /*倒计时数值，可以表示倒计时的分钟数，也可以表示倒计时的播放数*/
     int countdownValue;
+
+    int countdownValueThreshold;
 
     /*指示countdownValue的类型*/
     CountDownMode countDownMode;
@@ -176,6 +179,7 @@ public class SpeechService extends Service {
         isForegroundService = false;
         isReleased = false;
         serviceState = SpeechServiceState.Ready;
+        countDownMode = CountDownMode.None;
         articleDataProvider = new ArticleDataProvider(this);
 
         speechor = new SpeechEngineWrapper(this) {
@@ -243,10 +247,9 @@ public class SpeechService extends Service {
     }
 
 
-    private void onSpeechSerieLoadding(String articleTitle, String serieTitle) {
+    private void onSpeechSerieLoadding(Article article) {
         SpeechSerieLoaddingEvent event = new SpeechSerieLoaddingEvent();
-        event.setArticleTitle(articleTitle);
-        event.setSerieTitle(serieTitle);
+        event.setArticle(article);
         EventBus.getDefault().post(event);
     }
 
@@ -278,7 +281,9 @@ public class SpeechService extends Service {
 
     private void onSpeechError(int errorCode, String message, Article article) {
         EventBus.getDefault().post(new SpeechErrorEvent(errorCode, message, article));
-        foregroundServiceAdapter.retainForeground();
+        if(getSelected() != null) {
+            foregroundServiceAdapter.retainForeground();
+        }
     }
 
     private void onSpeechEnd(Article article, float progress, boolean deleteFromList) {
@@ -312,16 +317,19 @@ public class SpeechService extends Service {
     private void onSpeechStoped(SpeechStopEvent.StopReason reason) {
         EventBus.getDefault().post(new SpeechStopEvent(reason));
         //notificationManager.cancelAll();
-        if (reason == SpeechStopEvent.StopReason.ListIsNull) {
+
+        //if (reason == SpeechStopEvent.StopReason.ListIsNull) {
             //this.stopForeground(true);
             foregroundServiceAdapter.stopForeground(true);
-        }
+        //}
     }
 
+    /*
     private void onSpeechArticleFavor(Article article) {
         foregroundServiceAdapter.retainForeground();
         EventBus.getDefault().post(new SpeechFavorArticleEvent(article));
     }
+     */
 
     public synchronized SpeechServiceState getState() {
         return serviceState;
@@ -337,6 +345,7 @@ public class SpeechService extends Service {
 
         this.countDownMode = mode;
         this.countdownValue = tickcountValue;
+        this.countdownValueThreshold = tickcountValue;
 
         if (mode == CountDownMode.MinuteCount) {
             countdownTimer = new Timer();
@@ -365,11 +374,16 @@ public class SpeechService extends Service {
         }
         this.countDownMode = CountDownMode.None;
         this.countdownValue = 0;
+        this.countdownValueThreshold = 0;
     }
 
 
     public synchronized CountDownMode getCountDownMode() {
         return this.countDownMode;
+    }
+
+    public synchronized int getCountdownThresholdValue() {
+        return this.countdownValueThreshold;
     }
 
 
@@ -380,12 +394,13 @@ public class SpeechService extends Service {
 
     public synchronized int seek(float percentage) {
         //如果当前播放不存在，那返回错误
-        if (speechList.getCurrent() == null) {
+        if (getSelected() == null) {
             return -SpeechError.NOTHING_TO_PLAY;
         }
-        SpeechServiceState preState = serviceState;
-
-        if (serviceState == SpeechServiceState.Ready && serviceState == SpeechServiceState.Loadding) {
+        SpeechServiceState preState = getState();
+        //disable seek action while in ready state or loading list.
+        if (getState() == SpeechServiceState.Ready
+                || (getState() == SpeechServiceState.Loadding && getSelected() == null)) {
             return -SpeechError.SEEK_NOT_ALLOW;
         }
         if (getSelected() == null || getSelected().getTextBody() == null) {
@@ -411,6 +426,7 @@ public class SpeechService extends Service {
      */
     public synchronized boolean pause() {
         if (speechList.getCurrent() == null) {
+            //Loadding list保护
             return false;
         }
 
@@ -459,22 +475,18 @@ public class SpeechService extends Service {
     }
 
     private synchronized boolean playSelected() {
-        if (speechList == null || speechList.getCurrent() == null)
+        if (getSelected() == null) {
             return false;
-
+        }
         prepareArticle(speechList.getCurrent(), false);
         return true;
     }
 
     public synchronized Article getSelected() {
-        if (speechList == null || speechList.getCurrent() == null) {
+        if (speechList == null) {
             return null;
         }
         return speechList.getCurrent();
-    }
-
-    private void endCurrentArticle(Article articleToSpeech) {
-
     }
 
 
@@ -511,14 +523,15 @@ public class SpeechService extends Service {
 
     ArticleDataProvider.ArticleLoader<List<Article>> dataProviderCallback = null;
 
-    public synchronized void loadAndPlay(String serieId, String articleId) {
-        if (serieId == null || articleId == null) {
-            return;
+    public synchronized void loadAndPlay(Article article) throws Exception {
+        if (article.getArticleId() == null || article.getBroadcastId() == null) {
+            throw new Exception("The fields articleId or broadcastId can not be nullable.");
         }
 
-        Article destArticle = this.speechList.find(articleId);
+        Article destArticle = this.speechList.find(article.getArticleId());
         //如果要播放的目标文章，不是现存专辑的，也没有在现存专辑的列表中，那么重新加载列表
-        if (serieId.equals(this.serieId) == false || destArticle == null) {
+        if (article.getBroadcastId().equals(this.serieId) == false || destArticle == null) {
+            this.serieId = article.getBroadcastId();
             Article currentArticle = getSelected();
             if ((getState() == SpeechServiceState.Playing || getState() == SpeechServiceState.Paused)
                     && currentArticle != null) {
@@ -530,22 +543,30 @@ public class SpeechService extends Service {
                 }
             }
             ArticleDataProvider articleDataProvider = new ArticleDataProvider(this);
-            SpeechService.SpeechListType speechListType = ("-1".equals(serieId) ? SpeechListType.Unread : SpeechListType.Dynamic);
+            SpeechService.SpeechListType speechListType = ("-1".equals(article.getBroadcastId()) ? SpeechListType.Unread : SpeechListType.Dynamic);
             dataProviderCallback = new ArticleDataProvider.ArticleLoader<List<Article>>() {
                 @Override
                 public void invoke(int errorCode, List<Article> data) {
-                    //防止dataprovider在过程中被颠覆
-                    if (errorCode == 0 && this == dataProviderCallback) {
-                        synchronized (SpeechService.this) {
-                            SpeechService.this.resetSpeechList(data, speechListType);
-                            SpeechService.this.play(articleId);
+                    synchronized (SpeechService.this) {
+                        if (errorCode != 0) {
+                            Toast.makeText(SpeechService.this, "加载错误", Toast.LENGTH_SHORT).show();
+                            onSpeechError(SpeechError.LIST_LOAD_ERROR, "加载播单错误", article);
+                            return;
+                        }
+                        if (this == dataProviderCallback) {
+                            resetSpeechList(data, speechListType);
+                            speechList.select(article.getArticleId());
+                            //有可能这里被pause掉了
+                            if (getState() == SpeechServiceState.Loadding) {
+                                playSelected();
+                            }
                         }
                     }
                 }
             };
 
             if ("-1".equals(serieId) == false) {
-                articleDataProvider.getSpeechList(serieId, articleId, dataProviderCallback);
+                articleDataProvider.getSpeechList(article.getBroadcastId(), article.getArticleId(), dataProviderCallback);
             }
             else {
                 articleDataProvider.getUnreadSpeechList(dataProviderCallback);
@@ -553,10 +574,10 @@ public class SpeechService extends Service {
             this.serviceState = SpeechServiceState.Loadding;
             //清理列表
             this.speechList.removeAll();
-            onSpeechSerieLoadding(articleId, serieId);
+            onSpeechSerieLoadding(article);
         }
         else {
-            play(articleId);
+            play(article.getArticleId());
         }
     }
 
@@ -596,14 +617,16 @@ public class SpeechService extends Service {
         this.articleDataProvider.loadArticleAndList(article, needSourceEffect, isFirst, isLast, (int errorcode, ArticleDataProvider.ArticleListArgument responseResult) -> {
 
             synchronized (this) {
-                //解决轮回问题
-                if (isReleased || serviceState != SpeechServiceState.Loadding || responseResult.article != this.speechList.getCurrent()) {
-                    return;
-                }
-
                 if (errorcode != 0) {
                     this.serviceState = SpeechServiceState.Error;
                     this.onSpeechError(SpeechError.ARTICLE_LOAD_ERROR, "文章正文加载失败", article);
+                    return;
+                }
+                //解决轮回问题
+                if (isReleased
+                        || serviceState != SpeechServiceState.Loadding
+                        || responseResult == null
+                        || responseResult.article != this.speechList.getCurrent()) {
                     return;
                 }
 

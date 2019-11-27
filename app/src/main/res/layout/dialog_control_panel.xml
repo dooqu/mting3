@@ -215,6 +215,7 @@
             android:orientation="horizontal">
 
             <ImageView
+                android:id="@+id/ico_favor"
                 android:layout_width="32dp"
                 android:layout_height="32dp"
                 android:layout_gravity="center"
@@ -231,6 +232,7 @@
             android:orientation="horizontal">
 
             <ImageView
+                android:id="@+id/ico_dialog_addto"
                 android:layout_width="32dp"
                 android:layout_height="32dp"
                 android:layout_gravity="center"

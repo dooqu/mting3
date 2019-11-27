@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:id="@+id/rl_broadcast_item_menu_root"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:id="@+id/ll_broadcast_item_menu_bg"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="@drawable/corner_up"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tv_broadcast_item_menu_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="16dp"
+            android:layout_marginTop="24dp"
+            android:layout_marginRight="16dp"
+            android:ellipsize="end"
+            android:gravity="center"
+            android:lines="1"
+            android:textColor="@color/c666666"
+            android:textSize="15sp"
+            tools:text="你是  飒飒大阿松大神大神" />
+
+        <HorizontalScrollView
+            android:id="@+id/ww"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:scrollbars="none">
+
+            <LinearLayout
+                android:id="@+id/wwe"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/tv_broadcast_item_menu_wx"
+                    android:layout_width="103dp"
+                    android:layout_height="wrap_content"
+                    android:drawableTop="@mipmap/icon_wx"
+                    android:drawablePadding="8dp"
+                    android:gravity="center"
+                    android:text="微信好友"
+                    android:textColor="@color/c666666"
+                    android:textSize="12sp" />
+
+                <TextView
+                    android:id="@+id/tv_broadcast_item_menu_pyq"
+                    android:layout_width="103dp"
+                    android:layout_height="wrap_content"
+                    android:drawableTop="@mipmap/icon_pyq"
+                    android:drawablePadding="8dp"
+                    android:gravity="center"
+                    android:text="朋友圈"
+                    android:textColor="@color/c666666"
+                    android:textSize="12sp" />
+
+                <TextView
+                    android:id="@+id/tv_broadcast_item_menu_qq"
+                    android:layout_width="103dp"
+                    android:layout_height="wrap_content"
+                    android:drawableTop="@mipmap/icon_qq"
+                    android:drawablePadding="8dp"
+                    android:gravity="center"
+                    android:text="QQ好友"
+                    android:textColor="@color/c666666"
+                    android:textSize="12sp" />
+
+                <TextView
+                    android:id="@+id/tv_broadcast_item_menu_kj"
+                    android:layout_width="103dp"
+                    android:layout_height="wrap_content"
+                    android:drawableTop="@mipmap/icon_qqkj"
+                    android:drawablePadding="8dp"
+                    android:gravity="center"
+                    android:text="QQ空间"
+                    android:textColor="@color/c666666"
+                    android:textSize="12sp" />
+
+                <TextView
+                    android:id="@+id/tv_broadcast_item_menu_link"
+                    android:layout_width="103dp"
+                    android:layout_height="wrap_content"
+                    android:drawableTop="@mipmap/icon_link"
+                    android:drawablePadding="8dp"
+                    android:gravity="center"
+                    android:text="复制链接"
+                    android:textColor="@color/c666666"
+                    android:textSize="12sp" />
+            </LinearLayout>
+        </HorizontalScrollView>
+
+        <LinearLayout
+            android:id="@+id/ll_broadcast_item_menu_br"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/tv_broadcast_item_menu_collect"
+                android:layout_width="103dp"
+                android:layout_height="wrap_content"
+                android:drawableTop="@mipmap/icon_to_collect"
+                android:drawablePadding="8dp"
+                android:gravity="center"
+                android:text="收藏"
+                android:textColor="@color/c666666"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/tv_broadcast_item_menu_addto"
+                android:layout_width="103dp"
+                android:layout_height="wrap_content"
+                android:drawableTop="@mipmap/icon_addto"
+                android:drawablePadding="8dp"
+                android:gravity="center"
+                android:text="添加到"
+                android:textColor="@color/c666666"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/tv_broadcast_item_menu_del"
+                android:layout_width="103dp"
+                android:layout_height="wrap_content"
+                android:drawableTop="@mipmap/icon_del"
+                android:drawablePadding="8dp"
+                android:gravity="center"
+                android:text="删除"
+                android:textColor="@color/c666666"
+                android:textSize="12sp" />
+
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="16dp"
+            android:background="@color/cf0f0f0" />
+
+        <TextView
+            android:id="@+id/tv_broadcast_item_menu_close"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:ellipsize="end"
+            android:gravity="center"
+            android:lines="1"
+            android:text="关闭"
+            android:textColor="@color/c666666"
+            android:textSize="18sp" />
+
+
+    </LinearLayout>
+
+</RelativeLayout>

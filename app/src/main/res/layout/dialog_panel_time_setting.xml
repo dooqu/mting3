@@ -1,6 +1,144 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="top"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp">
 
-</android.support.constraint.ConstraintLayout>
+    <LinearLayout
+        android:id="@+id/dialog_panel_time_setting_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:fitsSystemWindows="true"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:id="@+id/btn_time_setting_close"
+            android:layout_width="wrap_content"
+            android:layout_height="30dp">
+
+            <ImageView
+                android:layout_width="18dp"
+                android:layout_height="18dp"
+                android:layout_gravity="center"
+                android:layout_marginLeft="0dp"
+                android:layout_marginRight="16dp"
+                android:src="@mipmap/back"></ImageView>
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/dialog_panel_article_title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="6dp"
+            android:layout_weight="1"
+            android:ellipsize="end"
+            android:singleLine="true"
+            android:text="定时关闭"
+            android:textColor="#666666"
+            android:textSize="15sp"></TextView>
+
+        <View
+            android:id="@+id/dialog_panel_share"
+            android:layout_width="49dp"
+            android:layout_height="30dp">
+
+        </View>
+    </LinearLayout>
+
+    <View
+        android:id="@+id/view_panel_sound_hr"
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:layout_below="@id/dialog_panel_time_setting_title"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="0dp"
+        android:background="#e0e0e0"></View>
+
+    <RadioGroup
+        android:id="@+id/rg_time_setting_options"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/view_panel_sound_hr"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginRight="20dp"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <RadioButton
+            android:id="@+id/rb_count_down_0"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="@null"
+            android:button="@null"
+            android:checked="true"
+            android:drawableRight="@drawable/bg_check_btn"
+            android:drawablePadding="@dimen/setting_dimen_7"
+            android:lineHeight="50dp"
+            android:text="不开启"
+            android:textAlignment="textStart"
+            android:textColor="#333333"
+            android:textSize="15sp" />
+
+        <RadioButton
+            android:id="@+id/rb_count_down_1"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="@null"
+            android:button="@null"
+            android:checked="false"
+            android:drawableRight="@drawable/bg_check_btn"
+            android:drawablePadding="@dimen/setting_dimen_7"
+            android:lineHeight="50dp"
+            android:text="读完本篇后关闭"
+            android:textAlignment="textStart"
+            android:textColor="#333333"
+            android:textSize="15sp" />
+        <RadioButton
+            android:id="@+id/rb_count_down_2"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="@null"
+            android:button="@null"
+            android:checked="false"
+            android:drawableRight="@drawable/bg_check_btn"
+            android:drawablePadding="@dimen/setting_dimen_7"
+            android:lineHeight="50dp"
+            android:text="10分钟"
+            android:textAlignment="textStart"
+            android:textColor="#333333"
+            android:textSize="15sp" />
+        <RadioButton
+            android:id="@+id/rb_count_down_3"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="@null"
+            android:button="@null"
+            android:checked="false"
+            android:drawableRight="@drawable/bg_check_btn"
+            android:drawablePadding="@dimen/setting_dimen_7"
+            android:lineHeight="50dp"
+            android:text="20分钟"
+            android:textAlignment="textStart"
+            android:textColor="#333333"
+            android:textSize="15sp" />
+        <RadioButton
+            android:id="@+id/rb_count_down_4"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="@null"
+            android:button="@null"
+            android:checked="false"
+            android:drawableRight="@drawable/bg_check_btn"
+            android:drawablePadding="@dimen/setting_dimen_7"
+            android:lineHeight="50dp"
+            android:text="30分钟"
+            android:textAlignment="textStart"
+            android:textColor="#333333"
+            android:textSize="15sp" />
+    </RadioGroup>
+</RelativeLayout>

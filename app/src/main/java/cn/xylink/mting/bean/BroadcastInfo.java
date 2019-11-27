@@ -34,6 +34,15 @@ public class BroadcastInfo {
     private Long createAt;
     private Long updateAt;
     private Long lastAt;
+    private String describe;
+
+    public String getDescribe() {
+        return describe;
+    }
+
+    public void setDescribe(String describe) {
+        this.describe = describe;
+    }
 
     public String getItemId() {
         return itemId;
