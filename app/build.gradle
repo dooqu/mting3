@@ -91,4 +91,6 @@ dependencies {
     implementation files('libs/wechat-sdk-android-with-mta-5.4.0.jar')
     implementation 'com.scwang.smartrefresh:SmartRefreshLayout:1.1.0'
     implementation 'com.scwang.smartrefresh:SmartRefreshHeader:1.1.0'
+    implementation files('libs/commons-codec-1.9.jar')
+    implementation files('libs/bcprov-jdk15on-159.jar')
 }

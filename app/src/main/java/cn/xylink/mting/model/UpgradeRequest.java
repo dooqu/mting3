@@ -1,4 +1,5 @@
 package cn.xylink.mting.model;
+import cn.xylink.mting.base.BaseRequest;
 
 public class UpgradeRequest extends BaseRequest {
     //protected String sn;
