@@ -20,6 +20,7 @@ import cn.xylink.mting.ui.activity.PersonalInfoActivity;
 import cn.xylink.mting.ui.activity.SettingSystemActivity;
 import cn.xylink.mting.utils.ContentManager;
 import cn.xylink.mting.utils.ImageUtils;
+import cn.xylink.mting.utils.L;
 
 public class MyFragment extends BaseFragment {
     @BindView(R.id.ll_setting_system)
@@ -50,7 +51,10 @@ public class MyFragment extends BaseFragment {
 
     private void setUserInfo() {
         UserInfo info = ContentManager.getInstance().getUserInfo();
-        if (ContentManager.getInstance().getVisitor().equals("1")) {
+        L.e(info);
+        if (ContentManager.getInstance().getVisitor().equals("0")) {
+            L.v("游客登录");
+        } else {
             if (null != info) {
                 if (!TextUtils.isEmpty(info.getHeadImg()))
                     ImageUtils.get().loadCircle(mHeadImageView, info.getHeadImg());
