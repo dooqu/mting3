@@ -253,6 +253,16 @@ public class RemoteUrl {
         return URL_BASE + "/api/art/v1/article/input_create";
     }
 
+    //播单文章添加
+    public static String addBroadcastItemUrl() {
+        return URL_BASE + "/api/art/v1/broadcast/item/add";
+    }
+
+    //我的播单列表
+    public static String getBroadcastListUrl() {
+        return URL_BASE + "/api/art/v1/broadcast/list";
+    }
+
     public static String getBroadcastDetailUrl() {
         return URL_BASE + "/api/art/v1/broadcast/detail";
     }
