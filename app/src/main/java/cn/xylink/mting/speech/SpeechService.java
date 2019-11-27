@@ -281,7 +281,7 @@ public class SpeechService extends Service {
 
     private void onSpeechError(int errorCode, String message, Article article) {
         EventBus.getDefault().post(new SpeechErrorEvent(errorCode, message, article));
-        if(getSelected() != null) {
+        if (getSelected() != null) {
             foregroundServiceAdapter.retainForeground();
         }
     }
@@ -319,8 +319,8 @@ public class SpeechService extends Service {
         //notificationManager.cancelAll();
 
         //if (reason == SpeechStopEvent.StopReason.ListIsNull) {
-            //this.stopForeground(true);
-            foregroundServiceAdapter.stopForeground(true);
+        //this.stopForeground(true);
+        foregroundServiceAdapter.stopForeground(true);
         //}
     }
 
