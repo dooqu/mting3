@@ -275,7 +275,7 @@ public class GetCodeActivity extends BasePresenterActivity implements GetCodeCon
             L.v("token", response.data.getToken());
             ContentManager.getInstance().setLoginToken(response.data.getToken());
             ContentManager.getInstance().setUserInfo(response.data);
-
+            ContentManager.getInstance().setVisitor("1");//表示不是游客登录
             TCAgent.onRegister(ContentManager.getInstance().getUserInfo().getUserId(), TDAccount.AccountType.ANONYMOUS, "");
             TCAgent.onLogin(ContentManager.getInstance().getUserInfo().getUserId(), TDAccount.AccountType.ANONYMOUS, "");
             Intent mIntent = new Intent(this, MainActivity.class);

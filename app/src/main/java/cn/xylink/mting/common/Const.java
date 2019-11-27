@@ -45,5 +45,16 @@ public class Const {
 
     public static final String USERPROTOCOL_URL = "http://service.xylink.net/article/html/agreement.html";
 
+    public class BottomDialogItem{
+        public static final String SET_TOP = "置顶";
+        public static final String CANEL_TOP = "取消置顶";
+        public static final String SUBSCRIBE = "订阅";
+        public static final String CANCEL_SUBSCRIBE = "取消订阅";
+        public static final String DELETE = "删除";
+        public static final String EDIT_BROADCAST = "编辑播单";
+        public static final String REPORT = "举报";
+        public static final String BATCH = "批量操作";
+    }
+
 
 }

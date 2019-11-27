@@ -48,12 +48,12 @@ public class RemoteUrl {
 
     //删除待读
     public static String getDelUnreadUrl() {
-        return URL_BASE + "/api/sct/v2/article/unread/delete";
+        return URL_BASE + "/api/art/v1/article/unread/delete";
     }
 
     //删除已读
     public static String getDelReadedUrl() {
-        return URL_BASE + "/api/sct/v2/article/existread/delete";
+        return URL_BASE + "/api/art/v1/article/existread/delete";
     }
 
     //删除收藏
@@ -62,7 +62,7 @@ public class RemoteUrl {
     }
 
     //收藏列表
-    public static String getStoreUrl() {
+    public static String getStoreListUrl() {
         return URL_BASE + "/api/sct/v2/article/store/list";
     }
 
@@ -253,7 +253,32 @@ public class RemoteUrl {
         return URL_BASE + "/api/art/v1/article/input_create";
     }
 
+    //播单文章添加
+    public static String addBroadcastItemUrl() {
+        return URL_BASE + "/api/art/v1/broadcast/item/add";
+    }
+
+    //我的播单列表
+    public static String getBroadcastListUrl() {
+        return URL_BASE + "/api/art/v1/broadcast/list";
+    }
+
     public static String getBroadcastDetailUrl() {
         return URL_BASE + "/api/art/v1/broadcast/detail";
+    }
+
+    //删除播单
+    public static String getDelBroadcastUrl() {
+        return URL_BASE + "/api/art/v1/broadcast/delete";
+    }
+
+    //播单文章删除接口v1
+    public static String getDelBroadcastArticleUrl() {
+        return URL_BASE + "/api/art/v1/broadcast/item/remove";
+    }
+
+    //创建的文章删除接口v1
+    public static String getDelMyCreateArticleUrl() {
+        return URL_BASE + "/api/art/v1/article/delete";
     }
 }

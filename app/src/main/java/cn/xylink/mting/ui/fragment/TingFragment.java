@@ -25,6 +25,7 @@ import cn.xylink.mting.base.BaseResponseArray;
 import cn.xylink.mting.bean.SetTopRequest;
 import cn.xylink.mting.bean.SubscribeRequest;
 import cn.xylink.mting.bean.TingInfo;
+import cn.xylink.mting.common.Const;
 import cn.xylink.mting.contract.SetTopContact;
 import cn.xylink.mting.contract.SubscribeContact;
 import cn.xylink.mting.contract.TingListContact;
@@ -130,6 +131,7 @@ public class TingFragment extends BasePresenterFragment implements TingListConta
         Intent intent = new Intent(getActivity(), BroadcastActivity.class);
         intent.putExtra(BroadcastActivity.EXTRA_BROADCASTID, article.getBroadcastId());
         intent.putExtra(BroadcastActivity.EXTRA_TITLE, article.getName());
+        intent.putExtra(BroadcastActivity.EXTRA_ISTOP, article.getTop());
         getActivity().startActivity(intent);
         if (article.getNewMsg() > 0) {
             article.setNewMsg(0);
@@ -141,12 +143,15 @@ public class TingFragment extends BasePresenterFragment implements TingListConta
     public void onItemLongClick(TingInfo article) {
 
         if ("-1".equals(article.getBroadcastId()) || ContentManager.getInstance().getUserInfo().getUserId().equals(article.getCreateUserId())) {
-            mBottomTingDialog.setItemModle(new BottomTingItemModle("置顶", "取消置顶", getActivity().getResources().getDrawable(R.mipmap.icon_set_top),
+            mBottomTingDialog.setItemModle(new BottomTingItemModle(Const.BottomDialogItem.SET_TOP, Const.BottomDialogItem.CANEL_TOP,
+                    getActivity().getResources().getDrawable(R.mipmap.icon_set_top),
                     getActivity().getResources().getDrawable(R.mipmap.icon_cancel_top), article.getTop() == 1, article.getBroadcastId()));
         } else {
-            mBottomTingDialog.setItemModle(new BottomTingItemModle("置顶", "取消置顶", getActivity().getResources().getDrawable(R.mipmap.icon_set_top),
+            mBottomTingDialog.setItemModle(new BottomTingItemModle(Const.BottomDialogItem.SET_TOP, Const.BottomDialogItem.CANEL_TOP,
+                            getActivity().getResources().getDrawable(R.mipmap.icon_set_top),
                             getActivity().getResources().getDrawable(R.mipmap.icon_cancel_top), article.getTop() == 1, article.getBroadcastId())
-                    , new BottomTingItemModle("取消订阅", getActivity().getResources().getDrawable(R.mipmap.icon_cancel_subscibe), article.getBroadcastId()));
+                    , new BottomTingItemModle(Const.BottomDialogItem.CANCEL_SUBSCRIBE,
+                            getActivity().getResources().getDrawable(R.mipmap.icon_cancel_subscibe), article.getBroadcastId()));
         }
         mBottomTingDialog.show();
     }
