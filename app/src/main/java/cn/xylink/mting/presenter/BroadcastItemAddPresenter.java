@@ -4,8 +4,10 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import cn.xylink.mting.base.BaseRequest;
+import cn.xylink.mting.base.BaseResponse;
 import cn.xylink.mting.base.BaseResponseArray;
 import cn.xylink.mting.bean.BroadcastItemAddInfo;
+import cn.xylink.mting.bean.BroadcastItemAddRequest;
 import cn.xylink.mting.contract.BroadcastItemAddContact;
 import cn.xylink.mting.model.data.RemoteUrl;
 import cn.xylink.mting.utils.OkGoUtils;
@@ -16,7 +18,7 @@ import cn.xylink.mting.utils.OkGoUtils;
  */
 public class BroadcastItemAddPresenter extends BasePresenter<BroadcastItemAddContact.IBroadcastItemAddView> implements BroadcastItemAddContact.Presenter {
     @Override
-    public void getBroadcastItemAddList(BaseRequest request, boolean isLoadMore) {
+    public void getBroadcastItemAddList(BaseRequest request) {
         OkGoUtils.getInstance().postData(mView, RemoteUrl.getBroadcastListUrl(), new Gson().toJson(request),
                 new TypeToken<BaseResponseArray<BroadcastItemAddInfo>>() {
 
@@ -31,15 +33,15 @@ public class BroadcastItemAddPresenter extends BasePresenter<BroadcastItemAddCon
                         BaseResponseArray<BroadcastItemAddInfo> baseResponse = (BaseResponseArray<BroadcastItemAddInfo>) data;
                         int code = baseResponse.code;
                         if (code == 200) {
-                            mView.onBroadcastItemAddSuccess(baseResponse.data, isLoadMore);
+                            mView.onBroadcastItemAddListSuccess(baseResponse.data);
                         } else {
-                            mView.onBroadcastItemAddError(code, baseResponse.message, isLoadMore);
+                            mView.onBroadcastItemAddListError(code, baseResponse.message);
                         }
                     }
 
                     @Override
                     public void onFailure(int code, String errorMsg) {
-                        mView.onBroadcastItemAddError(code, errorMsg, isLoadMore);
+                        mView.onBroadcastItemAddListError(code, errorMsg);
 
                     }
 
@@ -48,5 +50,41 @@ public class BroadcastItemAddPresenter extends BasePresenter<BroadcastItemAddCon
 
                     }
                 });
+    }
+
+    @Override
+    public void getBroadcastItemAdd(BroadcastItemAddRequest request) {
+        OkGoUtils.getInstance().postData(mView, RemoteUrl.addBroadcastItemUrl(), new Gson().toJson(request),
+                new TypeToken<BaseResponse<String>>() {
+
+                }.getType(), new OkGoUtils.ICallback() {
+                    @Override
+                    public void onStart() {
+
+                    }
+
+                    @Override
+                    public void onSuccess(Object data) {
+                        BaseResponse<String> baseResponse = (BaseResponse<String>) data;
+                        int code = baseResponse.code;
+                        if (code == 200) {
+                            mView.onBroadcastItemAddSuccess(baseResponse);
+                        } else {
+                            mView.onBroadcastItemAddError(code, baseResponse.message);
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(int code, String errorMsg) {
+                        mView.onBroadcastItemAddError(code, errorMsg);
+
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });
+
     }
 }
