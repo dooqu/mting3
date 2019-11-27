@@ -1,7 +1,7 @@
 package cn.xylink.mting.contract;
 
 import cn.xylink.mting.bean.BroadcastDetailInfo;
-import cn.xylink.mting.bean.BroadcastDetailRequest;
+import cn.xylink.mting.bean.BroadcastIdRequest;
 
 /**
  * -----------------------------------------------------------------
@@ -17,6 +17,6 @@ public interface BroadcastDetailContact {
     }
 
     interface Presenter<T> {
-        void getBroadcastDetail(BroadcastDetailRequest request);
+        void getBroadcastDetail(BroadcastIdRequest request);
     }
 }

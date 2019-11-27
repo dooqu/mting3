@@ -12,6 +12,8 @@ import android.widget.TextView;
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.scwang.smartrefresh.layout.footer.ClassicsFooter;
 
+import org.greenrobot.eventbus.EventBus;
+
 import java.util.List;
 
 import butterknife.BindView;
@@ -21,20 +23,27 @@ import cn.xylink.mting.base.BaseResponse;
 import cn.xylink.mting.bean.AddStoreRequest;
 import cn.xylink.mting.bean.Article;
 import cn.xylink.mting.bean.BroadcastDetailInfo;
-import cn.xylink.mting.bean.BroadcastDetailRequest;
+import cn.xylink.mting.bean.BroadcastIdRequest;
 import cn.xylink.mting.bean.BroadcastInfo;
 import cn.xylink.mting.bean.BroadcastListRequest;
-import cn.xylink.mting.bean.DelStoreRequest;
+import cn.xylink.mting.bean.ArticleIdsRequest;
+import cn.xylink.mting.bean.SetTopRequest;
+import cn.xylink.mting.bean.SubscribeRequest;
 import cn.xylink.mting.bean.WorldRequest;
 import cn.xylink.mting.common.Const;
 import cn.xylink.mting.contract.AddStoreContact;
 import cn.xylink.mting.contract.BroadcastDetailContact;
 import cn.xylink.mting.contract.BroadcastListContact;
 import cn.xylink.mting.contract.DelStoreContact;
+import cn.xylink.mting.contract.SetTopContact;
+import cn.xylink.mting.contract.SubscribeContact;
+import cn.xylink.mting.event.TingRefreshEvent;
 import cn.xylink.mting.presenter.AddStorePresenter;
 import cn.xylink.mting.presenter.BroadcastDetailPresenter;
 import cn.xylink.mting.presenter.BroadcastListPresenter;
 import cn.xylink.mting.presenter.DelStorePreesenter;
+import cn.xylink.mting.presenter.SetTopPresenter;
+import cn.xylink.mting.presenter.SubscribePresenter;
 import cn.xylink.mting.ui.adapter.BroadcastAdapter;
 import cn.xylink.mting.ui.dialog.BottomTingDialog;
 import cn.xylink.mting.ui.dialog.BottomTingItemModle;
@@ -48,10 +57,12 @@ import cn.xylink.mting.widget.EndlessRecyclerOnScrollListener;
  */
 public class BroadcastActivity extends BasePresenterActivity implements BroadcastListContact.IBroadcastListView,
         BroadcastDetailContact.IBroadcastDetailView, BroadcastAdapter.OnItemClickListener, BroadcastItemMenuDialog.OnBroadcastItemMenuListener
-        , AddStoreContact.IAddStoreView, DelStoreContact.IDelStoreView, BottomTingDialog.OnBottomTingListener {
+        , AddStoreContact.IAddStoreView, DelStoreContact.IDelStoreView, BottomTingDialog.OnBottomTingListener
+        , SetTopContact.ISetTopView, SubscribeContact.ISubscribeView {
 
     public static final String EXTRA_BROADCASTID = "extra_broadcast_id";
     public static final String EXTRA_TITLE = "extra_title";
+    public static final String EXTRA_ISTOP = "extra_istop";
     @BindView(R.id.ll_titlebar)
     LinearLayout mTitleBarLayout;
     @BindView(R.id.srl_refreshLayout)
@@ -71,6 +82,9 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
     private BroadcastDetailPresenter mBroadcastDetailPresenter;
     private AddStorePresenter mAddStorePresenter;
     private DelStorePreesenter mDelStorePreesenter;
+    private SetTopPresenter mSetTopPresenter;
+    private SubscribePresenter mSubscribePresenter;
+    private int isTopIntent;
 
     @Override
     protected void preView() {
@@ -87,6 +101,10 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
         mAddStorePresenter.attachView(this);
         mDelStorePreesenter = (DelStorePreesenter) createPresenter(DelStorePreesenter.class);
         mDelStorePreesenter.attachView(this);
+        mSetTopPresenter = (SetTopPresenter) createPresenter(SetTopPresenter.class);
+        mSetTopPresenter.attachView(this);
+        mSubscribePresenter = (SubscribePresenter) createPresenter(SubscribePresenter.class);
+        mSubscribePresenter.attachView(this);
         mRecyclerView.setItemAnimator(null);
         mAdapter = new BroadcastAdapter(this, getIntent().getStringExtra(EXTRA_BROADCASTID));
         mAdapter.setOnItemClickListener(this);
@@ -111,6 +129,7 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
 
 //        mRefreshLayout.setRefreshContent(this.getLayoutInflater().inflate(R.layout.dialog_tip,null));
 //        mRefreshLayout.setRefreshContent(mRecyclerView);
+        isTopIntent = getIntent().getIntExtra(EXTRA_ISTOP, 0);
     }
 
     Drawable drawable;
@@ -123,7 +142,7 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
     }
 
     private void initDetail() {
-        BroadcastDetailRequest request = new BroadcastDetailRequest();
+        BroadcastIdRequest request = new BroadcastIdRequest();
         request.setBroadcastId(getIntent().getStringExtra(EXTRA_BROADCASTID));
         request.doSign();
         mBroadcastDetailPresenter.getBroadcastDetail(request);
@@ -282,7 +301,7 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
                 if (getIntent().getStringExtra(EXTRA_BROADCASTID).startsWith("-")) {
                     /*是否是待读*/
                     if ("-1".equals(getIntent().getStringExtra(EXTRA_BROADCASTID))) {
-                        mBottomTingDialog.setItemModle(mDetailInfo.getTop() == 0 ? new BottomTingItemModle(Const.BottomDialogItem.SET_TOP,
+                        mBottomTingDialog.setItemModle(isTopIntent == 0 ? new BottomTingItemModle(Const.BottomDialogItem.SET_TOP,
                                         getResources().getDrawable(R.mipmap.icon_set_top))
                                         : new BottomTingItemModle(Const.BottomDialogItem.CANEL_TOP,
                                         getResources().getDrawable(R.mipmap.icon_cancel_top))
@@ -348,7 +367,7 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
     }
 
     private void delStore(String id) {
-        DelStoreRequest request = new DelStoreRequest();
+        ArticleIdsRequest request = new ArticleIdsRequest();
         request.setArticleIds(id);
         request.doSign();
         mDelStorePreesenter.delStore(request);
@@ -383,12 +402,16 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
     public void onBottomTingItemClick(BottomTingItemModle modle) {
         switch (modle.getName()) {
             case Const.BottomDialogItem.SET_TOP:
+                setTop(SetTopRequest.EVENT.TOP.name().toLowerCase());
                 break;
             case Const.BottomDialogItem.CANEL_TOP:
+                setTop(SetTopRequest.EVENT.CANCEL.name().toLowerCase());
                 break;
             case Const.BottomDialogItem.SUBSCRIBE:
+                subscribe(SubscribeRequest.EVENT.SUBSCRIBE.name().toLowerCase());
                 break;
             case Const.BottomDialogItem.CANCEL_SUBSCRIBE:
+                subscribe(SubscribeRequest.EVENT.CANCEL.name().toLowerCase());
                 break;
             case Const.BottomDialogItem.EDIT_BROADCAST:
                 break;
@@ -398,7 +421,50 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
                 break;
             case Const.BottomDialogItem.DELETE:
                 break;
-                default:
+            default:
         }
+    }
+
+    private void setTop(String event) {
+        SetTopRequest request = new SetTopRequest();
+        request.setBroadcastId(getIntent().getStringExtra(EXTRA_BROADCASTID));
+        request.setEvent(event);
+        request.doSign();
+        mSetTopPresenter.setTop(request);
+    }
+
+    private void subscribe(String event) {
+        SubscribeRequest request = new SubscribeRequest();
+        request.setBroadcastId(mDetailInfo.getBroadcastId());
+        request.setEvent(event);
+        request.doSign();
+        mSubscribePresenter.subscribe(request);
+    }
+
+
+    @Override
+    public void onSetTopSuccess(BaseResponse response) {
+        if (mDetailInfo != null) {
+            mDetailInfo.setTop(mDetailInfo.getTop() ^ 1);
+        } else if ("-1".equals(getIntent().getStringExtra(EXTRA_BROADCASTID))) {
+            isTopIntent ^= 1;
+        }
+        EventBus.getDefault().post(new TingRefreshEvent());
+    }
+
+    @Override
+    public void onSetTopError(int code, String errorMsg) {
+
+    }
+
+    @Override
+    public void onSubscribeSuccess(BaseResponse response, String event) {
+        mDetailInfo.setSubscribe(mDetailInfo.getSubscribe() ^ 1);
+        EventBus.getDefault().post(new TingRefreshEvent());
+    }
+
+    @Override
+    public void onSubscribeError(int code, String errorMsg, String event) {
+
     }
 }
