@@ -49,6 +49,12 @@ public class MyFragment extends BaseFragment {
         setUserInfo();
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        setUserInfo();
+    }
+
     private void setUserInfo() {
         UserInfo info = ContentManager.getInstance().getUserInfo();
         L.e(info);
