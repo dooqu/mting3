@@ -4,7 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import cn.xylink.mting.base.BaseResponse;
-import cn.xylink.mting.bean.DelStoreRequest;
+import cn.xylink.mting.bean.ArticleIdsRequest;
 import cn.xylink.mting.contract.DelStoreContact;
 import cn.xylink.mting.model.data.OkGoUtils;
 import cn.xylink.mting.model.data.RemoteUrl;
@@ -16,7 +16,7 @@ import cn.xylink.mting.model.data.RemoteUrl;
  */
 public class DelStorePreesenter extends BasePresenter<DelStoreContact.IDelStoreView> implements DelStoreContact.Presenter {
     @Override
-    public void delStore(DelStoreRequest request) {
+    public void delStore(ArticleIdsRequest request) {
         OkGoUtils.getInstance().postData(mView, RemoteUrl.getDelStoreUrl(), new Gson().toJson(request),
                 new TypeToken<BaseResponse>() {
 

@@ -7,7 +7,7 @@ import cn.xylink.mting.base.BaseRequest;
  * 2019/11/19 17:22 : Create BroadcastDetailRequest.java (JoDragon);
  * -----------------------------------------------------------------
  */
-public class BroadcastDetailRequest extends BaseRequest {
+public class BroadcastIdRequest extends BaseRequest {
     private String broadcastId;
 
     public String getBroadcastId() {

@@ -5,7 +5,7 @@ import com.google.gson.reflect.TypeToken;
 
 import cn.xylink.mting.base.BaseResponse;
 import cn.xylink.mting.bean.BroadcastDetailInfo;
-import cn.xylink.mting.bean.BroadcastDetailRequest;
+import cn.xylink.mting.bean.BroadcastIdRequest;
 import cn.xylink.mting.contract.BroadcastDetailContact;
 import cn.xylink.mting.model.data.OkGoUtils;
 import cn.xylink.mting.model.data.RemoteUrl;
@@ -17,7 +17,7 @@ import cn.xylink.mting.model.data.RemoteUrl;
  */
 public class BroadcastDetailPresenter extends BasePresenter<BroadcastDetailContact.IBroadcastDetailView> implements BroadcastDetailContact.Presenter {
     @Override
-    public void getBroadcastDetail(BroadcastDetailRequest request) {
+    public void getBroadcastDetail(BroadcastIdRequest request) {
         OkGoUtils.getInstance().postData(mView, RemoteUrl.getBroadcastDetailUrl(), new Gson().toJson(request),
                 new TypeToken<BaseResponse<BroadcastDetailInfo>>() {
 

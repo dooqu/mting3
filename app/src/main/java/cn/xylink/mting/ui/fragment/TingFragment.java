@@ -131,6 +131,7 @@ public class TingFragment extends BasePresenterFragment implements TingListConta
         Intent intent = new Intent(getActivity(), BroadcastActivity.class);
         intent.putExtra(BroadcastActivity.EXTRA_BROADCASTID, article.getBroadcastId());
         intent.putExtra(BroadcastActivity.EXTRA_TITLE, article.getName());
+        intent.putExtra(BroadcastActivity.EXTRA_ISTOP, article.getTop());
         getActivity().startActivity(intent);
         if (article.getNewMsg() > 0) {
             article.setNewMsg(0);

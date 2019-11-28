@@ -1,7 +1,7 @@
 package cn.xylink.mting.contract;
 
 import cn.xylink.mting.base.BaseResponse;
-import cn.xylink.mting.bean.DelStoreRequest;
+import cn.xylink.mting.bean.ArticleIdsRequest;
 
 /**
  * -----------------------------------------------------------------
@@ -16,6 +16,6 @@ public interface DelStoreContact {
     }
 
     interface Presenter<T> {
-        void delStore(DelStoreRequest request);
+        void delStore(ArticleIdsRequest request);
     }
 }
