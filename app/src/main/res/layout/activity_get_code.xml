@@ -2,9 +2,10 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
     android:orientation="vertical">
 
-    <include layout="@layout/title_include"/>
+    <include layout="@layout/title_include" />
 
     <TextView
         android:id="@+id/tv_msg_content"
@@ -15,35 +16,35 @@
         android:text="验证码已发送至:"
         android:textColor="@color/color_login_text_gray"
         android:textSize="20sp" />
+
     <cn.xylink.mting.widget.ZpPhoneEditText
         android:id="@+id/et_phone"
         android:layout_width="match_parent"
         android:layout_height="42dp"
         android:layout_marginStart="50dp"
-        android:layout_marginEnd="50dp"
         android:layout_marginTop="20dp"
-        android:inputType="phone"
+        android:layout_marginEnd="50dp"
+        android:background="@android:color/transparent"
         android:enabled="false"
         android:gravity="center"
-        android:background="@android:color/transparent"
+        android:inputType="phone"
         android:maxLength="13"
-        android:textColor="@color/color_blue"
         android:paddingBottom="10dp"
+        android:textColor="@color/color_blue"
         android:textSize="@dimen/text_23" />
-
 
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="67dp"
-        android:layout_marginRight="67dp"
-        android:layout_marginTop="46dp">
+        android:layout_marginTop="46dp"
+        android:layout_marginRight="67dp">
+
         <cn.xylink.mting.widget.PhoneCode
             android:id="@+id/pc_code"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            />
+            android:layout_height="wrap_content" />
     </RelativeLayout>
 
 
@@ -55,9 +56,9 @@
         android:layout_marginTop="26dp"
         android:layout_marginRight="40dp"
         android:gravity="right"
+        android:padding="30dp"
         android:text=""
         android:textColor="@color/color_blue"
-        android:textSize="18sp"
-        android:padding="30dp" />
+        android:textSize="18sp" />
 
 </LinearLayout>
