@@ -65,7 +65,6 @@ public class XiaoIceTTSAudioLoader implements TTSAudioLoader {
     }
 
 
-
     public void textToSpeechEx(String text, Speechor.SpeechorSpeed speechorSpeed, LoadResult result) {
         XiaoIceTTSRequest request = new XiaoIceTTSRequest();
         request.setSpeed(getSpeechString(speechorSpeed));
@@ -101,7 +100,7 @@ public class XiaoIceTTSAudioLoader implements TTSAudioLoader {
                             List<XiaoIceTTSInfo> ttsResponses = data.getData();
 
                             if (ttsResponses == null || ttsResponses.size() < 1) {
-                                if(result != null) {
+                                if (result != null) {
                                     result.invoke(FRAGMENT_LOAD_INNTERNAL_ERROR, "没有响应", null);
                                 }
                                 return;
@@ -216,13 +215,6 @@ public class XiaoIceTTSAudioLoader implements TTSAudioLoader {
                                             }
                                         }
                                     });
-
-                            new Thread(new Runnable() {
-                                @Override
-                                public void run() {
-
-                                }
-                            });
                         }
                         catch (JSONException jsonError) {
                             Log.d("SPEECH", "testToSpeechError:" + jsonError.toString());

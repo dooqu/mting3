@@ -3,6 +3,7 @@
     android:id="@+id/ll_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
     android:orientation="vertical">
 
     <include layout="@layout/title_include" />
@@ -38,11 +39,11 @@
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
-            android:paddingLeft="10dp"
             android:adjustViewBounds="true"
+            android:paddingLeft="10dp"
             android:paddingTop="10dp"
-            android:paddingBottom="10dp"
             android:paddingRight="32dp"
+            android:paddingBottom="10dp"
             android:scaleType="centerInside"
             android:src="@mipmap/arrow" />
     </RelativeLayout>
@@ -59,6 +60,7 @@
             android:text="昵称"
             android:textColor="@color/color_333333"
             android:textSize="16sp" />
+
         <FrameLayout
             android:id="@+id/fl_et_nick_name"
             android:layout_width="200dp"
@@ -75,9 +77,9 @@
                 android:layout_gravity="right"
                 android:background="@android:color/transparent"
                 android:gravity="right"
+                android:lines="1"
                 android:maxLength="15"
                 android:maxLines="1"
-                android:lines="1"
                 android:singleLine="true"
                 android:textSize="@dimen/text_16"
                 android:visibility="gone" />
@@ -88,9 +90,9 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="right"
                 android:gravity="right"
+                android:lines="1"
                 android:maxLength="15"
                 android:maxLines="1"
-                android:lines="1"
                 android:singleLine="true"
                 android:textSize="@dimen/text_16" />
         </FrameLayout>
@@ -102,8 +104,8 @@
             android:layout_alignParentRight="true"
             android:layout_gravity="center_vertical"
             android:paddingLeft="10dp"
-            android:paddingRight="32dp"
             android:paddingTop="5dp"
+            android:paddingRight="32dp"
             android:paddingBottom="5dp"
             android:scaleType="centerInside"
             android:src="@mipmap/arrow" />
@@ -127,8 +129,8 @@
             android:id="@+id/tv_sex"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingLeft="15dp"
             android:layout_toLeftOf="@+id/iv_arrow_3"
+            android:paddingLeft="15dp"
             android:text="@string/please_choose"
             android:textSize="@dimen/text_16" />
 
@@ -139,13 +141,14 @@
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
             android:paddingLeft="10dp"
-            android:paddingRight="32dp"
             android:paddingTop="5dp"
+            android:paddingRight="32dp"
             android:paddingBottom="5dp"
             android:scaleType="centerInside"
             android:src="@mipmap/arrow" />
 
     </RelativeLayout>
+
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -163,8 +166,8 @@
             android:id="@+id/tv_birthday"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingLeft="15dp"
             android:layout_toLeftOf="@+id/iv_arrow_4"
+            android:paddingLeft="15dp"
             android:text="@string/please_choose"
             android:textSize="@dimen/text_16" />
 
@@ -175,16 +178,13 @@
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
             android:paddingLeft="10dp"
-            android:paddingRight="32dp"
             android:paddingTop="5dp"
+            android:paddingRight="32dp"
             android:paddingBottom="5dp"
             android:scaleType="centerInside"
             android:src="@mipmap/arrow" />
 
     </RelativeLayout>
-
-
-
 
 
 </LinearLayout>

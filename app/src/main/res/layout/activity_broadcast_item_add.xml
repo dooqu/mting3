@@ -3,17 +3,10 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/bg_default"
+    android:fitsSystemWindows="true"
     android:orientation="vertical">
 
     <include layout="@layout/title_include" />
-
-    <!--    <com.scwang.smartrefresh.layout.SmartRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"-->
-    <!--        android:id="@+id/refreshLayout"-->
-    <!--        android:layout_width="match_parent"-->
-    <!--        android:layout_height="match_parent"-->
-    <!--        android:layout_below="@+id/ll_title"-->
-    <!--        android:layout_marginLeft="16dp"-->
-    <!--        android:layout_marginRight="16dp">-->
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/rv_broadcast_list"
@@ -21,6 +14,5 @@
         android:layout_height="match_parent"
         android:layout_margin="16dp"
         android:scrollbars="none" />
-    <!--    </com.scwang.smartrefresh.layout.SmartRefreshLayout>-->
 
 </LinearLayout>

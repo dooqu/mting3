@@ -65,10 +65,10 @@ public class ArticleDataProvider {
         handler = new Handler(Looper.getMainLooper());
     }
 
-    public void getSpeechListNearBy(String broadcastId, long createAt, String event, ArticleLoader<List<Article>> callback) {
+    public void getSpeechListNearBy(Article article, String event, ArticleLoader<List<Article>> callback) {
         SpeechListNearByRequest request = new SpeechListNearByRequest();
-        request.setLastAt(createAt);
-        request.setBroadcastId(broadcastId);
+        request.setLastAt(article.getCreateAt());
+        request.setBroadcastId(article.getBroadcastId());
         request.setEvent(event);
         request.setToken(ContentManager.getInstance().getLoginToken());
         request.doSign();
@@ -100,8 +100,9 @@ public class ArticleDataProvider {
                     public void onSuccess(SpeechListResponse response) {
                         if (response.getCode() == 200) {
                             List<Article> list = response.getData();
-                            for (Article article : list) {
-                                article.setBroadcastId(broadcastId);
+                            for (Article articleFinded : list) {
+                                articleFinded.setBroadcastId(article.getBroadcastId());
+                                articleFinded.setBroadcastTitle(article.getBroadcastTitle());
                             }
                             if (callback != null) {
                                 callback.invoke(0, response.getData());
@@ -119,10 +120,10 @@ public class ArticleDataProvider {
                 });
     }
 
-    public void getSpeechList(String broadcastId, String articleId, ArticleLoader<List<Article>> callback) {
+    public void getSpeechList(Article article, ArticleLoader<List<Article>> callback) {
         SpeechListRequest request = new SpeechListRequest();
-        request.setBroadcastId(broadcastId);
-        request.setArticleId(articleId);
+        request.setBroadcastId(article.getBroadcastId());
+        request.setArticleId(article.getArticleId());
         request.setToken(ContentManager.getInstance().getLoginToken());
         request.doSign();
         OkGoUtils.getInstance().postData(
@@ -157,8 +158,9 @@ public class ArticleDataProvider {
                                     Thread.sleep(3000);
 
                                     List<Article> list = response.getData();
-                                    for (Article article : list) {
-                                        article.setBroadcastId(broadcastId);
+                                    for (Article articleFinded : list) {
+                                        articleFinded.setBroadcastId(article.getBroadcastId());
+                                        articleFinded.setBroadcastTitle(article.getBroadcastTitle());
                                     }
                                     if (callback != null) {
                                         callback.invoke(0, response.getData());
@@ -385,7 +387,7 @@ public class ArticleDataProvider {
                             ArticleListArgument argumentInner = articleListArgument;
 
                             if (isFirst || isLast || "-1".equals(article.getBroadcastId()) == false) {
-                                getSpeechListNearBy(article.getBroadcastId(), article.getCreateAt(), (isFirst) ? "old" : "new", new ArticleLoader<List<Article>>() {
+                                getSpeechListNearBy(article, (isFirst) ? "old" : "new", new ArticleLoader<List<Article>>() {
                                     @Override
                                     public void invoke(int errorCode, List<Article> data) {
                                         if (errorCode == 0) {
