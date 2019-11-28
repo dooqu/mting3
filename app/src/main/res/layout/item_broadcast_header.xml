@@ -7,6 +7,13 @@
     android:background="@mipmap/bg_default_bro"
     android:minHeight="208dp">
 
+    <View
+        android:id="@+id/iv_broadcast_shadow"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"
+        android:background="#99000000"/>
+
     <ImageView
         android:id="@+id/iv_broadcast_img"
         android:layout_width="104dp"

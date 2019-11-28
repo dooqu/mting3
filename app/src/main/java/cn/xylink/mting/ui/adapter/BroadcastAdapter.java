@@ -87,6 +87,7 @@ public class BroadcastAdapter extends RecyclerView.Adapter<BroadcastAdapter.View
             if (mBroadcastid.startsWith("-")) {
                 initSysBroadcast(holder);
             } else if (mDetailInfo != null) {
+                holder.mShadowView.setVisibility(View.VISIBLE);
                 ViewGroup.LayoutParams lp = holder.mTopLayout.getLayoutParams();
                 lp.height = DensityUtil.dip2pxComm(mContext, 253f);
                 holder.mTopLayout.setLayoutParams(lp);
@@ -108,6 +109,7 @@ public class BroadcastAdapter extends RecyclerView.Adapter<BroadcastAdapter.View
             }
         } else {
             BroadcastInfo data = mData.get(position);
+            data.setPositin(position);
             holder.tvTitle.setText(data.getTitle());
             holder.tvSource.setText(data.getSourceName());
             if (!TextUtils.isEmpty(data.getPicture())) {
@@ -199,6 +201,7 @@ public class BroadcastAdapter extends RecyclerView.Adapter<BroadcastAdapter.View
         TextView mDesTextView;
         TextView mSubscribedTextView;
         TextView mShare2worldTextView;
+        View mShadowView;
 
         public ViewHolder(@NonNull View itemView, int position) {
             super(itemView);
@@ -209,6 +212,7 @@ public class BroadcastAdapter extends RecyclerView.Adapter<BroadcastAdapter.View
                 mDesTextView = itemView.findViewById(R.id.tv_broadcast_description);
                 mSubscribedTextView = itemView.findViewById(R.id.tv_broadcast_subscribed);
                 mShare2worldTextView = itemView.findViewById(R.id.tv_broadcast_share2world);
+                mShadowView = itemView.findViewById(R.id.iv_broadcast_shadow);
             } else {
                 tvTitle = itemView.findViewById(R.id.tv_broadcast_title);
                 tvSource = itemView.findViewById(R.id.tv_broadcast_source);

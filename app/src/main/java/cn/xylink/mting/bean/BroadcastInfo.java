@@ -35,6 +35,15 @@ public class BroadcastInfo {
     private Long updateAt;
     private Long lastAt;
     private String describe;
+    private int positin;
+
+    public int getPositin() {
+        return positin;
+    }
+
+    public void setPositin(int positin) {
+        this.positin = positin;
+    }
 
     public String getDescribe() {
         return describe;

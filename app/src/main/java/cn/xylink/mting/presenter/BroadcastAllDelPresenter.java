@@ -6,6 +6,7 @@ import com.google.gson.reflect.TypeToken;
 import cn.xylink.mting.base.BaseResponse;
 import cn.xylink.mting.bean.ArticleIdsRequest;
 import cn.xylink.mting.bean.BroadcastIdRequest;
+import cn.xylink.mting.bean.BroadcastInfo;
 import cn.xylink.mting.contract.BroadcastAllDelContact;
 import cn.xylink.mting.model.data.OkGoUtils;
 import cn.xylink.mting.model.data.RemoteUrl;
@@ -17,7 +18,7 @@ import cn.xylink.mting.model.data.RemoteUrl;
  */
 public class BroadcastAllDelPresenter extends BasePresenter<BroadcastAllDelContact.IBroadcastAllDelView> implements BroadcastAllDelContact.Presenter {
     @Override
-    public void delStore(ArticleIdsRequest request) {
+    public void delStore(ArticleIdsRequest request, BroadcastInfo info) {
         OkGoUtils.getInstance().postData(mView, RemoteUrl.getDelStoreUrl(), new Gson().toJson(request),
                 new TypeToken<BaseResponse>() {
 
@@ -31,7 +32,7 @@ public class BroadcastAllDelPresenter extends BasePresenter<BroadcastAllDelConta
                         BaseResponse baseResponse = (BaseResponse) data;
                         int code = baseResponse.code;
                         if (code == 200) {
-                            mView.onBroadcastAllDelSuccess(baseResponse);
+                            mView.onBroadcastAllDelSuccess(baseResponse,info);
                         } else {
                             mView.onBroadcastAllDelError(code, baseResponse.message);
                         }
@@ -49,7 +50,7 @@ public class BroadcastAllDelPresenter extends BasePresenter<BroadcastAllDelConta
     }
 
     @Override
-    public void delUnread(ArticleIdsRequest request) {
+    public void delUnread(ArticleIdsRequest request, BroadcastInfo info ) {
         OkGoUtils.getInstance().postData(mView, RemoteUrl.getDelUnreadUrl(), new Gson().toJson(request),
                 new TypeToken<BaseResponse>() {
 
@@ -63,7 +64,7 @@ public class BroadcastAllDelPresenter extends BasePresenter<BroadcastAllDelConta
                         BaseResponse baseResponse = (BaseResponse) data;
                         int code = baseResponse.code;
                         if (code == 200) {
-                            mView.onBroadcastAllDelSuccess(baseResponse);
+                            mView.onBroadcastAllDelSuccess(baseResponse,info);
                         } else {
                             mView.onBroadcastAllDelError(code, baseResponse.message);
                         }
@@ -81,7 +82,7 @@ public class BroadcastAllDelPresenter extends BasePresenter<BroadcastAllDelConta
     }
 
     @Override
-    public void delReaded(ArticleIdsRequest request) {
+    public void delReaded(ArticleIdsRequest request, BroadcastInfo info ) {
         OkGoUtils.getInstance().postData(mView, RemoteUrl.getDelReadedUrl(), new Gson().toJson(request),
                 new TypeToken<BaseResponse>() {
 
@@ -95,7 +96,7 @@ public class BroadcastAllDelPresenter extends BasePresenter<BroadcastAllDelConta
                         BaseResponse baseResponse = (BaseResponse) data;
                         int code = baseResponse.code;
                         if (code == 200) {
-                            mView.onBroadcastAllDelSuccess(baseResponse);
+                            mView.onBroadcastAllDelSuccess(baseResponse,info);
                         } else {
                             mView.onBroadcastAllDelError(code, baseResponse.message);
                         }
@@ -113,7 +114,7 @@ public class BroadcastAllDelPresenter extends BasePresenter<BroadcastAllDelConta
     }
 
     @Override
-    public void delMyCreateArticle(ArticleIdsRequest request) {
+    public void delMyCreateArticle(ArticleIdsRequest request, BroadcastInfo info ) {
         OkGoUtils.getInstance().postData(mView, RemoteUrl.getDelMyCreateArticleUrl(), new Gson().toJson(request),
                 new TypeToken<BaseResponse>() {
 
@@ -127,7 +128,7 @@ public class BroadcastAllDelPresenter extends BasePresenter<BroadcastAllDelConta
                         BaseResponse baseResponse = (BaseResponse) data;
                         int code = baseResponse.code;
                         if (code == 200) {
-                            mView.onBroadcastAllDelSuccess(baseResponse);
+                            mView.onBroadcastAllDelSuccess(baseResponse,info);
                         } else {
                             mView.onBroadcastAllDelError(code, baseResponse.message);
                         }
@@ -145,7 +146,7 @@ public class BroadcastAllDelPresenter extends BasePresenter<BroadcastAllDelConta
     }
 
     @Override
-    public void delMyCreateBroadcastArticle(ArticleIdsRequest request) {
+    public void delMyCreateBroadcastArticle(ArticleIdsRequest request, BroadcastInfo info ) {
         OkGoUtils.getInstance().postData(mView, RemoteUrl.getDelBroadcastArticleUrl(), new Gson().toJson(request),
                 new TypeToken<BaseResponse>() {
 
@@ -159,7 +160,7 @@ public class BroadcastAllDelPresenter extends BasePresenter<BroadcastAllDelConta
                         BaseResponse baseResponse = (BaseResponse) data;
                         int code = baseResponse.code;
                         if (code == 200) {
-                            mView.onBroadcastAllDelSuccess(baseResponse);
+                            mView.onBroadcastAllDelSuccess(baseResponse,info);
                         } else {
                             mView.onBroadcastAllDelError(code, baseResponse.message);
                         }
@@ -191,7 +192,7 @@ public class BroadcastAllDelPresenter extends BasePresenter<BroadcastAllDelConta
                         BaseResponse baseResponse = (BaseResponse) data;
                         int code = baseResponse.code;
                         if (code == 200) {
-                            mView.onBroadcastAllDelSuccess(baseResponse);
+                            mView.onBroadcastAllDelSuccess(baseResponse,null);
                         } else {
                             mView.onBroadcastAllDelError(code, baseResponse.message);
                         }

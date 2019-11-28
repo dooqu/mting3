@@ -1,6 +1,7 @@
 package cn.xylink.mting.ui.activity;
 
 
+import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -32,6 +33,7 @@ import cn.xylink.mting.bean.SubscribeRequest;
 import cn.xylink.mting.bean.WorldRequest;
 import cn.xylink.mting.common.Const;
 import cn.xylink.mting.contract.AddStoreContact;
+import cn.xylink.mting.contract.BroadcastAllDelContact;
 import cn.xylink.mting.contract.BroadcastDetailContact;
 import cn.xylink.mting.contract.BroadcastListContact;
 import cn.xylink.mting.contract.DelStoreContact;
@@ -39,6 +41,7 @@ import cn.xylink.mting.contract.SetTopContact;
 import cn.xylink.mting.contract.SubscribeContact;
 import cn.xylink.mting.event.TingRefreshEvent;
 import cn.xylink.mting.presenter.AddStorePresenter;
+import cn.xylink.mting.presenter.BroadcastAllDelPresenter;
 import cn.xylink.mting.presenter.BroadcastDetailPresenter;
 import cn.xylink.mting.presenter.BroadcastListPresenter;
 import cn.xylink.mting.presenter.DelStorePreesenter;
@@ -58,7 +61,7 @@ import cn.xylink.mting.widget.EndlessRecyclerOnScrollListener;
 public class BroadcastActivity extends BasePresenterActivity implements BroadcastListContact.IBroadcastListView,
         BroadcastDetailContact.IBroadcastDetailView, BroadcastAdapter.OnItemClickListener, BroadcastItemMenuDialog.OnBroadcastItemMenuListener
         , AddStoreContact.IAddStoreView, DelStoreContact.IDelStoreView, BottomTingDialog.OnBottomTingListener
-        , SetTopContact.ISetTopView, SubscribeContact.ISubscribeView {
+        , SetTopContact.ISetTopView, SubscribeContact.ISubscribeView, BroadcastAllDelContact.IBroadcastAllDelView {
 
     public static final String EXTRA_BROADCASTID = "extra_broadcast_id";
     public static final String EXTRA_TITLE = "extra_title";
@@ -85,6 +88,7 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
     private SetTopPresenter mSetTopPresenter;
     private SubscribePresenter mSubscribePresenter;
     private int isTopIntent;
+    private BroadcastAllDelPresenter mBroadcastAllDelPresenter;
 
     @Override
     protected void preView() {
@@ -105,6 +109,8 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
         mSetTopPresenter.attachView(this);
         mSubscribePresenter = (SubscribePresenter) createPresenter(SubscribePresenter.class);
         mSubscribePresenter.attachView(this);
+        mBroadcastAllDelPresenter = (BroadcastAllDelPresenter) createPresenter(BroadcastAllDelPresenter.class);
+        mBroadcastAllDelPresenter.attachView(this);
         mRecyclerView.setItemAnimator(null);
         mAdapter = new BroadcastAdapter(this, getIntent().getStringExtra(EXTRA_BROADCASTID));
         mAdapter.setOnItemClickListener(this);
@@ -350,13 +356,15 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
         if (info.getStore() == 0) {
             addStore(info.getArticleId());
         } else {
-            delStore(info.getArticleId());
+            delStore(info);
         }
     }
 
     @Override
     public void onItemAddTO(BroadcastInfo info) {
-
+        Intent intent = new Intent(this, BroadcastItemAddActivity.class);
+        intent.putExtra(BroadcastItemAddActivity.ARTICLE_IDS_EXTRA, info.getArticleId());
+        startActivity(intent);
     }
 
     private void addStore(String id) {
@@ -366,9 +374,9 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
         mAddStorePresenter.addStore(request);
     }
 
-    private void delStore(String id) {
+    private void delStore(BroadcastInfo info) {
         ArticleIdsRequest request = new ArticleIdsRequest();
-        request.setArticleIds(id);
+        request.setArticleIds(info.getArticleId());
         request.doSign();
         mDelStorePreesenter.delStore(request);
     }
@@ -414,15 +422,30 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
                 subscribe(SubscribeRequest.EVENT.CANCEL.name().toLowerCase());
                 break;
             case Const.BottomDialogItem.EDIT_BROADCAST:
+                if (mDetailInfo != null) {
+                    Intent intent = new Intent(this, BroadcastEditActivity.class);
+                    intent.putExtra(BroadcastEditActivity.BROADCAST_ID, mDetailInfo.getBroadcastId());
+                    intent.putExtra(BroadcastEditActivity.BROADCAST_NAME, mDetailInfo.getName());
+                    intent.putExtra(BroadcastEditActivity.BROADCAST_INTRO, mDetailInfo.getInfo());
+                    startActivity(intent);
+                }
                 break;
             case Const.BottomDialogItem.BATCH:
                 break;
             case Const.BottomDialogItem.REPORT:
                 break;
             case Const.BottomDialogItem.DELETE:
+                delBroadcast();
                 break;
             default:
         }
+    }
+
+    private void delBroadcast() {
+        BroadcastIdRequest request = new BroadcastIdRequest();
+        request.setBroadcastId(getIntent().getStringExtra(EXTRA_BROADCASTID));
+        request.doSign();
+        mBroadcastAllDelPresenter.delBroadcast(request);
     }
 
     private void setTop(String event) {
@@ -465,6 +488,21 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
 
     @Override
     public void onSubscribeError(int code, String errorMsg, String event) {
+
+    }
+
+    @Override
+    public void onBroadcastAllDelSuccess(BaseResponse response, BroadcastInfo info) {
+        if (info != null) {
+            mAdapter.notifyItemRemoved(info.getPositin());
+        } else {
+            EventBus.getDefault().post(new TingRefreshEvent());
+            this.finish();
+        }
+    }
+
+    @Override
+    public void onBroadcastAllDelError(int code, String errorMsg) {
 
     }
 }
