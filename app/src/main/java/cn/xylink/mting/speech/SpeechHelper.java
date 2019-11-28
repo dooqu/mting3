@@ -90,17 +90,17 @@ public class SpeechHelper {
 
     public static List<String> prepareTextFragments(String textBody, int singleFragmentMaxSize, boolean tryAloneFragment) {
         List<String> fragments = prepareTextFragments(textBody, tryAloneFragment);
-        if(tryAloneFragment) {
+        if (tryAloneFragment) {
             return fragments;
         }
         List<String> fragmentsGenerated = new ArrayList<>();
         int newFragmentSizeTotal = 0;
         //使用stringbuilder进行缓冲
         StringBuilder newFragmentText = new StringBuilder();
-        for(int index = 0, size = fragments.size(); index < size; ++index) {
+        for (int index = 0, size = fragments.size(); index < size; ++index) {
             int currFragSize = fragments.get(index).length();
             //如果当前缓冲区的剩余空间不可以放下当前的segment
-            if(newFragmentSizeTotal + currFragSize >= singleFragmentMaxSize && newFragmentSizeTotal != 0) {
+            if (newFragmentSizeTotal + currFragSize >= singleFragmentMaxSize && newFragmentSizeTotal != 0) {
                 //把目前缓冲区内的送进list
                 fragmentsGenerated.add(newFragmentText.toString());
                 //清空缓冲区
@@ -110,14 +110,14 @@ public class SpeechHelper {
             newFragmentSizeTotal += currFragSize;
             newFragmentText.append(fragments.get(index));
 
-            if(fragments.get(index).endsWith("\n")) {
+            if (fragments.get(index).endsWith("\n")) {
                 fragmentsGenerated.add(newFragmentText.toString());
                 newFragmentText.delete(0, newFragmentText.length());
                 newFragmentSizeTotal = 0;
                 continue;
             }
 
-            if(index == (size - 1)) {
+            if (index == (size - 1)) {
                 fragmentsGenerated.add(newFragmentText.toString());
             }
         }

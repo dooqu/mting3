@@ -2,6 +2,7 @@ package cn.xylink.mting.ui.dialog;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.view.ViewPager;
@@ -37,6 +38,7 @@ import cn.xylink.mting.speech.event.SpeechProgressEvent;
 import cn.xylink.mting.speech.event.SpeechStartEvent;
 import cn.xylink.mting.speech.event.SpeechStopEvent;
 import cn.xylink.mting.ui.activity.BaseActivity;
+import cn.xylink.mting.ui.activity.BroadcastItemAddActivity;
 import cn.xylink.mting.ui.adapter.ControlPanelAdapter;
 
 import static cn.xylink.mting.speech.Speechor.SpeechorRole.XiaoIce;
@@ -191,6 +193,19 @@ public class SpeechPanelDialog extends Dialog implements SeekBar.OnSeekBarChange
                     icoFavor.setImageResource(R.mipmap.ico_dialog_unfavor);
                     provider.unfavorArticle(article, favorCallback);
                 }
+            }
+        });
+        controlView.findViewById(R.id.view_dialog_panel_add_to).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(contextWeakReference.get() == null
+                        || speechServiceWeakReference.get() == null
+                        || speechServiceWeakReference.get().getSelected() == null) {
+                    return;
+                }
+                Intent intent = new Intent(contextWeakReference.get(), BroadcastItemAddActivity.class);
+                intent.putExtra(BroadcastItemAddActivity.ARTICLE_IDS_EXTRA, speechServiceWeakReference.get().getSelected().getArticleId());
+                contextWeakReference.get().startActivity(intent);
             }
         });
     }
