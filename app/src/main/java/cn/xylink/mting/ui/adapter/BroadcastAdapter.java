@@ -108,6 +108,7 @@ public class BroadcastAdapter extends RecyclerView.Adapter<BroadcastAdapter.View
             }
         } else {
             BroadcastInfo data = mData.get(position);
+            data.setPositin(position);
             holder.tvTitle.setText(data.getTitle());
             holder.tvSource.setText(data.getSourceName());
             if (!TextUtils.isEmpty(data.getPicture())) {
