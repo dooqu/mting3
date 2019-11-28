@@ -98,7 +98,8 @@ public class BroadcastItemAddActivity extends BasePresenterActivity implements B
 
     @Override
     public void onBroadcastItemAddSuccess(BaseResponse baseResponse) {
-
+        BroadcastItemAddActivity.this.finish();
+        L.v(baseResponse);
     }
 
     @Override

@@ -55,8 +55,8 @@ public class BroadcastEditActivity extends BasePresenterActivity implements Broa
     private TakePhoto takePhoto;
     private InvokeParam invokeParam;
     private File coverFile = null;
-    private String broadcastId = "201911201529147430620507";
-    private String name = "GGG";
+    private String broadcastId = "";
+    private String name = "";
     private String intro = "";
     public static String BROADCAST_ID = "BROADCAST_ID";
     public static String BROADCAST_NAME = "BROADCAST_NAME";
@@ -76,9 +76,9 @@ public class BroadcastEditActivity extends BasePresenterActivity implements Broa
     protected void initData() {
         mEditPresenter = (BroadcastEditPresenter) createPresenter(BroadcastEditPresenter.class);
         mEditPresenter.attachView(this);
-//        broadcastId=getIntent().getStringExtra("BROADCAST_ID")
-//        name=getIntent().getStringExtra("BROADCAST_NAME")
-//        intro=getIntent().getStringExtra("BROADCAST_INTRO")
+        broadcastId = getIntent().getStringExtra(BROADCAST_ID);
+        name = getIntent().getStringExtra(BROADCAST_NAME);
+        intro = getIntent().getStringExtra(BROADCAST_INTRO);
     }
 
     @Override
