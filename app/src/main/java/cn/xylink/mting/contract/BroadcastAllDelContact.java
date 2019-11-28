@@ -4,6 +4,7 @@ import cn.xylink.mting.base.BaseResponse;
 import cn.xylink.mting.bean.ArticleIdsRequest;
 import cn.xylink.mting.bean.BroadcastIdRequest;
 import cn.xylink.mting.bean.BroadcastInfo;
+import cn.xylink.mting.bean.DelBroadcastArticleRequest;
 
 /**
  * 播放删除接口集合
@@ -28,7 +29,7 @@ public interface BroadcastAllDelContact {
 
         void delMyCreateArticle(ArticleIdsRequest request, BroadcastInfo info);
 
-        void delMyCreateBroadcastArticle(ArticleIdsRequest request, BroadcastInfo info);
+        void delMyCreateBroadcastArticle(DelBroadcastArticleRequest request, BroadcastInfo info);
 
         void delBroadcast(BroadcastIdRequest request);
     }

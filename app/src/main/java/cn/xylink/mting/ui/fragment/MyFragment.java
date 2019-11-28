@@ -15,6 +15,8 @@ import butterknife.BindView;
 import butterknife.OnClick;
 import cn.xylink.mting.R;
 import cn.xylink.mting.bean.UserInfo;
+import cn.xylink.mting.common.Const;
+import cn.xylink.mting.ui.activity.BroadcastActivity;
 import cn.xylink.mting.ui.activity.LoginActivity;
 import cn.xylink.mting.ui.activity.PersonalInfoActivity;
 import cn.xylink.mting.ui.activity.SettingSystemActivity;
@@ -70,7 +72,7 @@ public class MyFragment extends BaseFragment {
         }
     }
 
-    @OnClick({R.id.ll_click_login, R.id.ll_setting_system, R.id.tv_out_account, R.id.tv_out_application})
+    @OnClick({R.id.ll_click_login, R.id.ll_setting_system, R.id.tv_out_account, R.id.tv_out_application,R.id.ll_collect,R.id.ll_read,R.id.ll_my_create})
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.ll_click_login:
@@ -95,6 +97,22 @@ public class MyFragment extends BaseFragment {
             case R.id.tv_out_application:
                 getActivity().sendBroadcast(new Intent("action2exit"));
                 break;
+            case R.id.ll_collect:
+                openBroadcast(Const.SystemBroadcast.SYSTEMBROADCAST_STORE,"收藏");
+                break;
+            case R.id.ll_read:
+                openBroadcast(Const.SystemBroadcast.SYSTEMBROADCAST_READED,"已读");
+                break;
+            case R.id.ll_my_create:
+                openBroadcast(Const.SystemBroadcast.SYSTEMBROADCAST_MY_CREATE_ARTICLE,"我创建的文章");
+                break;
         }
+    }
+
+    private void openBroadcast(String id,String name){
+        Intent intent = new Intent(getActivity(), BroadcastActivity.class);
+        intent.putExtra(BroadcastActivity.EXTRA_BROADCASTID, id);
+        intent.putExtra(BroadcastActivity.EXTRA_TITLE, name);
+        getActivity().startActivity(intent);
     }
 }
