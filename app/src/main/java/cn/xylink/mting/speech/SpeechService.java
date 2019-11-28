@@ -451,7 +451,7 @@ public class SpeechService extends Service {
         }
 
         boolean result = false;
-        if (serviceState == SpeechServiceState.Paused) {
+        if (getState() == SpeechServiceState.Paused || getState() == SpeechServiceState.Error) {
 
             if (this.isSimulatePaused == true) {
                 playSelected();
@@ -566,7 +566,7 @@ public class SpeechService extends Service {
             };
 
             if ("-1".equals(serieId) == false) {
-                articleDataProvider.getSpeechList(article.getBroadcastId(), article.getArticleId(), dataProviderCallback);
+                articleDataProvider.getSpeechList(article, dataProviderCallback);
             }
             else {
                 articleDataProvider.getUnreadSpeechList(dataProviderCallback);
