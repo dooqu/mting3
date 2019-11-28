@@ -90,7 +90,7 @@ public class UnreadSpeechList implements SpeechList {
         while (it.hasNext()) {
             Article currArt = it.next();
             if (articleId.equals(currArt.getArticleId())) {
-                return current;
+                return currArt;
             }
         }
         return null;
