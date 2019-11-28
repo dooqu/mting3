@@ -422,9 +422,13 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
                 subscribe(SubscribeRequest.EVENT.CANCEL.name().toLowerCase());
                 break;
             case Const.BottomDialogItem.EDIT_BROADCAST:
-//                Intent intent = new Intent(this, BroadcastEditActivity.class);
-//                intent.putExtra(BroadcastEditActivity.ARTICLE_IDS_EXTRA, info.getArticleId());
-//                startActivity(intent);
+                if (mDetailInfo != null) {
+                    Intent intent = new Intent(this, BroadcastEditActivity.class);
+                    intent.putExtra(BroadcastEditActivity.BROADCAST_ID, mDetailInfo.getBroadcastId());
+                    intent.putExtra(BroadcastEditActivity.BROADCAST_NAME, mDetailInfo.getName());
+                    intent.putExtra(BroadcastEditActivity.BROADCAST_INTRO, mDetailInfo.getInfo());
+                    startActivity(intent);
+                }
                 break;
             case Const.BottomDialogItem.BATCH:
                 break;
@@ -437,7 +441,7 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
         }
     }
 
-    private void delBroadcast(){
+    private void delBroadcast() {
         BroadcastIdRequest request = new BroadcastIdRequest();
         request.setBroadcastId(getIntent().getStringExtra(EXTRA_BROADCASTID));
         request.doSign();
@@ -489,9 +493,9 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
 
     @Override
     public void onBroadcastAllDelSuccess(BaseResponse response, BroadcastInfo info) {
-        if (info!=null){
+        if (info != null) {
             mAdapter.notifyItemRemoved(info.getPositin());
-        }else {
+        } else {
             EventBus.getDefault().post(new TingRefreshEvent());
             this.finish();
         }
