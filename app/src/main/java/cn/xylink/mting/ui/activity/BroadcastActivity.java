@@ -2,9 +2,7 @@ package cn.xylink.mting.ui.activity;
 
 
 import android.content.Intent;
-import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -463,6 +461,10 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
                 }
                 break;
             case Const.BottomDialogItem.BATCH:
+                Intent intent = new Intent(this,ArrangeActivity.class);
+                intent.putExtra(ArrangeActivity.EXTRA_BROADCASTID,getIntent().getStringExtra(EXTRA_BROADCASTID));
+                intent.putExtra(ArrangeActivity.EXTRA_IS_MY_CREATE_BROADCAST,mDetailInfo != null && mDetailInfo.getCreateUserId().equals(ContentManager.getInstance().getUserInfo().getUserId()));
+                startActivity(intent);
                 break;
             case Const.BottomDialogItem.REPORT:
                 break;
