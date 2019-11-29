@@ -12,37 +12,55 @@ import butterknife.BindView;
 import butterknife.OnClick;
 import cn.xylink.mting.R;
 import cn.xylink.mting.base.BaseResponse;
-import cn.xylink.mting.bean.Article;
-import cn.xylink.mting.bean.ArticleCreateInputInfo;
-import cn.xylink.mting.bean.ArticleCreateInputRequest;
-import cn.xylink.mting.contract.ArticleCreateContact;
-import cn.xylink.mting.presenter.ArticleCreatePresenter;
+import cn.xylink.mting.bean.ArticleEditRequest;
+import cn.xylink.mting.contract.ArticleEditContact;
+import cn.xylink.mting.presenter.ArticleEditPresenter;
 import cn.xylink.mting.widget.EditTextWidthClear;
 
 /**
  * @author wjn
- * @date 2019/11/22
+ * @date 2019/11/29
  */
-public class ArticleCreateActivity extends BasePresenterActivity implements TextWatcher, ArticleCreateContact.IArticleCreateView {
+public class ArticleEditActivity extends BasePresenterActivity implements TextWatcher, ArticleEditContact.IArticleEditView {
     @BindView(R.id.tv_include_title)
     TextView tvTitle;
     @BindView(R.id.tv_right)
     TextView tvRight;
-    @BindView(R.id.et_title_article)
+    @BindView(R.id.et_title_article_edit)
     EditTextWidthClear etTitle;
-    @BindView(R.id.et_content_article)
+    @BindView(R.id.et_content_article_edit)
     EditText etContent;
-    private ArticleCreatePresenter articleCreatePresenter;
+    private ArticleEditPresenter mArticleEditPresenter;
+
+    public static String ARTICLE_ID_EDIT = "ARTICLE_ID_EDIT";
+    public static String ARTICLE_TITLE_EDIT = "ARTICLE_TITLE_EDIT";
+    public static String ARTICLE_CONTENT_EDIT = "ARTICLE_CONTENT_EDIT";
+    private String articleId;
+    private String title;
+    private String content;
 
     @Override
     protected void preView() {
-        setContentView(R.layout.activity_article_create);
+        setContentView(R.layout.activity_article_edit);
     }
 
     @Override
     protected void initView() {
-        articleCreatePresenter = (ArticleCreatePresenter) createPresenter(ArticleCreatePresenter.class);
-        articleCreatePresenter.attachView(this);
+        Intent intent = getIntent();
+        articleId = intent.getStringExtra(ARTICLE_ID_EDIT);
+        title = intent.getStringExtra(ARTICLE_TITLE_EDIT);
+        content = intent.getStringExtra(ARTICLE_CONTENT_EDIT);
+        etContent.setText(content);
+        etTitle.setText(title);
+        if (TextUtils.isEmpty(etContent.getText().toString())) {
+            etTitle.requestFocus();
+            etTitle.setSelection(etTitle.getText().toString().length());
+        } else {
+            etContent.requestFocus();
+            etContent.setSelection(etContent.getText().toString().length());
+        }
+        mArticleEditPresenter = (ArticleEditPresenter) createPresenter(ArticleEditPresenter.class);
+        mArticleEditPresenter.attachView(this);
     }
 
     @Override
@@ -52,10 +70,12 @@ public class ArticleCreateActivity extends BasePresenterActivity implements Text
 
     @Override
     protected void initTitleBar() {
-        tvTitle.setText("创建文章");
+        tvTitle.setText("编辑文章");
         tvRight.setText("完成");
+        tvRight.setTextColor(getResources().getColor(R.color.c488def));
         etTitle.addTextChangedListener(this);
         etContent.addTextChangedListener(this);
+
     }
 
     @Override
@@ -85,41 +105,30 @@ public class ArticleCreateActivity extends BasePresenterActivity implements Text
                 break;
             case R.id.tv_right:
                 if (!TextUtils.isEmpty(etTitle.getText().toString()) && !TextUtils.isEmpty(etContent.getText().toString())) {
-                    doCreateArticle();
+                    doEditArticle();
                 }
                 break;
         }
     }
 
-    private void doCreateArticle() {
-        ArticleCreateInputRequest request = new ArticleCreateInputRequest();
+    private void doEditArticle() {
+        ArticleEditRequest request = new ArticleEditRequest();
+        request.setArticleId(articleId);
         request.setTitle(etTitle.getText().toString());
         request.setContent(etContent.getText().toString());
         request.doSign();
-        articleCreatePresenter.onArticleCreate(request);
+        mArticleEditPresenter.onArticleEdit(request);
         showLoading();
     }
 
     @Override
-    public void onArticleCreateSuccess(BaseResponse<ArticleCreateInputInfo> baseResponse) {
+    public void onArticleEditSuccess(BaseResponse<String> baseResponse) {
         hideLoading();
-        if (baseResponse.code == 200) {
-            Intent intent = new Intent(ArticleCreateActivity.this, ArticleDetailActivity.class);
-            //用来查询播放进度。待读传-1，已读历史传-2，收藏传-3，我创建的传-4。
-            intent.putExtra(ArticleDetailActivity.BROADCAST_ID_DETAIL, -4 + "");//-4表示是自己创建的
-            intent.putExtra(ArticleDetailActivity.ARTICLE_ID_DETAIL, baseResponse.data.getArticleId());
-            intent.putExtra(ArticleDetailActivity.USER_ID_DETAIL, baseResponse.data.getUserId());
-            startActivity(intent);
-            ArticleCreateActivity.this.finish();
-        } else {
-            toastShort(baseResponse.message);
-        }
-
-
+        ArticleEditActivity.this.finish();
     }
 
     @Override
-    public void onArticleCreateError(int code, String errorMsg) {
+    public void onArticleEditError(int code, String errorMsg) {
 
     }
 }
