@@ -56,5 +56,12 @@ public class Const {
         public static final String BATCH = "批量操作";
     }
 
+    public class SystemBroadcast{
+        public static final String SYSTEMBROADCAST_UNREAD = "-1";
+        public static final String SYSTEMBROADCAST_READED = "-2";
+        public static final String SYSTEMBROADCAST_STORE = "-3";
+        public static final String SYSTEMBROADCAST_MY_CREATE_ARTICLE = "-4";
+    }
+
 
 }

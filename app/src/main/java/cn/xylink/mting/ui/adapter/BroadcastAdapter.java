@@ -11,15 +11,19 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ListIterator;
 
 import cn.xylink.mting.R;
 import cn.xylink.mting.bean.BroadcastDetailInfo;
 import cn.xylink.mting.bean.BroadcastInfo;
+import cn.xylink.mting.common.Const;
 import cn.xylink.mting.utils.ContentManager;
 import cn.xylink.mting.utils.DensityUtil;
 import cn.xylink.mting.utils.ImageUtils;
+import cn.xylink.mting.utils.L;
 
 /**
  * -----------------------------------------------------------------
@@ -109,7 +113,6 @@ public class BroadcastAdapter extends RecyclerView.Adapter<BroadcastAdapter.View
             }
         } else {
             BroadcastInfo data = mData.get(position);
-            data.setPositin(position);
             holder.tvTitle.setText(data.getTitle());
             holder.tvSource.setText(data.getSourceName());
             if (!TextUtils.isEmpty(data.getPicture())) {
@@ -125,7 +128,8 @@ public class BroadcastAdapter extends RecyclerView.Adapter<BroadcastAdapter.View
                 }
             });
             holder.itemView.setOnLongClickListener(v -> {
-                if (mOnItemClickListener!=null){
+                if (mOnItemClickListener != null) {
+                    data.setPositin(holder.getAdapterPosition());
                     mOnItemClickListener.onItemLongClick(data);
                 }
                 return true;
@@ -138,16 +142,16 @@ public class BroadcastAdapter extends RecyclerView.Adapter<BroadcastAdapter.View
      */
     private void initSysBroadcast(BroadcastAdapter.ViewHolder holder) {
         holder.mTitleTextView.setText("简介");
-        if ("-1".equals(mBroadcastid)) {
+        if (Const.SystemBroadcast.SYSTEMBROADCAST_UNREAD.equals(mBroadcastid)) {
             holder.mImageView.setImageResource(R.mipmap.icon_head_unread);
             holder.mDesTextView.setText("待读会自动存放您添加到轩辕 听内的文章");
-        } else if ("-2".equals(mBroadcastid)) {
+        } else if (Const.SystemBroadcast.SYSTEMBROADCAST_READED.equals(mBroadcastid)) {
             holder.mImageView.setImageResource(R.mipmap.icon_head_readed);
             holder.mDesTextView.setText("这里显示您读过的所有文章");
-        } else if ("-3".equals(mBroadcastid)) {
+        } else if (Const.SystemBroadcast.SYSTEMBROADCAST_STORE.equals(mBroadcastid)) {
             holder.mImageView.setImageResource(R.mipmap.icon_head_love);
             holder.mDesTextView.setText("这里显示您收藏的所有文章");
-        } else if ("-4".equals(mBroadcastid)) {
+        } else if (Const.SystemBroadcast.SYSTEMBROADCAST_MY_CREATE_ARTICLE.equals(mBroadcastid)) {
             holder.mImageView.setImageResource(R.mipmap.icon_head_mycreate);
             holder.mDesTextView.setText("这里显示您创建的所有文章");
         }
@@ -175,6 +179,23 @@ public class BroadcastAdapter extends RecyclerView.Adapter<BroadcastAdapter.View
             return 0;
         }
         return 1;
+    }
+
+    public static String getPercentFormat(double d) {
+        NumberFormat nf = java.text.NumberFormat.getPercentInstance();
+        nf.setMaximumIntegerDigits(3);//小数点前保留几位
+        nf.setMinimumFractionDigits(0);// 小数点后保留几位
+        String str = nf.format(d);
+        return str;
+    }
+
+    public void notifyItemRemoe(int position) {
+        if (mData != null & mData.size() > position) {
+            ListIterator<BroadcastInfo> ite = mData.listIterator(position);
+            ite.next();
+            ite.remove();
+        }
+        notifyItemRemoved(position);
     }
 
     public List<BroadcastInfo> getArticleList() {
@@ -224,6 +245,7 @@ public class BroadcastAdapter extends RecyclerView.Adapter<BroadcastAdapter.View
 
     public interface OnItemClickListener {
         void onItemClick(BroadcastInfo article);
+
         void onItemLongClick(BroadcastInfo article);
     }
 }

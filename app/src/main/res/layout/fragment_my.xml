@@ -127,6 +127,7 @@
                 android:layout_marginBottom="18dp">
 
                 <LinearLayout
+                    android:id="@+id/ll_my_create"
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/my_dimen_57"
                     android:orientation="horizontal">

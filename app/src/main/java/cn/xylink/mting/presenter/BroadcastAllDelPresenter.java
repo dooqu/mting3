@@ -7,6 +7,7 @@ import cn.xylink.mting.base.BaseResponse;
 import cn.xylink.mting.bean.ArticleIdsRequest;
 import cn.xylink.mting.bean.BroadcastIdRequest;
 import cn.xylink.mting.bean.BroadcastInfo;
+import cn.xylink.mting.bean.DelBroadcastArticleRequest;
 import cn.xylink.mting.contract.BroadcastAllDelContact;
 import cn.xylink.mting.model.data.OkGoUtils;
 import cn.xylink.mting.model.data.RemoteUrl;
@@ -146,7 +147,7 @@ public class BroadcastAllDelPresenter extends BasePresenter<BroadcastAllDelConta
     }
 
     @Override
-    public void delMyCreateBroadcastArticle(ArticleIdsRequest request, BroadcastInfo info ) {
+    public void delMyCreateBroadcastArticle(DelBroadcastArticleRequest request, BroadcastInfo info ) {
         OkGoUtils.getInstance().postData(mView, RemoteUrl.getDelBroadcastArticleUrl(), new Gson().toJson(request),
                 new TypeToken<BaseResponse>() {
 

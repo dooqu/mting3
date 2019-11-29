@@ -2,7 +2,9 @@ package cn.xylink.mting.ui.activity;
 
 
 import android.content.Intent;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -28,6 +30,7 @@ import cn.xylink.mting.bean.BroadcastIdRequest;
 import cn.xylink.mting.bean.BroadcastInfo;
 import cn.xylink.mting.bean.BroadcastListRequest;
 import cn.xylink.mting.bean.ArticleIdsRequest;
+import cn.xylink.mting.bean.DelBroadcastArticleRequest;
 import cn.xylink.mting.bean.SetTopRequest;
 import cn.xylink.mting.bean.SubscribeRequest;
 import cn.xylink.mting.bean.WorldRequest;
@@ -54,6 +57,7 @@ import cn.xylink.mting.ui.dialog.BroadcastItemMenuDialog;
 import cn.xylink.mting.utils.ContentManager;
 import cn.xylink.mting.utils.L;
 import cn.xylink.mting.widget.EndlessRecyclerOnScrollListener;
+import cn.xylink.mting.widget.HDividerItemDecoration;
 
 /**
  * @author JoDragon
@@ -89,6 +93,7 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
     private SubscribePresenter mSubscribePresenter;
     private int isTopIntent;
     private BroadcastAllDelPresenter mBroadcastAllDelPresenter;
+    private Drawable drawable;
 
     @Override
     protected void preView() {
@@ -116,6 +121,7 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
         mAdapter.setOnItemClickListener(this);
         mRecyclerView.setLayoutManager(linearLayoutManager);
         mRecyclerView.setAdapter(mAdapter);
+        mRecyclerView.addItemDecoration(new HDividerItemDecoration(this));
         mRecyclerView.addOnScrollListener(endlessScrollListener);
         mRefreshLayout.setEnableRefresh(false);
         mRefreshLayout.setOnLoadMoreListener(refreshlayout -> {
@@ -138,7 +144,7 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
         isTopIntent = getIntent().getIntExtra(EXTRA_ISTOP, 0);
     }
 
-    Drawable drawable;
+
 
     private void initList() {
         BroadcastListRequest request = new BroadcastListRequest();
@@ -182,11 +188,9 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
 
     @Override
     public void onBroadcastListSuccess(List<BroadcastInfo> data, boolean isLoadMore) {
+        L.v(data.size()+"===============================================");
         if (isLoadMore) {
             mRefreshLayout.finishLoadMore(true);
-            if (data.size() < 20) {
-                mRefreshLayout.finishLoadMoreWithNoMoreData();
-            }
         } else {
             mRefreshLayout.finishRefresh(true);
         }
@@ -195,6 +199,9 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
                 mAdapter.clearData();
             }
             mAdapter.setData(data);
+        }
+        if (data.size() < 20) {
+            mRefreshLayout.finishLoadMoreWithNoMoreData();
         }
     }
 
@@ -306,7 +313,7 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
                 /*是否是系统播单*/
                 if (getIntent().getStringExtra(EXTRA_BROADCASTID).startsWith("-")) {
                     /*是否是待读*/
-                    if ("-1".equals(getIntent().getStringExtra(EXTRA_BROADCASTID))) {
+                    if (Const.SystemBroadcast.SYSTEMBROADCAST_UNREAD.equals(getIntent().getStringExtra(EXTRA_BROADCASTID))) {
                         mBottomTingDialog.setItemModle(isTopIntent == 0 ? new BottomTingItemModle(Const.BottomDialogItem.SET_TOP,
                                         getResources().getDrawable(R.mipmap.icon_set_top))
                                         : new BottomTingItemModle(Const.BottomDialogItem.CANEL_TOP,
@@ -383,7 +390,32 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
 
     @Override
     public void onItemDel(BroadcastInfo info) {
-
+        ArticleIdsRequest request = new ArticleIdsRequest();
+        request.setArticleIds(info.getArticleId());
+        request.doSign();
+        if (getIntent().getStringExtra(EXTRA_BROADCASTID).startsWith("-")) {
+            switch (getIntent().getStringExtra(EXTRA_BROADCASTID)) {
+                case Const.SystemBroadcast.SYSTEMBROADCAST_UNREAD:
+                    mBroadcastAllDelPresenter.delUnread(request,info);
+                    break;
+                case Const.SystemBroadcast.SYSTEMBROADCAST_READED:
+                    mBroadcastAllDelPresenter.delReaded(request,info);
+                    break;
+                case Const.SystemBroadcast.SYSTEMBROADCAST_STORE:
+                    mBroadcastAllDelPresenter.delStore(request,info);
+                    break;
+                case Const.SystemBroadcast.SYSTEMBROADCAST_MY_CREATE_ARTICLE:
+                    mBroadcastAllDelPresenter.delMyCreateArticle(request,info);
+                    break;
+                default:
+            }
+        } else {
+            DelBroadcastArticleRequest articleRequest = new DelBroadcastArticleRequest();
+            articleRequest.setBroadcastId(getIntent().getStringExtra(EXTRA_BROADCASTID));
+            articleRequest.setArticleIds(info.getArticleId());
+            articleRequest.doSign();
+            mBroadcastAllDelPresenter.delMyCreateBroadcastArticle(articleRequest,info);
+        }
     }
 
     @Override
@@ -469,7 +501,7 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
     public void onSetTopSuccess(BaseResponse response) {
         if (mDetailInfo != null) {
             mDetailInfo.setTop(mDetailInfo.getTop() ^ 1);
-        } else if ("-1".equals(getIntent().getStringExtra(EXTRA_BROADCASTID))) {
+        } else if (Const.SystemBroadcast.SYSTEMBROADCAST_UNREAD.equals(getIntent().getStringExtra(EXTRA_BROADCASTID))) {
             isTopIntent ^= 1;
         }
         EventBus.getDefault().post(new TingRefreshEvent());
@@ -494,7 +526,7 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
     @Override
     public void onBroadcastAllDelSuccess(BaseResponse response, BroadcastInfo info) {
         if (info != null) {
-            mAdapter.notifyItemRemoved(info.getPositin());
+            mAdapter.notifyItemRemoe(info.getPositin());
         } else {
             EventBus.getDefault().post(new TingRefreshEvent());
             this.finish();
