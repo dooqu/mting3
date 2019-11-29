@@ -552,6 +552,7 @@ public class SpeechPanelDialog extends Dialog implements SeekBar.OnSeekBarChange
                 setPlayingState(true);
                 break;
             case Playing:
+                displayLoaddingAnim(speechService.isBuffering());
                 enableSeekbar(true);
                 setPlayingState(true);
                 if (seekBarIsSlideByUser == false && !(speechEvent instanceof SpeechBufferingEvent)) {

@@ -203,15 +203,12 @@ public class PanelViewAdapter {
         if (event instanceof SpeechStartEvent) {
             currentArticle = event.getArticle();
         }
-        if (event instanceof SpeechProgressEvent) {
+        else if (event instanceof SpeechProgressEvent) {
             displayLoaddingAnim(false);
         }
         else if (event instanceof SpeechBufferingEvent) {
             //如果是SpeechStartEvent 或者 BufferEvent，就显示loadding
             displayLoaddingAnim(true);
-        }
-        else if (event instanceof SpeechStartEvent) {
-            //displayLoaddingAnim(true);
         }
         else if (event instanceof SpeechSerieLoaddingEvent) {
             //displayLoaddingAnim(true);

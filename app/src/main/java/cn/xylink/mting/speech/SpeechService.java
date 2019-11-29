@@ -119,6 +119,8 @@ public class SpeechService extends Service {
 
     String serieId;
 
+    boolean isBuffering;
+
 
     public class SpeechBinder extends Binder {
         public SpeechService getService() {
@@ -214,7 +216,7 @@ public class SpeechService extends Service {
                         serviceState = SpeechServiceState.Ready;
                         onSpeechStoped(reason);
                     }
-                    else if (speakerState == SpeechorState.SpeechorStateLoadding) {
+                    else if (speakerState == SpeechorState.SpeechorStateBuffering) {
                         onSpeechBuffering(currentArticle);
                     }
                 }
@@ -248,17 +250,20 @@ public class SpeechService extends Service {
 
 
     private void onSpeechSerieLoadding(Article article) {
+        isBuffering = false;
         SpeechSerieLoaddingEvent event = new SpeechSerieLoaddingEvent();
         event.setArticle(article);
         EventBus.getDefault().post(event);
     }
 
     private void onSpeechStart(Article article) {
+        isBuffering = false;
         foregroundServiceAdapter.retainForeground();
         EventBus.getDefault().post(new SpeechStartEvent(article));
     }
 
     private void onSpeechReady(Article article) {
+        isBuffering = false;
         speechDurationOfArticle = System.currentTimeMillis();
         speechDurationOfArticle = 0;
         speechStartTimeOfArticle = new java.util.Date().getTime();
@@ -267,19 +272,19 @@ public class SpeechService extends Service {
     }
 
     private void onSpeechProgress(Article article, int fragmentIndex, List<String> fragments) {
+        isBuffering = false;
         article.setProgress((float) fragmentIndex / (float) fragments.size());
-        //if(fragmentIndex == 0) {
         foregroundServiceAdapter.retainForeground();
-        // }
-
         EventBus.getDefault().post(new SpeechProgressEvent(fragmentIndex, fragments, article));
     }
 
     private void onSpeechBuffering(Article article) {
+        isBuffering = true;
         EventBus.getDefault().post(new SpeechBufferingEvent(getSpeechorFrameIndex(), getSpeechorTextFragments(), article));
     }
 
     private void onSpeechError(int errorCode, String message, Article article) {
+        isBuffering = false;
         EventBus.getDefault().post(new SpeechErrorEvent(errorCode, message, article));
         if (getSelected() != null) {
             foregroundServiceAdapter.retainForeground();
@@ -287,6 +292,7 @@ public class SpeechService extends Service {
     }
 
     private void onSpeechEnd(Article article, float progress, boolean deleteFromList) {
+        isBuffering = false;
         //与云端同步数据状态
         //articleDataProvider.readArticle(article, progress, deleteFromList, ((errorCode, articleResult) -> {
         //EventBus.getDefault().post(new SpeechArticleStatusSavedOnServerEvent(errorCode, "", articleResult));
@@ -301,6 +307,7 @@ public class SpeechService extends Service {
     }
 
     private void onSpeechPause(Article article) {
+        isBuffering = false;
         EventBus.getDefault().post(new SpeechPauseEvent(article));
         long duration = new java.util.Date().getTime() - speechStartTimeOfArticle;
         speechDurationOfArticle += (duration > 0) ? duration : 0;
@@ -315,21 +322,10 @@ public class SpeechService extends Service {
 
 
     private void onSpeechStoped(SpeechStopEvent.StopReason reason) {
+        isBuffering = false;
         EventBus.getDefault().post(new SpeechStopEvent(reason));
-        //notificationManager.cancelAll();
-
-        //if (reason == SpeechStopEvent.StopReason.ListIsNull) {
-        //this.stopForeground(true);
         foregroundServiceAdapter.stopForeground(true);
-        //}
     }
-
-    /*
-    private void onSpeechArticleFavor(Article article) {
-        foregroundServiceAdapter.retainForeground();
-        EventBus.getDefault().post(new SpeechFavorArticleEvent(article));
-    }
-     */
 
     public synchronized SpeechServiceState getState() {
         return serviceState;
@@ -420,7 +416,6 @@ public class SpeechService extends Service {
         return index;
     }
 
-
     /*
     pause的结果，可能导致当前状态为Paused或者Ready
      */
@@ -446,16 +441,25 @@ public class SpeechService extends Service {
 
 
     public synchronized boolean resume() {
-        if (speechList.getCurrent() == null) {
+        if (getSelected() == null) {
             return false;
         }
-
         boolean result = false;
         if (getState() == SpeechServiceState.Paused || getState() == SpeechServiceState.Error) {
-
-            if (this.isSimulatePaused == true) {
+            //处理特殊情况，例如在loadding过程中（加载列表、加载正文）被用户pause掉
+            //或者干脆加载正文失败，那么getContent == null
+            if (this.isSimulatePaused == true || getSelected().getContent() == null) {
+                //如果getContent != null，说明正文被加载了，没必要再次调用，直接seek:0
+                if (getSelected().getContent() != null) {
+                    result = seek(0) > 0;
+                    if (result) {
+                        onSpeechResume(speechList.getCurrent());
+                        return result;
+                    }
+                }
+                //如果通过seek不能成功，那么重新走play流程
                 playSelected();
-                onSpeechResume(speechList.getCurrent());
+                //onSpeechResume(speechList.getCurrent());
                 return true;
             }
             else {
@@ -466,7 +470,6 @@ public class SpeechService extends Service {
                 }
                 else {
                     result = seek(getProgress()) > 0;
-                    //onSpeechResume(speechList.getCurrent());????
                 }
                 return result;
             }
@@ -478,7 +481,7 @@ public class SpeechService extends Service {
         if (getSelected() == null) {
             return false;
         }
-        prepareArticle(speechList.getCurrent(), false);
+        prepareArticle(getSelected(), false);
         return true;
     }
 
@@ -491,7 +494,7 @@ public class SpeechService extends Service {
 
 
     public synchronized Article pushFrontToSpeechListAndPlay(Article article) {
-        Article previousArt = this.speechList.getCurrent();
+        Article previousArt = getSelected();
         if (previousArt != null && article.getArticleId().equals(previousArt.getArticleId()) == false) {
             if (previousArt.getProgress() != 1) {
                 this.onSpeechEnd(previousArt, previousArt.getProgress(), false);
@@ -586,7 +589,7 @@ public class SpeechService extends Service {
         if (articleId == null || speechList == null) {
             return null;
         }
-        Article previousArt = this.speechList.getCurrent();
+        Article previousArt = getSelected();
         if (previousArt != null && articleId.equals(previousArt.getArticleId()) == false) {
             if (previousArt.getProgress() != 1) {
                 this.onSpeechEnd(previousArt, previousArt.getProgress(), false);
@@ -602,8 +605,10 @@ public class SpeechService extends Service {
     }
 
 
+    private ArticleDataProvider.ArticleLoader<ArticleDataProvider.ArticleListArgument> articleInfoCallback;
+
     private void prepareArticle(final Article article, boolean needSourceEffect) {
-        if (speechList.getCurrent() != null
+        if (getSelected() != null
                 && (getState() == SpeechServiceState.Playing || getState() == SpeechServiceState.Paused)) {
             this.speechor.stop();
         }
@@ -614,51 +619,56 @@ public class SpeechService extends Service {
         boolean isFirst = (speechList instanceof DynamicSpeechList && speechList.getFirst() != null && speechList.getFirst() == article);
         boolean isLast = (speechList instanceof DynamicSpeechList && speechList.getLast() != null && speechList.getLast() == article);
 
-        this.articleDataProvider.loadArticleAndList(article, needSourceEffect, isFirst, isLast, (int errorcode, ArticleDataProvider.ArticleListArgument responseResult) -> {
-
-            synchronized (this) {
-                if (errorcode != 0) {
-                    this.serviceState = SpeechServiceState.Error;
-                    this.onSpeechError(SpeechError.ARTICLE_LOAD_ERROR, "文章正文加载失败", article);
-                    return;
-                }
-                //解决轮回问题
-                if (isReleased
-                        || serviceState != SpeechServiceState.Loadding
-                        || responseResult == null
-                        || responseResult.article != this.speechList.getCurrent()) {
-                    return;
-                }
-
-                if (responseResult.list != null && responseResult.list.size() > 0) {
-                    if (isFirst) {
-                        speechList.pushFront(responseResult.list);
+        articleInfoCallback = new ArticleDataProvider.ArticleLoader<ArticleDataProvider.ArticleListArgument>() {
+            @Override
+            public void invoke(int errorCode, ArticleDataProvider.ArticleListArgument responseResult) {
+                synchronized (SpeechService.this) {
+                    if(isReleased
+                        || this != articleInfoCallback
+                        || getState() != SpeechServiceState.Loadding) {
+                        return;
                     }
-                    else if (isLast) {
-                        speechList.pushBack(responseResult.list);
+                    if (errorCode != 0) {
+                        serviceState = SpeechServiceState.Error;
+                        onSpeechError(SpeechError.ARTICLE_LOAD_ERROR, "文章正文加载失败", article);
+                        return;
                     }
-                }
+                    //解决轮回问题
+                    if (responseResult == null || responseResult.article != getSelected()) {
+                        return;
+                    }
 
-                this.onSpeechReady(article);
-                speechor.reset();
-                speechor.prepare(article.getTitle());
-                speechor.prepare(article.getTextBody());
+                    if (responseResult.list != null && responseResult.list.size() > 0) {
+                        if (isFirst) {
+                            speechList.pushFront(responseResult.list);
+                        }
+                        else if (isLast) {
+                            speechList.pushBack(responseResult.list);
+                        }
+                    }
 
-                int fragmentSize = speechor.getTextFragments().size();
-                int destFragIndex = helper.seekFragmentIndex(article.getProgress(), speechor.getTextFragments());
+                    onSpeechReady(article);
+                    speechor.reset();
+                    speechor.prepare(article.getTitle());
+                    speechor.prepare(article.getTextBody());
 
-                if (destFragIndex >= fragmentSize) {
-                    destFragIndex = fragmentSize - 1;
-                }
+                    int fragmentSize = speechor.getTextFragments().size();
+                    int destFragIndex = helper.seekFragmentIndex(article.getProgress(), speechor.getTextFragments());
 
-                if (speechor.seek(destFragIndex) >= 0) {
-                    this.serviceState = SpeechServiceState.Playing;
-                }
-                else {
-                    this.serviceState = SpeechServiceState.Ready;
-                }
-            } // end synchonized
-        });
+                    if (destFragIndex >= fragmentSize) {
+                        destFragIndex = fragmentSize - 1;
+                    }
+
+                    if (speechor.seek(destFragIndex) >= 0) {
+                        serviceState = SpeechServiceState.Playing;
+                    }
+                    else {
+                        serviceState = SpeechServiceState.Ready;
+                    }
+                } // end synchonized
+            }
+        };
+        this.articleDataProvider.loadArticleAndList(article, needSourceEffect, isFirst, isLast, articleInfoCallback);
     }
 
     private boolean moveNext() {
@@ -770,6 +780,9 @@ public class SpeechService extends Service {
         return this.speechList != null ? this.speechList.getCurrent() : null;
     }
 
+    public synchronized  boolean isBuffering() {
+        return getState() == SpeechServiceState.Playing && isBuffering;
+    }
 
     public synchronized float getProgress() {
         return speechor.getProgress();

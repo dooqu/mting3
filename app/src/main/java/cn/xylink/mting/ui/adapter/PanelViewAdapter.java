@@ -20,6 +20,7 @@ import cn.xylink.mting.speech.event.SpeechStopEvent;
 import cn.xylink.mting.ui.activity.BaseActivity;
 import cn.xylink.mting.ui.dialog.SpeechPanelDialog;
 
+@Deprecated
 public class PanelViewAdapter {
 
     WeakReference<BaseActivity> contextRef;
