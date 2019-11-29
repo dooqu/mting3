@@ -103,6 +103,7 @@ public class BroadcastEditActivity extends BasePresenterActivity implements Broa
 
     @Override
     public void onSuccessBroadcastEdit(BaseResponse baseResponse) {
+        hideLoading();
         if (baseResponse.code == 200) {
             toastShort(baseResponse.message);
             BroadcastEditActivity.this.finish();
@@ -179,6 +180,7 @@ public class BroadcastEditActivity extends BasePresenterActivity implements Broa
     }
 
     private void doEditBroadcast() {
+        showLoading();
         if (!TextUtils.isEmpty(mTitle.getText().toString())) {
             Map<String, String> data = new HashMap<>();
             BroadcastCreateRequest request = new BroadcastCreateRequest();
