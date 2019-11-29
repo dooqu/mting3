@@ -92,7 +92,12 @@ public class ArticleDetailActivity extends BasePresenterActivity implements Arti
 
                 break;
             case R.id.btn_edit:
-
+                Intent intent = new Intent(ArticleDetailActivity.this, ArticleEditActivity.class);
+                intent.putExtra(ArticleEditActivity.ARTICLE_ID_EDIT, articleId);
+                intent.putExtra(ArticleEditActivity.ARTICLE_TITLE_EDIT, tvArticleTitle.getText().toString());
+                intent.putExtra(ArticleEditActivity.ARTICLE_CONTENT_EDIT, tvArticleContent.getText().toString());
+                startActivity(intent);
+                ArticleDetailActivity.this.finish();
                 break;
             default:
                 break;
@@ -103,7 +108,7 @@ public class ArticleDetailActivity extends BasePresenterActivity implements Arti
     public void onSuccessArticleDetail(ArticleDetail2Info info) {
         tvArticleTitle.setText(info.getTitle());
         tvArticleContent.setText(info.getContent());
-        if (TextUtils.isEmpty(String.valueOf(info.getSourceName()))) {
+        if (TextUtils.isEmpty(String.valueOf(info.getSourceName())) || String.valueOf(info.getSourceName()).equals("null")) {
             tvArticleSource.setText("");
         } else {
             tvArticleSource.setText(String.valueOf(info.getSourceName()));

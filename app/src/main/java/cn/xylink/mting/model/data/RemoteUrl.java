@@ -281,8 +281,14 @@ public class RemoteUrl {
     public static String getDelMyCreateArticleUrl() {
         return URL_BASE + "/api/art/v1/article/delete";
     }
+
     //文章详情
     public static String getArticleDetailUrl() {
         return URL_BASE + "/api/art/v1/article/detail";
+    }
+
+    //文章编辑
+    public static String getArticleEditUrl() {
+        return URL_BASE + "/api/art/v1/article/edit";
     }
 }
