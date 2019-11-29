@@ -133,6 +133,7 @@ public class BroadcastCreateActivity extends BasePresenterActivity implements Br
 
     @Override
     public void onSuccessCreateBroadcast(BaseResponse<BroadcastCreateInfo> baseResponse) {
+        hideLoading();
         L.v(baseResponse);
         EventBus.getDefault().post(new TingRefreshEvent());
         if (null != baseResponse.data) {
@@ -179,6 +180,7 @@ public class BroadcastCreateActivity extends BasePresenterActivity implements Br
     }
 
     private void doCreateBroadcast() {
+        showLoading();
         if (!TextUtils.isEmpty(mTitle.getText().toString())) {
             Map<String, String> data = new HashMap<>();
             BroadcastCreateRequest request = new BroadcastCreateRequest();
@@ -189,7 +191,7 @@ public class BroadcastCreateActivity extends BasePresenterActivity implements Br
             data.put("info", mIntro.getText().toString());
             if (null != coverFile) {
                 mBroadcastCreatePresenter.onCreateBroadcast(data, coverFile);
-            }else {
+            } else {
                 mBroadcastCreatePresenter.onCreateBroadcast(data);
             }
         } else {
