@@ -1,5 +1,6 @@
 package cn.xylink.mting.ui.activity;
 
+import android.content.Intent;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -11,6 +12,7 @@ import butterknife.BindView;
 import butterknife.OnClick;
 import cn.xylink.mting.R;
 import cn.xylink.mting.base.BaseResponse;
+import cn.xylink.mting.bean.Article;
 import cn.xylink.mting.bean.ArticleCreateInputInfo;
 import cn.xylink.mting.bean.ArticleCreateInputRequest;
 import cn.xylink.mting.contract.ArticleCreateContact;
@@ -95,11 +97,19 @@ public class ArticleCreateActivity extends BasePresenterActivity implements Text
         request.setContent(etContent.getText().toString());
         request.doSign();
         articleCreatePresenter.onArticleCreate(request);
+        showLoading();
     }
 
     @Override
     public void onArticleCreateSuccess(BaseResponse<ArticleCreateInputInfo> baseResponse) {
+        hideLoading();
         if (baseResponse.code == 200) {
+            Intent intent = new Intent(ArticleCreateActivity.this, ArticleDetailActivity.class);
+            //用来查询播放进度。待读传-1，已读历史传-2，收藏传-3，我创建的传-4。
+            intent.putExtra(ArticleDetailActivity.BROADCAST_ID_DETAIL, -4 + "");//-4表示是自己创建的
+            intent.putExtra(ArticleDetailActivity.ARTICLE_ID_DETAIL, baseResponse.data.getArticleId());
+            intent.putExtra(ArticleDetailActivity.USER_ID_DETAIL, baseResponse.data.getUserId());
+            startActivity(intent);
             ArticleCreateActivity.this.finish();
         } else {
             toastShort(baseResponse.message);

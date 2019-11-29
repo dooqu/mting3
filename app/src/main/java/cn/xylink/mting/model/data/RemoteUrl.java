@@ -167,9 +167,9 @@ public class RemoteUrl {
         return URL_BASE + "/article/html/tutorial_quick.html?";
     }
 
-    public static String getArticleDetailUrl() {
-        return URL_BASE + "/api/sct/v2/article/detail";
-    }
+//    public static String getArticleDetailUrl() {
+//        return URL_BASE + "/api/sct/v2/article/detail";
+//    }
 
     //public static String getArticleReadedUrl() { return URL_BASE + "/api/sct/v2/article/read"; }
 
@@ -280,5 +280,9 @@ public class RemoteUrl {
     //创建的文章删除接口v1
     public static String getDelMyCreateArticleUrl() {
         return URL_BASE + "/api/art/v1/article/delete";
+    }
+    //文章详情
+    public static String getArticleDetailUrl() {
+        return URL_BASE + "/api/art/v1/article/detail";
     }
 }
