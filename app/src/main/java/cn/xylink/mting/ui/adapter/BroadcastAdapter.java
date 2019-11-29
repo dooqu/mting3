@@ -115,6 +115,9 @@ public class BroadcastAdapter extends RecyclerView.Adapter<BroadcastAdapter.View
             BroadcastInfo data = mData.get(position);
             holder.tvTitle.setText(data.getTitle());
             holder.tvSource.setText(data.getSourceName());
+            if (data.getProgress() > 0) {
+                holder.tvProgress.setText("已读"+getPercentFormat(data.getProgress()));
+            }
             if (!TextUtils.isEmpty(data.getPicture())) {
                 holder.ivImg.setVisibility(View.VISIBLE);
                 ImageUtils.get().load(holder.ivImg, data.getPicture());
@@ -181,7 +184,7 @@ public class BroadcastAdapter extends RecyclerView.Adapter<BroadcastAdapter.View
         return 1;
     }
 
-    public static String getPercentFormat(double d) {
+    public static String getPercentFormat(float d) {
         NumberFormat nf = java.text.NumberFormat.getPercentInstance();
         nf.setMaximumIntegerDigits(3);//小数点前保留几位
         nf.setMinimumFractionDigits(0);// 小数点后保留几位

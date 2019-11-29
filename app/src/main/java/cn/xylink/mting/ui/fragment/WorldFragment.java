@@ -25,6 +25,7 @@ import cn.xylink.mting.ui.adapter.WorldAdapter;
 import cn.xylink.mting.ui.dialog.MainAddMenuPop;
 import cn.xylink.mting.utils.DensityUtil;
 import cn.xylink.mting.widget.EndlessRecyclerOnScrollListener;
+import cn.xylink.mting.widget.HDividerItemDecoration;
 import cn.xylink.mting.widget.TingHeaderView;
 
 /**
@@ -61,6 +62,7 @@ public class WorldFragment extends BasePresenterFragment implements WorldListCon
         mRecyclerView.setLayoutManager(linearLayoutManager);
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.addOnScrollListener(endlessScrollListener);
+        mRecyclerView.addItemDecoration(new HDividerItemDecoration(getActivity()));
         mRefreshLayout.setOnRefreshListener(refreshlayout -> {
             initData();
         });

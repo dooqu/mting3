@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:fitsSystemWindows="true"
+    android:orientation="vertical">
+
+    <include layout="@layout/title_include" />
+
+    <cn.xylink.mting.widget.EditTextWidthClear
+        android:id="@+id/et_title_article_edit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginRight="16dp"
+        android:background="@null"
+        android:gravity="center_vertical"
+        android:lineSpacingExtra="27dp"
+        android:maxLength="30"
+        android:textColor="#333333"
+        android:textColorHint="#ff999999"
+        android:textCursorDrawable="@null"
+        android:textSize="24sp" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_margin="@dimen/create_dimen_16"
+        android:background="@color/cutting_line" />
+
+    <EditText
+        android:id="@+id/et_content_article_edit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginBottom="24dp"
+        android:background="@null"
+        android:lineSpacingExtra="23dp"
+        android:textColor="#666666"
+        android:textColorHint="#ff999999"
+        android:textCursorDrawable="@null"
+        android:textSize="18sp" />
+
+
+</LinearLayout>
