@@ -98,7 +98,7 @@ public class PanelViewAdapter {
         SpeechEvent event = events.length > 0? events[0] : null;
 
         switch (speechService.getState()) {
-            case Ready:
+            case Stoped:
             case Playing:
                 isPlaying = true;
                 progressBar.setVisibility(View.INVISIBLE);

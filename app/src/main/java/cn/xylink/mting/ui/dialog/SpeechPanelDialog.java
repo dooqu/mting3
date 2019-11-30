@@ -134,7 +134,7 @@ public class SpeechPanelDialog extends Dialog implements SeekBar.OnSeekBarChange
     private void onInitControlView(View controlView) {
         Article articlePlaying = speechServiceWeakReference.get().getSelected();
         SpeechService.SpeechServiceState currentState = speechServiceWeakReference.get().getState();
-        boolean seekBarEnabled = currentState != SpeechService.SpeechServiceState.Loadding && currentState != SpeechService.SpeechServiceState.Ready && articlePlaying != null;
+        boolean seekBarEnabled = currentState != SpeechService.SpeechServiceState.Loadding && currentState != SpeechService.SpeechServiceState.Stoped && articlePlaying != null;
         float currentProgress = seekBarEnabled ? articlePlaying.getProgress() : 0f;
         tvTitle = controlView.findViewById(R.id.dialog_panel_article_title);
         seekBar = controlView.findViewById(R.id.dialog_panel_seekbar);
@@ -523,7 +523,7 @@ public class SpeechPanelDialog extends Dialog implements SeekBar.OnSeekBarChange
         }
         if (speechService.getSelected() != null &&
                 speechService.getState() != SpeechService.SpeechServiceState.Loadding &&
-                speechService.getState() != SpeechService.SpeechServiceState.Ready) {
+                speechService.getState() != SpeechService.SpeechServiceState.Stoped) {
             displayLoaddingAnim(true);
             speechService.seek((float) seekBar.getProgress() / 100f);
         }
@@ -562,7 +562,7 @@ public class SpeechPanelDialog extends Dialog implements SeekBar.OnSeekBarChange
             case Paused:
                 enableSeekbar(true);
                 seekBar.setProgress((int) (100 * speechService.getProgress()));
-            case Ready:
+            case Stoped:
             case Error:
                 displayLoaddingAnim(false);
                 setPlayingState(false);

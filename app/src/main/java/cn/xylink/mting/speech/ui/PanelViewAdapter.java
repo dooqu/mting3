@@ -1,5 +1,6 @@
 package cn.xylink.mting.speech.ui;
 
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -30,6 +31,7 @@ import cn.xylink.mting.ui.activity.BaseActivity;
 import cn.xylink.mting.ui.dialog.SpeechPanelDialog;
 
 public class PanelViewAdapter {
+    static String TAG = PanelViewAdapter.class.getSimpleName();
 
     WeakReference<BaseActivity> contextRef;
     WeakReference<SpeechService> speechServiceWeakReference;
@@ -138,15 +140,18 @@ public class PanelViewAdapter {
         }
         isUserClosed = false;
         speechPanelView.setVisibility(View.VISIBLE);
+
         Article article = speechService.getSelected();
         SpeechService.SpeechServiceState currentState = speechService.getState();
+        Log.d(TAG, "setVisile,currentState=" + currentState);
         if (article != null) {
             articleTitle.setText(article.getTitle());
             broadcastTitle.setText("-1".equals(article.getBroadcastId())? "待读播单" : (article.getBroadcastTitle() != null? article.getBroadcastTitle() : article.getBroadcastId()));
         }
         else if (event != null && event instanceof SpeechSerieLoaddingEvent && event.getArticle() != null) {
-            articleTitle.setText(event.getArticle().getTitle() != null ? event.getArticle().getTitle() : event.getArticle().getArticleId());
-            broadcastTitle.setText("-1".equals(article.getBroadcastId())? "待读播单" : (article.getBroadcastTitle() != null? article.getBroadcastTitle() : article.getBroadcastId()));
+            Article eventArticle = event.getArticle();
+            articleTitle.setText(eventArticle.getTitle());
+            broadcastTitle.setText("-1".equals(eventArticle.getBroadcastId())? "待读播单" : eventArticle.getBroadcastTitle());
         }
         else {
             articleTitle.setText("正在加载...");
@@ -162,7 +167,7 @@ public class PanelViewAdapter {
                 setPlayingState(true);
                 //ProgressEvent那里，消掉loadding，因为内部的buffering，也会调用该事件，但state == playing
                 break;
-            case Ready:
+            case Stoped:
             case Error:
             case Paused:
                 closeIcon.setVisibility(View.VISIBLE);
@@ -188,9 +193,7 @@ public class PanelViewAdapter {
 
     private void displayLoaddingAnim(boolean display) {
         if (display) {
-            if (progressBar.getVisibility() != View.VISIBLE) {
-                progressBar.setVisibility(View.VISIBLE);
-            }
+            progressBar.setVisibility(View.VISIBLE);
         }
         else {
             progressBar.setVisibility(View.INVISIBLE);
@@ -199,6 +202,7 @@ public class PanelViewAdapter {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onSpeechEvent(SpeechEvent event) {
+        Log.d(TAG, event.toString());
         validatePanelView(event);
         if (event instanceof SpeechStartEvent) {
             currentArticle = event.getArticle();

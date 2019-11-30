@@ -10,8 +10,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.support.annotation.MainThread;
-import android.view.Display;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -256,7 +254,7 @@ public class SpeechForegroundServiceAdapter {
                         break;
                     case "SPEECH_ACTION_NEXT":
                         switch (speechService.getState()) {
-                            case Ready:
+                            case Stoped:
                                 if (speechService.getSelected() != null) {
                                     speechService.play(speechService.getSelected().getArticleId());
                                 }

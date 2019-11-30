@@ -32,7 +32,7 @@ public class SpeechService extends Service {
     /*SpeechService的状态描述类型*/
     public enum SpeechServiceState {
         /*正文准备就绪准备就绪*/
-        Ready,
+        Stoped,
         /*播放中*/
         Playing,
         /*暂停中*/
@@ -180,7 +180,7 @@ public class SpeechService extends Service {
     private void initService() {
         isForegroundService = false;
         isReleased = false;
-        serviceState = SpeechServiceState.Ready;
+        serviceState = SpeechServiceState.Stoped;
         countDownMode = CountDownMode.None;
         articleDataProvider = new ArticleDataProvider(this);
 
@@ -197,7 +197,7 @@ public class SpeechService extends Service {
                     }
 
                     if (speakerState == SpeechorState.SpeechorStateReady) {
-                        Log.d(TAG, "SpeechService.onStateChanged:Ready");
+                        Log.d(TAG, "SpeechService.onStateChanged:Stoped");
 
                         currentArticle.setProgress(1);
                         SpeechService.this.onSpeechEnd(currentArticle, 1, true);
@@ -213,7 +213,7 @@ public class SpeechService extends Service {
                         }
 
                         SpeechService.this.moveNext();
-                        serviceState = SpeechServiceState.Ready;
+                        serviceState = SpeechServiceState.Stoped;
                         onSpeechStoped(reason);
                     }
                     else if (speakerState == SpeechorState.SpeechorStateBuffering) {
@@ -395,7 +395,7 @@ public class SpeechService extends Service {
         }
         SpeechServiceState preState = getState();
         //disable seek action while in ready state or loading list.
-        if (getState() == SpeechServiceState.Ready
+        if (getState() == SpeechServiceState.Stoped
                 || (getState() == SpeechServiceState.Loadding && getSelected() == null)) {
             return -SpeechError.SEEK_NOT_ALLOW;
         }
@@ -663,7 +663,7 @@ public class SpeechService extends Service {
                         serviceState = SpeechServiceState.Playing;
                     }
                     else {
-                        serviceState = SpeechServiceState.Ready;
+                        serviceState = SpeechServiceState.Stoped;
                     }
                 } // end synchonized
             }
@@ -749,7 +749,7 @@ public class SpeechService extends Service {
         boolean isSelectedDeleted = this.speechList.removeAll();
         if (isSelectedDeleted) {
             this.speechor.stop();
-            this.serviceState = SpeechServiceState.Ready;
+            this.serviceState = SpeechServiceState.Stoped;
             this.onSpeechStoped(SpeechStopEvent.StopReason.ListIsNull);
         }
     }
@@ -768,7 +768,7 @@ public class SpeechService extends Service {
                 prepareArticle(article, false);
             }
             else {
-                this.serviceState = SpeechServiceState.Ready;
+                this.serviceState = SpeechServiceState.Stoped;
                 //没有要播放的内容了
                 this.onSpeechStoped(SpeechStopEvent.StopReason.ListIsNull);
             }
