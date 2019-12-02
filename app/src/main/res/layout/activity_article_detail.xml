@@ -59,44 +59,50 @@
         android:layout_marginTop="-1dp"
         android:background="@color/cutting_line" />
 
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@+id/top_title_layout"
-        android:orientation="vertical">
+        android:layout_height="match_parent">
 
-
-        <TextView
-            android:id="@+id/tv_article_title"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="16dp"
-            android:lineSpacingExtra="10dp"
-            android:textColor="@color/color_333333"
-            android:textSize="24sp" />
+            android:layout_height="match_parent"
+            android:layout_below="@+id/top_title_layout"
+            android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/tv_article_source"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="16dp"
-            android:layout_marginTop="-2dp"
-            android:lineSpacingExtra="10dp"
-            android:textColor="@color/color_999999"
-            android:textSize="14sp" />
 
-        <TextView
-            android:id="@+id/tv_article_content"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="16dp"
-            android:layout_marginTop="21dp"
-            android:layout_marginRight="16dp"
-            android:lineSpacingExtra="13dp"
-            android:textColor="@color/color_333333"
-            android:textSize="18sp" />
+            <TextView
+                android:id="@+id/tv_article_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="16dp"
+                android:lineSpacingExtra="33dp"
+                android:textColor="@color/color_333333"
+                android:textSize="24sp" />
 
-    </LinearLayout>
+            <TextView
+                android:id="@+id/tv_article_source"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:layout_marginTop="-2dp"
+                android:lineSpacingExtra="20dp"
+                android:textColor="@color/color_999999"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/tv_article_content"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:layout_marginTop="21dp"
+                android:layout_marginRight="16dp"
+                android:lineSpacingExtra="27dp"
+                android:textColor="@color/color_333333"
+                android:textSize="18sp" />
+
+        </LinearLayout>
+    </ScrollView>
+
 
     <ImageButton
         android:id="@+id/btn_edit"
@@ -115,7 +121,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_marginTop="16dp">
+        android:layout_marginTop="16dp"
+        android:padding="8dp">
 
         <FrameLayout
             android:id="@+id/view_detail_panel_play"
@@ -130,14 +137,14 @@
                 android:layout_centerInParent="true"
                 android:src="@mipmap/ico_dialog_play"></ImageView>
 
-<!--            <ProgressBar-->
-<!--                android:id="@+id/detail_panel_progress"-->
-<!--                style="@style/Widget.AppCompat.ProgressBar"-->
-<!--                android:layout_width="64dp"-->
-<!--                android:layout_height="64dp"-->
-<!--                android:layout_gravity="center"-->
-<!--                android:background="@color/transparent"-->
-<!--                android:visibility="invisible"></ProgressBar>-->
+            <!--            <ProgressBar-->
+            <!--                android:id="@+id/detail_panel_progress"-->
+            <!--                style="@style/Widget.AppCompat.ProgressBar"-->
+            <!--                android:layout_width="64dp"-->
+            <!--                android:layout_height="64dp"-->
+            <!--                android:layout_gravity="center"-->
+            <!--                android:background="@color/transparent"-->
+            <!--                android:visibility="invisible"></ProgressBar>-->
         </FrameLayout>
 
         <LinearLayout
