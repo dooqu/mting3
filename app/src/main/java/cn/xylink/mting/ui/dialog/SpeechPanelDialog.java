@@ -28,6 +28,7 @@ import java.util.List;
 
 import cn.xylink.mting.R;
 import cn.xylink.mting.bean.Article;
+import cn.xylink.mting.bean.BroadcastDetailInfo;
 import cn.xylink.mting.speech.SpeechService;
 import cn.xylink.mting.speech.Speechor;
 import cn.xylink.mting.speech.data.ArticleDataProvider;
@@ -203,9 +204,29 @@ public class SpeechPanelDialog extends Dialog implements SeekBar.OnSeekBarChange
                         || speechServiceWeakReference.get().getSelected() == null) {
                     return;
                 }
+                dismiss();
                 Intent intent = new Intent(contextWeakReference.get(), BroadcastItemAddActivity.class);
                 intent.putExtra(BroadcastItemAddActivity.ARTICLE_IDS_EXTRA, speechServiceWeakReference.get().getSelected().getArticleId());
                 contextWeakReference.get().startActivity(intent);
+            }
+        });
+        controlView.findViewById(R.id.dialog_panel_share).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(contextWeakReference.get() == null
+                        || speechServiceWeakReference.get() == null
+                        || speechServiceWeakReference.get().getSelected() == null) {
+                    return;
+                }
+                dismiss();
+                Article article = speechServiceWeakReference.get().getSelected();
+                BroadcastItemMenuDialog shareDialog = new BroadcastItemMenuDialog(contextWeakReference.get());
+                BroadcastDetailInfo broadcastDetailInfo = new BroadcastDetailInfo();
+                broadcastDetailInfo.setName(article.getBroadcastTitle());
+                broadcastDetailInfo.setCreateName(article.getSourceName());
+                broadcastDetailInfo.setShareUrl(article.getShareUrl());
+                shareDialog.setDetailInfo(broadcastDetailInfo);
+                shareDialog.show();
             }
         });
     }

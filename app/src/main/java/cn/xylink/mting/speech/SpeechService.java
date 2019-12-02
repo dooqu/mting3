@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
-
 import android.app.Service;
 import android.bluetooth.BluetoothA2dp;
 import android.content.BroadcastReceiver;
@@ -14,10 +13,7 @@ import android.content.IntentFilter;
 import android.os.Binder;
 import android.os.IBinder;
 import android.util.Log;
-import android.widget.Toast;
-
 import org.greenrobot.eventbus.EventBus;
-
 import cn.xylink.mting.bean.Article;
 import cn.xylink.mting.speech.data.ArticleDataProvider;
 import cn.xylink.mting.speech.list.DynamicSpeechList;
@@ -37,8 +33,6 @@ public class SpeechService extends Service {
         Playing,
         /*暂停中*/
         Paused,
-        /*播放完成*/
-        //Stoped,
         /*加载中
          * State.Loadding != Event.Buffering
          * Loaddin状态指示当前SpeechService在加载列表或者正文的远程数据筹备阶段中，并不代表播放器对audio的缓冲；
@@ -101,9 +95,6 @@ public class SpeechService extends Service {
 
     /*分钟倒计时要使用的Timer，没分钟递减一次*/
     Timer countdownTimer;
-
-
-    //NotificationManager notificationManager;
 
     boolean isForegroundService;
 
