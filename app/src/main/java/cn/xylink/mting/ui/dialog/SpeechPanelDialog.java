@@ -28,6 +28,7 @@ import java.util.List;
 
 import cn.xylink.mting.R;
 import cn.xylink.mting.bean.Article;
+import cn.xylink.mting.bean.BroadcastDetailInfo;
 import cn.xylink.mting.speech.SpeechService;
 import cn.xylink.mting.speech.Speechor;
 import cn.xylink.mting.speech.data.ArticleDataProvider;
@@ -134,7 +135,7 @@ public class SpeechPanelDialog extends Dialog implements SeekBar.OnSeekBarChange
     private void onInitControlView(View controlView) {
         Article articlePlaying = speechServiceWeakReference.get().getSelected();
         SpeechService.SpeechServiceState currentState = speechServiceWeakReference.get().getState();
-        boolean seekBarEnabled = currentState != SpeechService.SpeechServiceState.Loadding && currentState != SpeechService.SpeechServiceState.Ready && articlePlaying != null;
+        boolean seekBarEnabled = currentState != SpeechService.SpeechServiceState.Loadding && currentState != SpeechService.SpeechServiceState.Stoped && articlePlaying != null;
         float currentProgress = seekBarEnabled ? articlePlaying.getProgress() : 0f;
         tvTitle = controlView.findViewById(R.id.dialog_panel_article_title);
         seekBar = controlView.findViewById(R.id.dialog_panel_seekbar);
@@ -203,9 +204,29 @@ public class SpeechPanelDialog extends Dialog implements SeekBar.OnSeekBarChange
                         || speechServiceWeakReference.get().getSelected() == null) {
                     return;
                 }
+                dismiss();
                 Intent intent = new Intent(contextWeakReference.get(), BroadcastItemAddActivity.class);
                 intent.putExtra(BroadcastItemAddActivity.ARTICLE_IDS_EXTRA, speechServiceWeakReference.get().getSelected().getArticleId());
                 contextWeakReference.get().startActivity(intent);
+            }
+        });
+        controlView.findViewById(R.id.dialog_panel_share).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(contextWeakReference.get() == null
+                        || speechServiceWeakReference.get() == null
+                        || speechServiceWeakReference.get().getSelected() == null) {
+                    return;
+                }
+                dismiss();
+                Article article = speechServiceWeakReference.get().getSelected();
+                BroadcastItemMenuDialog shareDialog = new BroadcastItemMenuDialog(contextWeakReference.get());
+                BroadcastDetailInfo broadcastDetailInfo = new BroadcastDetailInfo();
+                broadcastDetailInfo.setName(article.getBroadcastTitle());
+                broadcastDetailInfo.setCreateName(article.getSourceName());
+                broadcastDetailInfo.setShareUrl(article.getShareUrl());
+                shareDialog.setDetailInfo(broadcastDetailInfo);
+                shareDialog.show();
             }
         });
     }
@@ -523,7 +544,7 @@ public class SpeechPanelDialog extends Dialog implements SeekBar.OnSeekBarChange
         }
         if (speechService.getSelected() != null &&
                 speechService.getState() != SpeechService.SpeechServiceState.Loadding &&
-                speechService.getState() != SpeechService.SpeechServiceState.Ready) {
+                speechService.getState() != SpeechService.SpeechServiceState.Stoped) {
             displayLoaddingAnim(true);
             speechService.seek((float) seekBar.getProgress() / 100f);
         }
@@ -552,6 +573,7 @@ public class SpeechPanelDialog extends Dialog implements SeekBar.OnSeekBarChange
                 setPlayingState(true);
                 break;
             case Playing:
+                displayLoaddingAnim(speechService.isBuffering());
                 enableSeekbar(true);
                 setPlayingState(true);
                 if (seekBarIsSlideByUser == false && !(speechEvent instanceof SpeechBufferingEvent)) {
@@ -561,7 +583,7 @@ public class SpeechPanelDialog extends Dialog implements SeekBar.OnSeekBarChange
             case Paused:
                 enableSeekbar(true);
                 seekBar.setProgress((int) (100 * speechService.getProgress()));
-            case Ready:
+            case Stoped:
             case Error:
                 displayLoaddingAnim(false);
                 setPlayingState(false);

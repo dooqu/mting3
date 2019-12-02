@@ -36,6 +36,15 @@ public class BroadcastInfo {
     private Long lastAt;
     private String describe;
     private int positin;
+    private boolean isChecked= false;
+
+    public boolean isChecked() {
+        return isChecked;
+    }
+
+    public void setChecked(boolean checked) {
+        isChecked = checked;
+    }
 
     public int getPositin() {
         return positin;

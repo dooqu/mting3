@@ -222,7 +222,7 @@ public abstract class SpeechEngineWrapper implements Speechor {
             if (destSpeechor != preSpeechor) {
                 synchronized (destSpeechor) {
                     //通过换解决，停掉发音
-                    if (preState == SpeechorState.SpeechorStatePlaying || preState == SpeechorState.SpeechorStateLoadding) {
+                    if (preState == SpeechorState.SpeechorStatePlaying || preState == SpeechorState.SpeechorStateBuffering) {
                         preSpeechor.stop();
                     }
                     //更换主发音引擎
