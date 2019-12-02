@@ -108,7 +108,7 @@ public class ArticleCreateActivity extends BasePresenterActivity implements Text
             //用来查询播放进度。待读传-1，已读历史传-2，收藏传-3，我创建的传-4。
             intent.putExtra(ArticleDetailActivity.BROADCAST_ID_DETAIL, -4 + "");//-4表示是自己创建的
             intent.putExtra(ArticleDetailActivity.ARTICLE_ID_DETAIL, baseResponse.data.getArticleId());
-            intent.putExtra(ArticleDetailActivity.USER_ID_DETAIL, baseResponse.data.getUserId());
+//            intent.putExtra(ArticleDetailActivity.USER_ID_DETAIL, baseResponse.data.getUserId());
             startActivity(intent);
             ArticleCreateActivity.this.finish();
         } else {
