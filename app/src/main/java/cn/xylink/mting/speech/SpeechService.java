@@ -552,7 +552,7 @@ public class SpeechService extends Service {
                 public void invoke(int errorCode, List<Article> data) {
                     synchronized (SpeechService.this) {
                         if (errorCode != 0) {
-                            Toast.makeText(SpeechService.this, "加载错误", Toast.LENGTH_SHORT).show();
+                            foregroundServiceAdapter.stopForeground(true);
                             onSpeechError(SpeechError.LIST_LOAD_ERROR, "加载播单错误", article);
                             return;
                         }
