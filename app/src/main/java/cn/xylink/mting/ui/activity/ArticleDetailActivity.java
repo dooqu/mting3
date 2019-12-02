@@ -123,4 +123,9 @@ public class ArticleDetailActivity extends BasePresenterActivity implements Arti
     public void onErrorArticleDetail(int code, String errorMsg) {
 
     }
+
+    @Override
+    protected boolean enableSpeechService() {
+        return true;
+    }
 }
