@@ -38,6 +38,7 @@ import cn.xylink.mting.speech.event.SpeechFavorArticleEvent;
 import cn.xylink.mting.speech.event.SpeechProgressEvent;
 import cn.xylink.mting.speech.event.SpeechStartEvent;
 import cn.xylink.mting.speech.event.SpeechStopEvent;
+import cn.xylink.mting.ui.activity.ArticleDetailActivity;
 import cn.xylink.mting.ui.activity.BaseActivity;
 import cn.xylink.mting.ui.activity.BroadcastItemAddActivity;
 import cn.xylink.mting.ui.adapter.ControlPanelAdapter;
@@ -110,7 +111,6 @@ public class SpeechPanelDialog extends Dialog implements SeekBar.OnSeekBarChange
         dialogWindow.setGravity(Gravity.BOTTOM);
         dialogWindow.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);//设置横向全屏
 
-
         onInitControlView(controlView);
         onInitSoundSettingView(soundSettingView);
         onInitTimeSettingView(timetickcountView);
@@ -169,6 +169,22 @@ public class SpeechPanelDialog extends Dialog implements SeekBar.OnSeekBarChange
             @Override
             public void onClick(View v) {
                 viewPager.setCurrentItem(2, true);
+            }
+        });
+
+        controlView.findViewById(R.id.button_panel_go_detail).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(contextWeakReference.get() == null
+                        || speechServiceWeakReference.get() == null
+                        || speechServiceWeakReference.get().getSelected() == null) {
+                    return;
+                }
+                dismiss();
+                Intent intent = new Intent(contextWeakReference.get(), ArticleDetailActivity.class);
+                intent.putExtra(ArticleDetailActivity.BROADCAST_ID_DETAIL, speechServiceWeakReference.get().getSelected().getBroadcastId());
+                intent.putExtra(ArticleDetailActivity.ARTICLE_ID_DETAIL, speechServiceWeakReference.get().getSelected().getArticleId());
+                contextWeakReference.get().startActivity(intent);
             }
         });
 
