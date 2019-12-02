@@ -27,8 +27,10 @@ import cn.xylink.mting.speech.event.SpeechProgressEvent;
 import cn.xylink.mting.speech.event.SpeechSerieLoaddingEvent;
 import cn.xylink.mting.speech.event.SpeechStartEvent;
 import cn.xylink.mting.speech.event.SpeechStopEvent;
+import cn.xylink.mting.ui.activity.ArticleDetailActivity;
 import cn.xylink.mting.ui.activity.BaseActivity;
 import cn.xylink.mting.ui.dialog.SpeechPanelDialog;
+import cn.xylink.mting.utils.DensityUtil;
 
 public class PanelViewAdapter {
     static String TAG = PanelViewAdapter.class.getSimpleName();
@@ -76,8 +78,9 @@ public class PanelViewAdapter {
         speechPanelView = View.inflate(contextRef.get(), R.layout.view_control_panel, null);
         RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
         if(!(contextRef.get() instanceof MainActivity)) {
-            speechPanelView.setPadding(speechPanelView.getPaddingLeft(), speechPanelView.getPaddingTop(), speechPanelView.getPaddingRight(), speechPanelView.getPaddingRight());
+            speechPanelView.setPadding(speechPanelView.getPaddingLeft(), speechPanelView.getPaddingTop(), speechPanelView.getPaddingRight(), (contextRef.get() instanceof ArticleDetailActivity)? DensityUtil.dip2pxComm(contextRef.get(), 88) : speechPanelView.getPaddingRight());
         }
+
         speechPanelView.setLayoutParams(layoutParams);
         contextRef.get().addContentView(speechPanelView, layoutParams);
         speechPanelView.setVisibility(View.INVISIBLE);
