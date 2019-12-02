@@ -54,6 +54,7 @@ public class Const {
         public static final String EDIT_BROADCAST = "编辑播单";
         public static final String REPORT = "举报";
         public static final String BATCH = "批量操作";
+        public static final String FEEDBACK = "批量操作";
     }
 
     public class SystemBroadcast{

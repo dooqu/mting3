@@ -35,8 +35,7 @@
             android:paddingLeft="16dp"
             android:paddingRight="16dp"
             android:scaleType="fitCenter"
-            android:src="@mipmap/icon_share_gray"
-            />
+            android:src="@mipmap/icon_share_gray" />
 
 
         <ImageButton
@@ -106,6 +105,7 @@
         android:layout_marginRight="16dp"
         android:layout_marginBottom="164dp"
         android:background="@drawable/bg_edit"
+        android:scaleType="fitCenter"
         android:src="@mipmap/icon_edit"
-        android:scaleType="fitCenter"/>
+        android:visibility="invisible" />
 </RelativeLayout>
