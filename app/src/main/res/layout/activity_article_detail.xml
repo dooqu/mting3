@@ -119,11 +119,11 @@
         android:visibility="invisible" />
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="76dp"
         android:layout_alignParentBottom="true"
         android:layout_marginTop="16dp"
-        android:background="@color/white"
-        android:padding="8dp">
+        android:background="@drawable/bg_white"
+        >
 
         <FrameLayout
             android:id="@+id/view_detail_panel_play"
@@ -137,15 +137,6 @@
                 android:layout_height="64dp"
                 android:layout_centerInParent="true"
                 android:src="@mipmap/ico_dialog_play"></ImageView>
-
-            <!--            <ProgressBar-->
-            <!--                android:id="@+id/detail_panel_progress"-->
-            <!--                style="@style/Widget.AppCompat.ProgressBar"-->
-            <!--                android:layout_width="64dp"-->
-            <!--                android:layout_height="64dp"-->
-            <!--                android:layout_gravity="center"-->
-            <!--                android:background="@color/transparent"-->
-            <!--                android:visibility="invisible"></ProgressBar>-->
         </FrameLayout>
 
         <LinearLayout
@@ -155,6 +146,7 @@
             android:layout_marginRight="16dp"
             android:layout_toLeftOf="@id/view_detail_panel_play"
             android:gravity="center"
+            android:layout_centerVertical="true"
             android:orientation="horizontal">
 
             <ImageView
@@ -172,7 +164,8 @@
             android:layout_marginLeft="16dp"
             android:layout_toRightOf="@id/view_detail_panel_play"
             android:gravity="center"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:layout_centerVertical="true">
 
             <ImageView
                 android:id="@+id/ico_detail_addto"
