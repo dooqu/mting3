@@ -67,7 +67,9 @@ public class ArticleDetailActivity extends BasePresenterActivity implements Arti
     private void doGetArticleDetail() {
         ArticleDetailRequest request = new ArticleDetailRequest();
         request.setArticleId(articleId);
-        request.setBroadcastId(broadcastId);
+        if (!TextUtils.isEmpty(broadcastId)) {
+            request.setBroadcastId(broadcastId);
+        }
         request.doSign();
         mArticleDetailPresenter.createArticleDetail(request);
         showLoading();
