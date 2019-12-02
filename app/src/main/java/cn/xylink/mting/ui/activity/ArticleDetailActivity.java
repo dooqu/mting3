@@ -136,7 +136,10 @@ public class ArticleDetailActivity extends BasePresenterActivity implements Arti
                 postToSpeechService(article);
                 break;
             case R.id.view_detail_panel_add_to:
-
+                Intent intent2 = new Intent(this, BroadcastItemAddActivity.class);
+                intent2.putExtra(BroadcastItemAddActivity.ARTICLE_IDS_EXTRA, articleId);
+                startActivity(intent2);
+                this.finish();
                 break;
 
             default:
