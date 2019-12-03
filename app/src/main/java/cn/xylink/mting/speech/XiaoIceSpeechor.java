@@ -7,8 +7,6 @@ import android.util.Log;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 
 
 import cn.xylink.mting.BuildConfig;
@@ -213,10 +211,10 @@ public abstract class XiaoIceSpeechor implements Speechor {
             switch (fragment.getFragmentState()) {
                 case AudioLoadding:
                     if (isSegumentCurrentToPlay == true) {
-                        if (this.state != SpeechorState.SpeechorStateLoadding) {
-                            this.state = SpeechorState.SpeechorStateLoadding;
+                        if (this.state != SpeechorState.SpeechorStateBuffering) {
+                            this.state = SpeechorState.SpeechorStateBuffering;
                             new Thread(() -> {
-                                onStateChanged(SpeechorState.SpeechorStateLoadding);
+                                onStateChanged(SpeechorState.SpeechorStateBuffering);
                             }).start();
                         }
                         
@@ -233,10 +231,10 @@ public abstract class XiaoIceSpeechor implements Speechor {
 
                 case TextReady:
                     if (isSegumentCurrentToPlay == true) {
-                        if (this.state != SpeechorState.SpeechorStateLoadding) {
-                            this.state = SpeechorState.SpeechorStateLoadding;
+                        if (this.state != SpeechorState.SpeechorStateBuffering) {
+                            this.state = SpeechorState.SpeechorStateBuffering;
                             new Thread(() -> {
-                                onStateChanged(SpeechorState.SpeechorStateLoadding);
+                                onStateChanged(SpeechorState.SpeechorStateBuffering);
                             }).start();
                         }
                     }
@@ -259,7 +257,7 @@ public abstract class XiaoIceSpeechor implements Speechor {
                                         return;
                                     }
                                     if (this.fragment.getFrameIndex() == XiaoIceSpeechor.this.fragmentIndex) {
-                                        if (state == SpeechorState.SpeechorStateLoadding) {
+                                        if (state == SpeechorState.SpeechorStateBuffering) {
                                             //定性
                                             state = SpeechorState.SpeechorStatePlaying;
                                             //play it;
@@ -282,7 +280,7 @@ public abstract class XiaoIceSpeechor implements Speechor {
 
                                         if (this.fragment.getFrameIndex() == XiaoIceSpeechor.this.fragmentIndex) {
 
-                                            if (state == SpeechorState.SpeechorStateLoadding) {
+                                            if (state == SpeechorState.SpeechorStateBuffering) {
                                                 state = SpeechorState.SpeechorStateReady;
                                                 onError(errorCode, BuildConfig.DEBUG ? this.fragment.getErrorMessage() : BufferErrorHint);
                                             }
@@ -422,7 +420,7 @@ public abstract class XiaoIceSpeechor implements Speechor {
             return false;
         }
         switch (state) {
-            case SpeechorStateLoadding:
+            case SpeechorStateBuffering:
                 this.isSimulatePaused = true;
             case SpeechorStatePlaying:
                 mediaPlayer.pause();
@@ -566,7 +564,7 @@ public abstract class XiaoIceSpeechor implements Speechor {
         clearCachedFragmentsAudio();
 
         switch (state) {
-            case SpeechorStateLoadding:
+            case SpeechorStateBuffering:
             case SpeechorStatePlaying:
                 if (mediaPlayer.isPlaying()) {
                     mediaPlayer.stop();

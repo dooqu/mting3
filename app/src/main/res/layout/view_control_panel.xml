@@ -74,7 +74,7 @@
                 android:layout_width="28dp"
                 android:layout_height="28dp"
                 android:scaleType="fitCenter"
-                android:src="@mipmap/panel_play"
+                android:src="@mipmap/panel_pause"
                 android:layout_gravity="center">
             </ImageView>
             <ProgressBar
