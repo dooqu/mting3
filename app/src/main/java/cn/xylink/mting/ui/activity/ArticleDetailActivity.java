@@ -3,12 +3,15 @@ package cn.xylink.mting.ui.activity;
 import android.content.Intent;
 import android.support.v4.widget.NestedScrollView;
 import android.text.TextUtils;
+import android.util.TypedValue;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -23,7 +26,7 @@ import cn.xylink.mting.contract.AddStoreContact;
 import cn.xylink.mting.contract.ArticleDetailContract;
 import cn.xylink.mting.contract.DelStoreContact;
 import cn.xylink.mting.event.ArticleDetailScrollEvent;
-import cn.xylink.mting.event.TingRefreshEvent;
+import cn.xylink.mting.event.ArticleFontSizeEvent;
 import cn.xylink.mting.presenter.AddStorePresenter;
 import cn.xylink.mting.presenter.ArticleDetailPresenter;
 import cn.xylink.mting.presenter.DelStorePreesenter;
@@ -71,6 +74,7 @@ public class ArticleDetailActivity extends BasePresenterActivity implements Arti
 
     @Override
     protected void initView() {
+        EventBus.getDefault().register(this);
         Intent intent = getIntent();
         broadcastId = intent.getStringExtra(BROADCAST_ID_DETAIL);
         articleId = intent.getStringExtra(ARTICLE_ID_DETAIL);
@@ -237,5 +241,37 @@ public class ArticleDetailActivity extends BasePresenterActivity implements Arti
         request.setArticleIds(articleId);
         request.doSign();
         mDelStorePresenter.delStore(request);
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onChangeFontSize(ArticleFontSizeEvent fontSizeEvent) {
+        String fontSize = fontSizeEvent.getFontSize();
+        switch (fontSize) {
+            case "default":
+                tvArticleTitle.setTextSize(TypedValue.COMPLEX_UNIT_SP, 24);
+                tvArticleSource.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
+                tvArticleContent.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
+                tvArticleTitle.setLineSpacing(0, 1.0f);
+                break;
+            case "middle":
+                tvArticleTitle.setTextSize(TypedValue.COMPLEX_UNIT_SP, 27);
+                tvArticleSource.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
+                tvArticleContent.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
+                break;
+            case "big":
+                tvArticleTitle.setTextSize(TypedValue.COMPLEX_UNIT_SP, 30);
+                tvArticleSource.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
+                tvArticleContent.setTextSize(TypedValue.COMPLEX_UNIT_SP, 24);
+                break;
+        }
+//        EventBus.getDefault().post(new ArticleFontSizeEvent("default"));//默认字号
+//        EventBus.getDefault().post(new ArticleFontSizeEvent("middle"));//中字号
+//        EventBus.getDefault().post(new ArticleFontSizeEvent("big"));//大字号
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        EventBus.getDefault().unregister(this);
     }
 }
