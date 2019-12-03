@@ -2,6 +2,7 @@ package cn.xylink.mting.ui.activity;
 
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
@@ -28,7 +29,7 @@ import cn.xylink.mting.presenter.SearchPresenter;
 import cn.xylink.mting.ui.adapter.SearchAdapter;
 import cn.xylink.mting.widget.EndlessRecyclerOnScrollListener;
 
-public class SearchActivity extends BasePresenterActivity implements SearchContact.ISearchView {
+public class SearchActivity extends BasePresenterActivity implements SearchContact.ISearchView, SearchAdapter.OnItemClickListener {
 
     private SearchPresenter mSearchPresenter;
     @BindView(R.id.rv_search)
@@ -40,6 +41,7 @@ public class SearchActivity extends BasePresenterActivity implements SearchConta
     private SearchAdapter mAdapter;
     @BindView(R.id.et_search)
     EditText mEditView;
+    private int mCurrentPage = 1;
 
     @Override
     protected void preView() {
@@ -52,13 +54,14 @@ public class SearchActivity extends BasePresenterActivity implements SearchConta
         mSearchPresenter.attachView(this);
         mRecyclerView.setItemAnimator(null);
         mAdapter = new SearchAdapter(this);
-//        mAdapter.setOnItemClickListener(this);
+        mAdapter.setListener(this);
         mRecyclerView.setLayoutManager(linearLayoutManager);
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.addOnScrollListener(endlessScrollListener);
         mRefreshLayout.setEnableRefresh(false);
         mRefreshLayout.setOnLoadMoreListener(refreshlayout -> {
-//            loadMoreData();
+            if (!isLoading)
+                loadData(mCurrentPage);
         });
         mRefreshLayout.setEnableLoadMoreWhenContentNotFull(false);
         mRefreshLayout.setRefreshFooter(new ClassicsFooter(this));
@@ -78,9 +81,15 @@ public class SearchActivity extends BasePresenterActivity implements SearchConta
 
     }
 
+    private boolean isLoading = false;
+
     private void loadData(int page) {
         if (!TextUtils.isEmpty(mEditView.getText().toString().trim())) {
-            showLoading();
+            if (page == 1) {
+                mCurrentPage = 1;
+                showLoading();
+            }
+            isLoading = true;
             SearchRequest request = new SearchRequest();
             request.setQuery(mEditView.getText().toString().trim());
             request.setPage(page);
@@ -102,18 +111,24 @@ public class SearchActivity extends BasePresenterActivity implements SearchConta
                     if (!isSearchArticle) {
                         mAdapter.clearData();
                         isSearchArticle = true;
-                        loadData(1);
+                        if (mArticleData == null) {
+                            loadData(1);
+                        } else {
+                            mAdapter.setData(mArticleData);
+                        }
                     }
-                    isSearchArticle = true;
 
                     break;
                 case R.id.rb_search_broadcast:
                     if (isSearchArticle) {
                         mAdapter.clearData();
                         isSearchArticle = false;
-                        loadData(1);
+                        if (mBroadcastData == null) {
+                            loadData(1);
+                        } else {
+                            mAdapter.setData(mBroadcastData);
+                        }
                     }
-                    isSearchArticle = false;
                     break;
                 default:
                     break;
@@ -125,7 +140,7 @@ public class SearchActivity extends BasePresenterActivity implements SearchConta
 
     @OnEditorAction(R.id.et_search)
     boolean onEditorAction(KeyEvent key) {
-        if (!TextUtils.isEmpty(mEditView.getText().toString())) {
+        if (!TextUtils.isEmpty(mEditView.getText().toString()) && key.getAction() == KeyEvent.ACTION_DOWN) {
             mAdapter.clearData();
             loadData(1);
         }
@@ -133,35 +148,82 @@ public class SearchActivity extends BasePresenterActivity implements SearchConta
     }
 
     @OnClick(R.id.tv_search_cancel)
-    void onClick(View v){
+    void onClick(View v) {
         this.finish();
     }
+
+    private List<SearchInfo> mArticleData;
+    private List<SearchInfo> mBroadcastData;
 
     @Override
     public void onSearchArticleSuccess(List<SearchInfo> response) {
         hideLoading();
+        if (mCurrentPage>1) {
+            mRefreshLayout.finishLoadMore(true);
+            if (response.size() < 20) {
+                mRefreshLayout.finishLoadMoreWithNoMoreData();
+            }
+        }
+        mCurrentPage++;
+        if (mAdapter.getItemCount() == 0) {
+            mArticleData = response;
+        }
         mAdapter.setData(response);
+        isLoading = false;
     }
 
     @Override
     public void onSearchArticleError(int code, String errorMsg) {
         hideLoading();
+        isLoading = false;
     }
 
     @Override
     public void onSearchBroadcastSuccess(List<SearchInfo> response) {
         hideLoading();
+        mCurrentPage++;
+        if (mAdapter.getItemCount() == 0) {
+            mBroadcastData = response;
+        }
         mAdapter.setData(response);
+        isLoading = false;
     }
 
     @Override
     public void onSearchBroadcastError(int code, String errorMsg) {
         hideLoading();
+        isLoading = false;
     }
 
     private EndlessRecyclerOnScrollListener endlessScrollListener = new EndlessRecyclerOnScrollListener(linearLayoutManager) {
         @Override
         public void onLoadMore(int current_page) {
+            if (!isLoading)
+                loadData(mCurrentPage);
         }
     };
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (mRecyclerView != null) {
+            mRecyclerView.removeOnScrollListener(endlessScrollListener);
+        }
+    }
+
+    @Override
+    public void onItemClick(SearchInfo article) {
+        if (isSearchArticle) {
+            Intent intent = new Intent(this, ArticleDetailActivity.class);
+//            intent.putExtra(ArticleDetailActivity.BROADCAST_ID_DETAIL,article.getBroadcastId());
+            intent.putExtra(ArticleDetailActivity.ARTICLE_ID_DETAIL, article.getArticleId());
+            startActivity(intent);
+        } else {
+            Intent intent = new Intent(this, BroadcastActivity.class);
+            intent.putExtra(BroadcastActivity.EXTRA_BROADCASTID, article.getBroadcastId());
+//            intent.putExtra(BroadcastActivity.EXTRA_TITLE, article.getName());
+//            intent.putExtra(BroadcastActivity.EXTRA_ISTOP, article.getTop());
+            startActivity(intent);
+        }
+    }
 }

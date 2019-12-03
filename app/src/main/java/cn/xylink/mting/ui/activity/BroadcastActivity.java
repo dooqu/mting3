@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.scwang.smartrefresh.layout.footer.ClassicsFooter;
@@ -39,6 +40,7 @@ import cn.xylink.mting.contract.BroadcastDetailContact;
 import cn.xylink.mting.contract.BroadcastListContact;
 import cn.xylink.mting.contract.DelStoreContact;
 import cn.xylink.mting.contract.SetTopContact;
+import cn.xylink.mting.contract.Share2WorldContact;
 import cn.xylink.mting.contract.SubscribeContact;
 import cn.xylink.mting.event.TingRefreshEvent;
 import cn.xylink.mting.presenter.AddStorePresenter;
@@ -47,6 +49,7 @@ import cn.xylink.mting.presenter.BroadcastDetailPresenter;
 import cn.xylink.mting.presenter.BroadcastListPresenter;
 import cn.xylink.mting.presenter.DelStorePreesenter;
 import cn.xylink.mting.presenter.SetTopPresenter;
+import cn.xylink.mting.presenter.Share2WorldPresenter;
 import cn.xylink.mting.presenter.SubscribePresenter;
 import cn.xylink.mting.ui.adapter.BroadcastAdapter;
 import cn.xylink.mting.ui.dialog.BottomTingDialog;
@@ -63,7 +66,8 @@ import cn.xylink.mting.widget.HDividerItemDecoration;
 public class BroadcastActivity extends BasePresenterActivity implements BroadcastListContact.IBroadcastListView,
         BroadcastDetailContact.IBroadcastDetailView, BroadcastAdapter.OnItemClickListener, BroadcastItemMenuDialog.OnBroadcastItemMenuListener
         , AddStoreContact.IAddStoreView, DelStoreContact.IDelStoreView, BottomTingDialog.OnBottomTingListener
-        , SetTopContact.ISetTopView, SubscribeContact.ISubscribeView, BroadcastAllDelContact.IBroadcastAllDelView {
+        , SetTopContact.ISetTopView, SubscribeContact.ISubscribeView, BroadcastAllDelContact.IBroadcastAllDelView
+        , Share2WorldContact.ISetTopView {
 
     public static final String EXTRA_BROADCASTID = "extra_broadcast_id";
     public static final String EXTRA_TITLE = "extra_title";
@@ -92,6 +96,7 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
     private int isTopIntent;
     private BroadcastAllDelPresenter mBroadcastAllDelPresenter;
     private Drawable drawable;
+    private Share2WorldPresenter mShare2WorldPresenter;
 
     @Override
     protected void preView() {
@@ -114,6 +119,8 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
         mSubscribePresenter.attachView(this);
         mBroadcastAllDelPresenter = (BroadcastAllDelPresenter) createPresenter(BroadcastAllDelPresenter.class);
         mBroadcastAllDelPresenter.attachView(this);
+        mShare2WorldPresenter = (Share2WorldPresenter) createPresenter(Share2WorldPresenter.class);
+        mShare2WorldPresenter.attachView(this);
         mRecyclerView.setItemAnimator(null);
         mAdapter = new BroadcastAdapter(this, getIntent().getStringExtra(EXTRA_BROADCASTID));
         mAdapter.setOnItemClickListener(this);
@@ -141,7 +148,6 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
 //        mRefreshLayout.setRefreshContent(mRecyclerView);
         isTopIntent = getIntent().getIntExtra(EXTRA_ISTOP, 0);
     }
-
 
 
     private void initList() {
@@ -180,13 +186,8 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
     }
 
     @Override
-    protected boolean enableSpeechService() {
-        return true;
-    }
-
-    @Override
     public void onBroadcastListSuccess(List<BroadcastInfo> data, boolean isLoadMore) {
-        L.v(data.size()+"===============================================");
+        L.v(data.size() + "===============================================");
         if (isLoadMore) {
             mRefreshLayout.finishLoadMore(true);
         } else {
@@ -213,6 +214,7 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
     public void onBroadcastDetailSuccess(BroadcastDetailInfo data) {
         mDetailInfo = data;
         initList();
+        mTableBarTitleTextView.setText(data.getName());
         if (mAdapter != null) {
             mAdapter.setDetailInfo(data);
         }
@@ -270,12 +272,10 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
 
     @Override
     public void onItemClick(BroadcastInfo article) {
-        Article article1 = new Article();
-        article1.setTitle(article.getTitle());
-        article1.setArticleId(article.getArticleId());
-        article1.setBroadcastId(getIntent().getStringExtra(EXTRA_BROADCASTID));
-        article1.setBroadcastTitle(getIntent().getStringExtra(EXTRA_TITLE));
-        postToSpeechService(article1);
+        Intent intent = new Intent(this, ArticleDetailActivity.class);
+        intent.putExtra(ArticleDetailActivity.BROADCAST_ID_DETAIL, getIntent().getStringExtra(EXTRA_BROADCASTID));
+        intent.putExtra(ArticleDetailActivity.ARTICLE_ID_DETAIL, article.getArticleId());
+        startActivity(intent);
     }
 
     @Override
@@ -290,6 +290,14 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
         }
         dialog.setListener(this);
         dialog.show();
+    }
+
+    @Override
+    public void onShare2World() {
+        BroadcastIdRequest request = new BroadcastIdRequest();
+        request.setBroadcastId(getIntent().getStringExtra(EXTRA_BROADCASTID));
+        request.doSign();
+        mShare2WorldPresenter.share2World(request);
     }
 
     private BottomTingDialog mBottomTingDialog;
@@ -394,16 +402,16 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
         if (getIntent().getStringExtra(EXTRA_BROADCASTID).startsWith("-")) {
             switch (getIntent().getStringExtra(EXTRA_BROADCASTID)) {
                 case Const.SystemBroadcast.SYSTEMBROADCAST_UNREAD:
-                    mBroadcastAllDelPresenter.delUnread(request,info);
+                    mBroadcastAllDelPresenter.delUnread(request, info);
                     break;
                 case Const.SystemBroadcast.SYSTEMBROADCAST_READED:
-                    mBroadcastAllDelPresenter.delReaded(request,info);
+                    mBroadcastAllDelPresenter.delReaded(request, info);
                     break;
                 case Const.SystemBroadcast.SYSTEMBROADCAST_STORE:
-                    mBroadcastAllDelPresenter.delStore(request,info);
+                    mBroadcastAllDelPresenter.delStore(request, info);
                     break;
                 case Const.SystemBroadcast.SYSTEMBROADCAST_MY_CREATE_ARTICLE:
-                    mBroadcastAllDelPresenter.delMyCreateArticle(request,info);
+                    mBroadcastAllDelPresenter.delMyCreateArticle(request, info);
                     break;
                 default:
             }
@@ -412,7 +420,7 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
             articleRequest.setBroadcastId(getIntent().getStringExtra(EXTRA_BROADCASTID));
             articleRequest.setArticleIds(info.getArticleId());
             articleRequest.doSign();
-            mBroadcastAllDelPresenter.delMyCreateBroadcastArticle(articleRequest,info);
+            mBroadcastAllDelPresenter.delMyCreateBroadcastArticle(articleRequest, info);
         }
     }
 
@@ -461,9 +469,10 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
                 }
                 break;
             case Const.BottomDialogItem.BATCH:
-                Intent intent = new Intent(this,ArrangeActivity.class);
-                intent.putExtra(ArrangeActivity.EXTRA_BROADCASTID,getIntent().getStringExtra(EXTRA_BROADCASTID));
-                intent.putExtra(ArrangeActivity.EXTRA_IS_MY_CREATE_BROADCAST,mDetailInfo != null && mDetailInfo.getCreateUserId().equals(ContentManager.getInstance().getUserInfo().getUserId()));
+                Intent intent = new Intent(this, ArrangeActivity.class);
+                intent.putExtra(ArrangeActivity.EXTRA_BROADCASTID, getIntent().getStringExtra(EXTRA_BROADCASTID));
+                intent.putExtra(ArrangeActivity.EXTRA_IS_MY_CREATE_BROADCAST,
+                        mDetailInfo != null && mDetailInfo.getCreateUserId().equals(ContentManager.getInstance().getUserInfo().getUserId()));
                 startActivity(intent);
                 break;
             case Const.BottomDialogItem.REPORT:
@@ -538,5 +547,16 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
     @Override
     public void onBroadcastAllDelError(int code, String errorMsg) {
 
+    }
+
+    @Override
+    public void onShare2WorldSuccess(BaseResponse response) {
+        Toast.makeText(this, "分享成功！", Toast.LENGTH_SHORT).show();
+        mAdapter.setShare2World();
+    }
+
+    @Override
+    public void onShare2WorldError(int code, String errorMsg) {
+        Toast.makeText(this, "分享失败！", Toast.LENGTH_SHORT).show();
     }
 }
