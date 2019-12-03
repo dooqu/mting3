@@ -36,6 +36,7 @@ import cn.xylink.mting.presenter.TingListPresenter;
 import cn.xylink.mting.ui.activity.ArticleCreateActivity;
 import cn.xylink.mting.ui.activity.BroadcastActivity;
 import cn.xylink.mting.ui.activity.BroadcastCreateActivity;
+import cn.xylink.mting.ui.activity.SearchActivity;
 import cn.xylink.mting.ui.adapter.TingAdapter;
 import cn.xylink.mting.ui.dialog.BottomTingDialog;
 import cn.xylink.mting.ui.dialog.BottomTingItemModle;
@@ -156,10 +157,17 @@ public class TingFragment extends BasePresenterFragment implements TingListConta
         mBottomTingDialog.show();
     }
 
-    @OnClick({R.id.iv_ting_menu})
+    @OnClick({R.id.iv_ting_menu,R.id.tv_ting_search})
     void onClick(View view) {
-        MainAddMenuPop pop = new MainAddMenuPop(getActivity(), this);
-        pop.showAsRight(mMenuImageView);
+        switch (view.getId()){
+            case R.id.iv_ting_menu:
+                MainAddMenuPop pop = new MainAddMenuPop(getActivity(), this);
+                pop.showAsRight(mMenuImageView);
+                break;
+            case R.id.tv_ting_search:
+                getActivity().startActivity(new Intent(getActivity(), SearchActivity.class));
+                break;
+        }
     }
 
     private void setTop(String bid, String event) {

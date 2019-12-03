@@ -1,5 +1,6 @@
 package cn.xylink.mting.ui.fragment;
 
+import android.content.Intent;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -21,6 +22,7 @@ import cn.xylink.mting.bean.WorldInfo;
 import cn.xylink.mting.bean.WorldRequest;
 import cn.xylink.mting.contract.WorldListContact;
 import cn.xylink.mting.presenter.WorldListPresenter;
+import cn.xylink.mting.ui.activity.SearchActivity;
 import cn.xylink.mting.ui.adapter.WorldAdapter;
 import cn.xylink.mting.ui.dialog.MainAddMenuPop;
 import cn.xylink.mting.utils.DensityUtil;
@@ -31,7 +33,7 @@ import cn.xylink.mting.widget.TingHeaderView;
 /**
  * @author JoDragon
  */
-public class WorldFragment extends BasePresenterFragment implements WorldListContact.IWorldListView ,MainAddMenuPop.OnMainAddMenuListener{
+public class WorldFragment extends BasePresenterFragment implements WorldListContact.IWorldListView, MainAddMenuPop.OnMainAddMenuListener {
 
     @BindView(R.id.rv_tab_world)
     RecyclerView mRecyclerView;
@@ -72,7 +74,8 @@ public class WorldFragment extends BasePresenterFragment implements WorldListCon
         mRefreshLayout.setEnableAutoLoadMore(true);
         mRefreshLayout.setEnableLoadMoreWhenContentNotFull(false);
         mRefreshLayout.setRefreshHeader(new TingHeaderView(getActivity()).setIsWrite(false));
-//        mRefreshLayout.setRefreshFooter(new BallPulseFooter(getActivity()).setSpinnerStyle(SpinnerStyle.Scale).setAnimatingColor(getResources().getColor(R.color.c488def)));
+//        mRefreshLayout.setRefreshFooter(new BallPulseFooter(getActivity()).setSpinnerStyle(SpinnerStyle.Scale).setAnimatingColor(getResources()
+//        .getColor(R.color.c488def)));
         mRefreshLayout.setRefreshFooter(new ClassicsFooter(getActivity()));
     }
 
@@ -84,25 +87,33 @@ public class WorldFragment extends BasePresenterFragment implements WorldListCon
         mRefreshLayout.resetNoMoreData();
     }
 
-    private void loadMoreData(){
+    private void loadMoreData() {
         WorldRequest request = new WorldRequest();
         request.setEvent(WorldRequest.EVENT.NEW.name().toLowerCase());
-        request.setLastAt(mAdapter.getArticleList().get(mAdapter.getArticleList().size()-1).getLastAt());
+        request.setLastAt(mAdapter.getArticleList().get(mAdapter.getArticleList().size() - 1).getLastAt());
         request.doSign();
         mWorldListPresenter.getWorldList(request, true);
     }
 
-    @OnClick({R.id.iv_world_add})
+    @OnClick({R.id.iv_world_add, R.id.tv_world_search})
     void onClick(View view) {
-        MainAddMenuPop pop = new MainAddMenuPop(getActivity(), this);
-        pop.showAsRight(mMenuImageView);
+        switch (view.getId()) {
+            case R.id.iv_world_add:
+                MainAddMenuPop pop = new MainAddMenuPop(getActivity(), this);
+                pop.showAsRight(mMenuImageView);
+                break;
+            case R.id.tv_world_search:
+                getActivity().startActivity(new Intent(getActivity(), SearchActivity.class));
+                break;
+            default:
+        }
     }
 
     @Override
     public void onWorldListSuccess(List<WorldInfo> data, boolean isLoadMore) {
         if (isLoadMore) {
             mRefreshLayout.finishLoadMore(true);
-            if (data.size()<20){
+            if (data.size() < 20) {
                 mRefreshLayout.finishLoadMoreWithNoMoreData();
             }
         } else {
@@ -137,7 +148,7 @@ public class WorldFragment extends BasePresenterFragment implements WorldListCon
     }
 
     LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
-    EndlessRecyclerOnScrollListener endlessScrollListener=new EndlessRecyclerOnScrollListener(linearLayoutManager) {
+    EndlessRecyclerOnScrollListener endlessScrollListener = new EndlessRecyclerOnScrollListener(linearLayoutManager) {
         @Override
         public void onLoadMore(int current_page) {
             loadMoreData();
