@@ -1,12 +1,14 @@
 package cn.xylink.mting.ui.activity;
 
-import android.content.Context;
 import android.content.Intent;
+import android.support.v4.widget.NestedScrollView;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import org.greenrobot.eventbus.EventBus;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -17,14 +19,16 @@ import cn.xylink.mting.bean.Article;
 import cn.xylink.mting.bean.ArticleDetail2Info;
 import cn.xylink.mting.bean.ArticleDetailRequest;
 import cn.xylink.mting.bean.ArticleIdsRequest;
-import cn.xylink.mting.bean.BroadcastInfo;
 import cn.xylink.mting.contract.AddStoreContact;
 import cn.xylink.mting.contract.ArticleDetailContract;
 import cn.xylink.mting.contract.DelStoreContact;
+import cn.xylink.mting.event.ArticleDetailScrollEvent;
+import cn.xylink.mting.event.TingRefreshEvent;
 import cn.xylink.mting.presenter.AddStorePresenter;
 import cn.xylink.mting.presenter.ArticleDetailPresenter;
 import cn.xylink.mting.presenter.DelStorePreesenter;
 import cn.xylink.mting.utils.ContentManager;
+import cn.xylink.mting.utils.L;
 
 /**
  * @author wjn
@@ -45,6 +49,8 @@ public class ArticleDetailActivity extends BasePresenterActivity implements Arti
     ImageView icoPlay;
     @BindView(R.id.ico_detail_addto)
     ImageView icoAddTo;
+    @BindView(R.id.scrollView_detail)
+    NestedScrollView scrollView;
 
     private ArticleDetailPresenter mArticleDetailPresenter;
     //    public static String USER_ID_DETAIL = "USER_ID_DETAIL";
@@ -75,6 +81,19 @@ public class ArticleDetailActivity extends BasePresenterActivity implements Arti
         mDelStorePresenter = (DelStorePreesenter) createPresenter(DelStorePreesenter.class);
         mDelStorePresenter.attachView(this);
         doGetArticleDetail();
+        scrollView.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
+            @Override
+            public void onScrollChange(NestedScrollView nestedScrollView, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
+                if (scrollY > oldScrollY) {
+                    L.v("下滑......");
+                    EventBus.getDefault().post(new ArticleDetailScrollEvent("glide"));
+                }
+                if (scrollY < oldScrollY) {
+                    L.v("上滑......");
+                    EventBus.getDefault().post(new ArticleDetailScrollEvent("upGlide"));
+                }
+            }
+        });
     }
 
     @Override
