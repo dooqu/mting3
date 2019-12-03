@@ -291,4 +291,12 @@ public class RemoteUrl {
     public static String getArticleEditUrl() {
         return URL_BASE + "/api/art/v1/article/edit";
     }
+    //文章搜搜
+    public static String getSearchArticleUrl() {
+        return URL_BASE + "/api/art/v1/search/article";
+    }
+    //播单搜搜
+    public static String getSearchBroadcastUrl() {
+        return URL_BASE + "/api/art/v1/search/broadcast";
+    }
 }
