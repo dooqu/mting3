@@ -18,14 +18,17 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.OnClick;
 import cn.xylink.mting.R;
+import cn.xylink.mting.bean.Article;
 import cn.xylink.mting.bean.WorldInfo;
 import cn.xylink.mting.bean.WorldRequest;
 import cn.xylink.mting.contract.WorldListContact;
 import cn.xylink.mting.presenter.WorldListPresenter;
+import cn.xylink.mting.ui.activity.ArticleDetailActivity;
 import cn.xylink.mting.ui.activity.SearchActivity;
 import cn.xylink.mting.ui.adapter.WorldAdapter;
 import cn.xylink.mting.ui.dialog.MainAddMenuPop;
 import cn.xylink.mting.utils.DensityUtil;
+import cn.xylink.mting.utils.L;
 import cn.xylink.mting.widget.EndlessRecyclerOnScrollListener;
 import cn.xylink.mting.widget.HDividerItemDecoration;
 import cn.xylink.mting.widget.TingHeaderView;
@@ -33,7 +36,8 @@ import cn.xylink.mting.widget.TingHeaderView;
 /**
  * @author JoDragon
  */
-public class WorldFragment extends BasePresenterFragment implements WorldListContact.IWorldListView, MainAddMenuPop.OnMainAddMenuListener {
+public class WorldFragment extends BasePresenterFragment implements WorldListContact.IWorldListView, MainAddMenuPop.OnMainAddMenuListener
+        , WorldAdapter.OnItemClickListener {
 
     @BindView(R.id.rv_tab_world)
     RecyclerView mRecyclerView;
@@ -58,7 +62,7 @@ public class WorldFragment extends BasePresenterFragment implements WorldListCon
         view.setPadding(0, DensityUtil.getStatusBarHeight(getActivity()), 0, 0);
         mWorldListPresenter = (WorldListPresenter) createPresenter(WorldListPresenter.class);
         mWorldListPresenter.attachView(this);
-        mAdapter = new WorldAdapter(getActivity());
+        mAdapter = new WorldAdapter(getActivity(), this);
         mRecyclerView.setItemAnimator(null);
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         mRecyclerView.setLayoutManager(linearLayoutManager);
@@ -89,7 +93,7 @@ public class WorldFragment extends BasePresenterFragment implements WorldListCon
 
     private void loadMoreData() {
         WorldRequest request = new WorldRequest();
-        request.setEvent(WorldRequest.EVENT.NEW.name().toLowerCase());
+        request.setEvent(WorldRequest.EVENT.OLD.name().toLowerCase());
         request.setLastAt(mAdapter.getArticleList().get(mAdapter.getArticleList().size() - 1).getLastAt());
         request.doSign();
         mWorldListPresenter.getWorldList(request, true);
@@ -111,6 +115,7 @@ public class WorldFragment extends BasePresenterFragment implements WorldListCon
 
     @Override
     public void onWorldListSuccess(List<WorldInfo> data, boolean isLoadMore) {
+        L.v(data.size()+"******************************************");
         if (isLoadMore) {
             mRefreshLayout.finishLoadMore(true);
             if (data.size() < 20) {
@@ -161,5 +166,13 @@ public class WorldFragment extends BasePresenterFragment implements WorldListCon
         if (mRecyclerView != null) {
             mRecyclerView.removeOnScrollListener(endlessScrollListener);
         }
+    }
+
+    @Override
+    public void onItemClick(WorldInfo article) {
+        Intent intent = new Intent(getActivity(), ArticleDetailActivity.class);
+        intent.putExtra(ArticleDetailActivity.BROADCAST_ID_DETAIL,article.getBroadcastId());
+        intent.putExtra(ArticleDetailActivity.ARTICLE_ID_DETAIL,article.getArticleId());
+        startActivity(intent);
     }
 }

@@ -99,10 +99,11 @@ public class BroadcastAdapter extends RecyclerView.Adapter<BroadcastAdapter.View
                 holder.mDesTextView.setText(mDetailInfo.getInfo());
                 ImageUtils.get().load(holder.mImageView, 0, 0, 8, mDetailInfo.getPicture());
                 ImageUtils.get().load(holder.mTopLayout, mDetailInfo.getPicture());
-                if (mDetailInfo.getCreateName().equals(ContentManager.getInstance().getUserInfo().getUserId())) {
+                if (mDetailInfo.getCreateUserId().equals(ContentManager.getInstance().getUserInfo().getUserId())) {
                     if (mDetailInfo.getShare() == 0) {
                         holder.mShare2worldTextView.setVisibility(View.VISIBLE);
                     } else {
+                        holder.mShare2worldTextView.setVisibility(View.GONE);
                         holder.mSubscribedTextView.setVisibility(View.VISIBLE);
                         holder.mSubscribedTextView.setText("已定阅：" + getSubscribedNum(mDetailInfo.getSubscribeTotal()));
                     }
@@ -111,12 +112,20 @@ public class BroadcastAdapter extends RecyclerView.Adapter<BroadcastAdapter.View
                     holder.mSubscribedTextView.setText("已定阅：" + getSubscribedNum(mDetailInfo.getSubscribeTotal()));
                 }
             }
+            holder.mShare2worldTextView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (mOnItemClickListener != null) {
+                        mOnItemClickListener.onShare2World();
+                    }
+                }
+            });
         } else {
             BroadcastInfo data = mData.get(position);
             holder.tvTitle.setText(data.getTitle());
             holder.tvSource.setText(data.getSourceName());
             if (data.getProgress() > 0) {
-                holder.tvProgress.setText("已读"+getPercentFormat(data.getProgress()));
+                holder.tvProgress.setText("已读" + getPercentFormat(data.getProgress()));
             }
             if (!TextUtils.isEmpty(data.getPicture())) {
                 holder.ivImg.setVisibility(View.VISIBLE);
@@ -138,6 +147,11 @@ public class BroadcastAdapter extends RecyclerView.Adapter<BroadcastAdapter.View
                 return true;
             });
         }
+    }
+
+    public void setShare2World(){
+        mDetailInfo.setShare(1);
+        notifyItemChanged(0);
     }
 
     /**
@@ -167,7 +181,7 @@ public class BroadcastAdapter extends RecyclerView.Adapter<BroadcastAdapter.View
      * 10000以上，1万+
      */
     private String getSubscribedNum(int total) {
-        if (total < 1000) {
+        if (0 < total && total < 1000) {
             return "<1千";
         } else if (total > 10000) {
             return "1万+";
@@ -250,5 +264,7 @@ public class BroadcastAdapter extends RecyclerView.Adapter<BroadcastAdapter.View
         void onItemClick(BroadcastInfo article);
 
         void onItemLongClick(BroadcastInfo article);
+
+        void onShare2World();
     }
 }

@@ -32,6 +32,7 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.ViewHolder
     private static final int TYPE_ARTICLE = 0;
     private static final int TYPE_BROADCAST = 1;
     private Context mContext;
+    private OnItemClickListener mListener;
 
     public SearchAdapter(Context context) {
         this.mContext = context;
@@ -47,7 +48,7 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.ViewHolder
     }
 
     public void clearData() {
-        if (mData != null) {
+        if (mData != null && mData.size() > 0) {
             mData.clear();
             this.notifyDataSetChanged();
         }
@@ -80,6 +81,15 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.ViewHolder
         } else {
             viewHolder.ivImg.setVisibility(View.GONE);
         }
+        viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mListener != null) {
+                    mListener.onItemClick(info);
+                }
+            }
+        });
+
     }
 
     public boolean isSearchArticle() {
@@ -110,10 +120,20 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.ViewHolder
             super(itemView);
             tvTitle = itemView.findViewById(R.id.tv_search_title);
             tvSource = itemView.findViewById(R.id.tv_search_source);
-            if (isSearchArticle) {
-                ivImg = itemView.findViewById(R.id.iv_search_img);
-            }
+            ivImg = itemView.findViewById(R.id.iv_search_img);
         }
+    }
+
+    public OnItemClickListener getListener() {
+        return mListener;
+    }
+
+    public void setListener(OnItemClickListener listener) {
+        mListener = listener;
+    }
+
+    public interface OnItemClickListener {
+        void onItemClick(SearchInfo article);
     }
 
 }

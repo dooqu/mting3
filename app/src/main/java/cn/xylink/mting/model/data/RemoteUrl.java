@@ -299,4 +299,8 @@ public class RemoteUrl {
     public static String getSearchBroadcastUrl() {
         return URL_BASE + "/api/art/v1/search/broadcast";
     }
+    //分享到世界
+    public static String getShare2WorldUrl() {
+        return URL_BASE + "/api/art/v1/broadcast/share";
+    }
 }
