@@ -302,7 +302,7 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
         Intent intent = new Intent(this, ArticleDetailActivity.class);
         intent.putExtra(ArticleDetailActivity.BROADCAST_ID_DETAIL, getIntent().getStringExtra(EXTRA_BROADCASTID));
         intent.putExtra(ArticleDetailActivity.ARTICLE_ID_DETAIL, article.getArticleId());
-//        intent.putExtra(ArticleDetailActivity.BROADCAST_TITLE_DETAIL, mDetailInfo.getName());
+        intent.putExtra(ArticleDetailActivity.BROADCAST_TITLE_DETAIL, mDetailInfo.getName());
         startActivity(intent);
     }
 
