@@ -22,8 +22,8 @@ import butterknife.BindView;
 import butterknife.OnClick;
 import cn.xylink.mting.R;
 import cn.xylink.mting.base.BaseResponse;
+import cn.xylink.mting.base.BaseResponseArray;
 import cn.xylink.mting.bean.AddStoreRequest;
-import cn.xylink.mting.bean.Article;
 import cn.xylink.mting.bean.BroadcastDetailInfo;
 import cn.xylink.mting.bean.BroadcastIdRequest;
 import cn.xylink.mting.bean.BroadcastInfo;
@@ -86,6 +86,14 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
     TextView mTableBarTitleTextView;
     @BindView(R.id.rv_broadcast)
     RecyclerView mRecyclerView;
+    @BindView(R.id.ll_empty)
+    LinearLayout mEmptylayout;
+    @BindView(R.id.iv_empty)
+    ImageView mEmptyImageView;
+    @BindView(R.id.tv_empty)
+    TextView mEmptyTextView;
+    @BindView(R.id.tv_look_studio)
+    TextView mLookStudioTextView;
     private BroadcastListPresenter mPresenter;
     private BroadcastAdapter mAdapter;
     private BroadcastDetailPresenter mBroadcastDetailPresenter;
@@ -185,9 +193,19 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
 
     }
 
+    private boolean isUsed = false;
+
     @Override
-    public void onBroadcastListSuccess(List<BroadcastInfo> data, boolean isLoadMore) {
-        L.v(data.size() + "===============================================");
+    public void onBroadcastListSuccess(BaseResponseArray<BroadcastInfo> baseResponse, boolean isLoadMore) {
+        if (Const.SystemBroadcast.SYSTEMBROADCAST_UNREAD.equals(getIntent().getStringExtra(EXTRA_BROADCASTID))) {
+            isUsed = baseResponse.ext.used == 1;
+        }
+        List<BroadcastInfo> data = baseResponse.data;
+        if (!isLoadMore && data.size() == 0) {
+            showEmptyLayout();
+        }else {
+            mEmptylayout.setVisibility(View.GONE);
+        }
         if (isLoadMore) {
             mRefreshLayout.finishLoadMore(true);
         } else {
@@ -206,6 +224,11 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
 
     @Override
     public void onBroadcastListError(int code, String errorMsg, boolean isLoadMore) {
+        if (code == 9999) {
+            showNetworlError();
+        } else {
+            showLoadFail();
+        }
     }
 
     private BroadcastDetailInfo mDetailInfo;
@@ -222,7 +245,11 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
 
     @Override
     public void onBroadcastDetailError(int code, String errorMsg) {
-
+        if (code == 9999) {
+            showNetworlError();
+        } else {
+            showLoadFail();
+        }
     }
 
     private int mDY = 0;
@@ -275,6 +302,7 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
         Intent intent = new Intent(this, ArticleDetailActivity.class);
         intent.putExtra(ArticleDetailActivity.BROADCAST_ID_DETAIL, getIntent().getStringExtra(EXTRA_BROADCASTID));
         intent.putExtra(ArticleDetailActivity.ARTICLE_ID_DETAIL, article.getArticleId());
+//        intent.putExtra(ArticleDetailActivity.BROADCAST_TITLE_DETAIL, mDetailInfo.getName());
         startActivity(intent);
     }
 
@@ -302,9 +330,18 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
 
     private BottomTingDialog mBottomTingDialog;
 
-    @OnClick({R.id.iv_titlebar_share, R.id.iv_titlebar_menu, R.id.iv_titlebar_back})
+    @OnClick({R.id.iv_titlebar_share, R.id.iv_titlebar_menu, R.id.iv_titlebar_back, R.id.ll_empty})
     void onClick(View view) {
         switch (view.getId()) {
+            case R.id.ll_empty:
+                initList();
+                break;
+            case R.id.tv_look_studio:
+                Intent intent = new Intent(this, PlayerActivity.class);
+                intent.putExtra(PlayerActivity.EXTRA_HTML, PlayerActivity.PROTOCOL_URL);
+                intent.putExtra(PlayerActivity.EXTRA_TITLE, "玩转轩辕听");
+                startActivity(intent);
+                break;
             case R.id.iv_titlebar_back:
                 this.finish();
                 break;
@@ -559,4 +596,44 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
     public void onShare2WorldError(int code, String errorMsg) {
         Toast.makeText(this, "分享失败！", Toast.LENGTH_SHORT).show();
     }
+
+    private void showEmptyLayout() {
+        mEmptylayout.setVisibility(View.VISIBLE);
+        String id = getIntent().getStringExtra(EXTRA_BROADCASTID);
+        if (Const.SystemBroadcast.SYSTEMBROADCAST_UNREAD.equals(id)) {
+            if (isUsed) {
+                mEmptyImageView.setImageResource(R.mipmap.bg_empty);
+                mEmptyTextView.setText("真棒！文章读完了，快去添加内容吧！");
+            } else {
+                mEmptyImageView.setImageResource(R.mipmap.bg_empty_first);
+                mEmptyTextView.setText("欢迎来到轩辕听，先去看看如何使用吧！");
+            }
+            mLookStudioTextView.setVisibility(View.VISIBLE);
+        } else if (Const.SystemBroadcast.SYSTEMBROADCAST_STORE.equals(id)) {
+            mEmptyImageView.setImageResource(R.mipmap.bg_empty_store);
+            mEmptyTextView.setText("没有收藏得内容！");
+            mLookStudioTextView.setVisibility(View.GONE);
+        } else {
+            mEmptyImageView.setImageResource(R.mipmap.bg_empty);
+            mEmptyTextView.setText("null");
+            mLookStudioTextView.setVisibility(View.GONE);
+        }
+
+    }
+
+    private void showLoadFail() {
+        mEmptylayout.setVisibility(View.VISIBLE);
+        mEmptyImageView.setImageResource(R.mipmap.bg_load_fail);
+        mEmptyTextView.setText("加载失败");
+        mLookStudioTextView.setVisibility(View.GONE);
+    }
+
+    private void showNetworlError() {
+        mEmptylayout.setVisibility(View.VISIBLE);
+        mEmptyImageView.setImageResource(R.mipmap.bg_network_error);
+        mEmptyTextView.setText("网络开小差了，等会试试吧");
+        mLookStudioTextView.setVisibility(View.GONE);
+    }
+
+
 }

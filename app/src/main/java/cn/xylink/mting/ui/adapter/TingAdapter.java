@@ -14,6 +14,7 @@ import java.util.List;
 
 import cn.xylink.mting.R;
 import cn.xylink.mting.bean.TingInfo;
+import cn.xylink.mting.common.Const;
 
 /**
  * 享听适配器
@@ -27,19 +28,14 @@ public class TingAdapter extends RecyclerView.Adapter<TingAdapter.ViewHolder> {
     private List<TingInfo> mData = new ArrayList<>();
     private TingAdapter.OnItemClickListener mOnItemClickListener;
 
-    public TingAdapter(Context context) {
-        this.mContext = context;
-    }
 
     public TingAdapter(Context context, TingAdapter.OnItemClickListener listener) {
         this.mContext = context;
         this.mOnItemClickListener = listener;
-    }
-
-    public TingAdapter(Context context, List<TingInfo> list, TingAdapter.OnItemClickListener listener) {
-        this.mContext = context;
-        this.mData = list;
-        this.mOnItemClickListener = listener;
+        TingInfo info = new TingInfo();
+        info.setBroadcastId(Const.SystemBroadcast.SYSTEMBROADCAST_UNREAD);
+        info.setName("待读");
+        mData.add(info);
     }
 
     public void setData(List<TingInfo> list) {

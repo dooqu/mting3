@@ -31,7 +31,7 @@ public class BroadcastListPresenter extends BasePresenter<BroadcastListContact.I
                         BaseResponseArray<BroadcastInfo> baseResponse = (BaseResponseArray<BroadcastInfo>) data;
                         int code = baseResponse.code;
                         if (code == 200) {
-                            mView.onBroadcastListSuccess(baseResponse.data, isLoadMore);
+                            mView.onBroadcastListSuccess(baseResponse, isLoadMore);
                         } else {
                             mView.onBroadcastListError(code, baseResponse.message, isLoadMore);
                         }
