@@ -2,6 +2,7 @@ package cn.xylink.mting.contract;
 
 import java.util.List;
 
+import cn.xylink.mting.base.BaseResponseArray;
 import cn.xylink.mting.bean.BroadcastInfo;
 import cn.xylink.mting.bean.BroadcastListRequest;
 
@@ -12,7 +13,7 @@ import cn.xylink.mting.bean.BroadcastListRequest;
  */
 public interface BroadcastListContact {
     interface IBroadcastListView extends IBaseView {
-        void onBroadcastListSuccess(List<BroadcastInfo> data, boolean isLoadMore);
+        void onBroadcastListSuccess(BaseResponseArray<BroadcastInfo> baseResponse, boolean isLoadMore);
 
         void onBroadcastListError(int code, String errorMsg, boolean isLoadMore);
     }

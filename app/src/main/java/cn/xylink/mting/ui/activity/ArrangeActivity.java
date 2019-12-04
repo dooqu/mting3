@@ -15,6 +15,7 @@ import butterknife.BindView;
 import butterknife.OnClick;
 import cn.xylink.mting.R;
 import cn.xylink.mting.base.BaseResponse;
+import cn.xylink.mting.base.BaseResponseArray;
 import cn.xylink.mting.bean.ArticleIdsRequest;
 import cn.xylink.mting.bean.BroadcastInfo;
 import cn.xylink.mting.bean.BroadcastListRequest;
@@ -185,7 +186,8 @@ public class ArrangeActivity extends BasePresenterActivity implements BroadcastL
     }
 
     @Override
-    public void onBroadcastListSuccess(List<BroadcastInfo> data, boolean isLoadMore) {
+    public void onBroadcastListSuccess(BaseResponseArray<BroadcastInfo> baseResponse, boolean isLoadMore) {
+        List<BroadcastInfo> data = baseResponse.data;
         if (isLoadMore) {
             mRefreshLayout.finishLoadMore(true);
         } else {

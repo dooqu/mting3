@@ -7,4 +7,5 @@ public class BaseResponseArray<T> {
     public String message;
     public List<T> data;
     public List<T> list;
+    public Ext ext;
 }
