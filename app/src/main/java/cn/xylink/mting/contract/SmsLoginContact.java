@@ -1,12 +1,11 @@
 package cn.xylink.mting.contract;
 
-import cn.xylink.mting.base.BaseResponse;
-import cn.xylink.mting.bean.UserInfo;
 import cn.xylink.mting.model.SmsLoginRequset;
+import cn.xylink.mting.model.data.SmsLoginResponse;
 
 public interface SmsLoginContact {
     interface ISmsLoginView extends IBaseView {
-        void onSmsLoginSuccess(BaseResponse<UserInfo> loginInfoBaseResponse);
+        void onSmsLoginSuccess(SmsLoginResponse smsLoginResponse);
 
         void onSmsLoginError(int code, String errorMsg);
     }

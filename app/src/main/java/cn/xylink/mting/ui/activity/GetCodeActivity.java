@@ -17,13 +17,13 @@ import cn.xylink.mting.MainActivity;
 import cn.xylink.mting.R;
 import cn.xylink.mting.base.BaseResponse;
 import cn.xylink.mting.bean.CodeInfo;
-import cn.xylink.mting.bean.UserInfo;
 import cn.xylink.mting.contract.GetCodeContact;
 import cn.xylink.mting.contract.SmsLoginContact;
 import cn.xylink.mting.model.GetCodeRequest;
 import cn.xylink.mting.model.SmsLoginRequset;
 import cn.xylink.mting.model.data.Const;
 import cn.xylink.mting.model.data.HttpConst;
+import cn.xylink.mting.model.data.SmsLoginResponse;
 import cn.xylink.mting.presenter.GetCodePresenter;
 import cn.xylink.mting.presenter.SmsLoginPresenter;
 import cn.xylink.mting.utils.ContentManager;
@@ -270,17 +270,23 @@ public class GetCodeActivity extends BasePresenterActivity implements GetCodeCon
     }
 
     @Override
-    public void onSmsLoginSuccess(BaseResponse<UserInfo> response) {
-        if (response.data != null) {
-            L.v("token", response.data.getToken());
-            ContentManager.getInstance().setLoginToken(response.data.getToken());
-            ContentManager.getInstance().setUserInfo(response.data);
-            ContentManager.getInstance().setVisitor("1");//表示不是游客登录
+    public void onSmsLoginSuccess(SmsLoginResponse response) {
+        if (response.getData() != null) {
+            L.v("token", response.getData().getToken());
+            ContentManager.getInstance().setLoginToken(response.getData().getToken());
+            ContentManager.getInstance().setUserInfo(response.getData());
             TCAgent.onRegister(ContentManager.getInstance().getUserInfo().getUserId(), TDAccount.AccountType.ANONYMOUS, "");
             TCAgent.onLogin(ContentManager.getInstance().getUserInfo().getUserId(), TDAccount.AccountType.ANONYMOUS, "");
             Intent mIntent = new Intent(this, MainActivity.class);
+            int newUser = response.getExt().getNewUser();
+            //之前是游客身份并且后来登录的手机号是新用户就需要同步数据
+            if (newUser == 1) {//1-是新用户 0-不是新用户
+                ContentManager.getInstance().setVisitorToken("");
+            }
+            mIntent.putExtra(MainActivity.IS_NEW_USER, newUser);//判断是不是新用户
             mIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(mIntent);
+            ContentManager.getInstance().setVisitor("1");//表示不是游客登录
             finish();
             MTing.getActivityManager().popAllActivitys();
         }

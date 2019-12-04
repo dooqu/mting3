@@ -238,6 +238,11 @@ public class RemoteUrl {
         return URL_BASE + "/api/user/v1/visitor/register";
     }
 
+    //同步游客数据
+    public static String getVisitorSyncDataUrl() {
+        return URL_BASE + "/api/art/v1/visitor/syncdata";
+    }
+
     //创建播单
     public static String getCreateBroadcastUrl() {
         return URL_BASE + "/api/art/v1/broadcast/create";
@@ -291,14 +296,17 @@ public class RemoteUrl {
     public static String getArticleEditUrl() {
         return URL_BASE + "/api/art/v1/article/edit";
     }
+
     //文章搜搜
     public static String getSearchArticleUrl() {
         return URL_BASE + "/api/art/v1/search/article";
     }
+
     //播单搜搜
     public static String getSearchBroadcastUrl() {
         return URL_BASE + "/api/art/v1/search/broadcast";
     }
+
     //分享到世界
     public static String getShare2WorldUrl() {
         return URL_BASE + "/api/art/v1/broadcast/share";

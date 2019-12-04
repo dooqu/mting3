@@ -56,7 +56,7 @@ public class ArticleDetailActivity extends BasePresenterActivity implements Arti
     NestedScrollView scrollView;
 
     private ArticleDetailPresenter mArticleDetailPresenter;
-    //    public static String USER_ID_DETAIL = "USER_ID_DETAIL";
+    public static String  BROADCAST_TITLE_DETAIL = "BROADCAST_TITLE_DETAIL";
     public static String BROADCAST_ID_DETAIL = "BROADCAST_ID_DETAIL";
     public static String ARTICLE_ID_DETAIL = "ARTICLE_ID_DETAIL";
 
@@ -172,6 +172,7 @@ public class ArticleDetailActivity extends BasePresenterActivity implements Arti
 
     @Override
     public void onSuccessArticleDetail(ArticleDetail2Info info) {
+        initFontSize();
         tvArticleTitle.setText(info.getTitle());
         tvArticleContent.setText(info.getContent());
         userId = info.getUserId();
@@ -251,7 +252,6 @@ public class ArticleDetailActivity extends BasePresenterActivity implements Arti
                 tvArticleTitle.setTextSize(TypedValue.COMPLEX_UNIT_SP, 24);
                 tvArticleSource.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
                 tvArticleContent.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
-                tvArticleTitle.setLineSpacing(0, 1.0f);
                 break;
             case "middle":
                 tvArticleTitle.setTextSize(TypedValue.COMPLEX_UNIT_SP, 27);
@@ -267,6 +267,27 @@ public class ArticleDetailActivity extends BasePresenterActivity implements Arti
 //        EventBus.getDefault().post(new ArticleFontSizeEvent("default"));//默认字号
 //        EventBus.getDefault().post(new ArticleFontSizeEvent("middle"));//中字号
 //        EventBus.getDefault().post(new ArticleFontSizeEvent("big"));//大字号
+    }
+
+    private void initFontSize() {
+        int size = ContentManager.getInstance().getTextSize();
+        switch (size) {
+            case 0:
+                tvArticleTitle.setTextSize(TypedValue.COMPLEX_UNIT_SP, 24);
+                tvArticleSource.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
+                tvArticleContent.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
+                break;
+            case 1:
+                tvArticleTitle.setTextSize(TypedValue.COMPLEX_UNIT_SP, 27);
+                tvArticleSource.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
+                tvArticleContent.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
+                break;
+            case 2:
+                tvArticleTitle.setTextSize(TypedValue.COMPLEX_UNIT_SP, 30);
+                tvArticleSource.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
+                tvArticleContent.setTextSize(TypedValue.COMPLEX_UNIT_SP, 24);
+                break;
+        }
     }
 
     @Override
