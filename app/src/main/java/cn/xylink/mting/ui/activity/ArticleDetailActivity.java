@@ -56,13 +56,15 @@ public class ArticleDetailActivity extends BasePresenterActivity implements Arti
     NestedScrollView scrollView;
 
     private ArticleDetailPresenter mArticleDetailPresenter;
-    public static String  BROADCAST_TITLE_DETAIL = "BROADCAST_TITLE_DETAIL";
+    public static String BROADCAST_TITLE_DETAIL = "BROADCAST_TITLE_DETAIL";
     public static String BROADCAST_ID_DETAIL = "BROADCAST_ID_DETAIL";
     public static String ARTICLE_ID_DETAIL = "ARTICLE_ID_DETAIL";
 
     private String broadcastId;//用来查询播放进度。待读传-1，已读历史传-2，收藏传-3，我创建的传-4。
     private String articleId;//文章id
     private String userId;
+    private String articleTitle;
+    private String broadcastTitle;
     private boolean isFavor;
     private AddStorePresenter mAddStorePresenter;
     private DelStorePreesenter mDelStorePresenter;
@@ -78,6 +80,7 @@ public class ArticleDetailActivity extends BasePresenterActivity implements Arti
         Intent intent = getIntent();
         broadcastId = intent.getStringExtra(BROADCAST_ID_DETAIL);
         articleId = intent.getStringExtra(ARTICLE_ID_DETAIL);
+        broadcastTitle = intent.getStringExtra(BROADCAST_TITLE_DETAIL);
         mArticleDetailPresenter = (ArticleDetailPresenter) createPresenter(ArticleDetailPresenter.class);
         mArticleDetailPresenter.attachView(this);
         mAddStorePresenter = (AddStorePresenter) createPresenter(AddStorePresenter.class);
@@ -156,6 +159,8 @@ public class ArticleDetailActivity extends BasePresenterActivity implements Arti
                 Article article = new Article();
                 article.setBroadcastId(broadcastId);
                 article.setArticleId(articleId);
+                article.setBroadcastTitle(broadcastTitle);
+                article.setTitle(articleTitle);
                 postToSpeechService(article);
                 break;
             case R.id.view_detail_panel_add_to:
@@ -176,6 +181,7 @@ public class ArticleDetailActivity extends BasePresenterActivity implements Arti
         tvArticleTitle.setText(info.getTitle());
         tvArticleContent.setText(info.getContent());
         userId = info.getUserId();
+        articleTitle = info.getTitle();
         //articleId应该跟其他activity接收过来的是一致的，不然就有问题，哈哈~
         this.articleId = info.getArticleId();
         //由此判断该文章是否是用户自己创建的,如果获取的文章的用户id跟userInfo中的一致，则表明该文章是自己创建的
