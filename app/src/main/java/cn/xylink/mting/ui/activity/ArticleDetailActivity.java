@@ -56,7 +56,7 @@ public class ArticleDetailActivity extends BasePresenterActivity implements Arti
     NestedScrollView scrollView;
 
     private ArticleDetailPresenter mArticleDetailPresenter;
-    //    public static String USER_ID_DETAIL = "USER_ID_DETAIL";
+    public static String  BROADCAST_TITLE_DETAIL = "BROADCAST_TITLE_DETAIL";
     public static String BROADCAST_ID_DETAIL = "BROADCAST_ID_DETAIL";
     public static String ARTICLE_ID_DETAIL = "ARTICLE_ID_DETAIL";
 
