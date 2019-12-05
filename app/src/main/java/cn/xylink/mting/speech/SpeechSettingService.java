@@ -8,7 +8,7 @@ public class SpeechSettingService {
     WeakReference<SpeechService> speechServiceWeakReference;
 
     private SpeechSettingService(SpeechService speechService) {
-
+        speechServiceWeakReference = new WeakReference<>(speechService);
     }
 
     public static SpeechSettingService create(SpeechService service) {
