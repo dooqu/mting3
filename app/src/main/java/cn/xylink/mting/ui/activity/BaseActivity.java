@@ -40,6 +40,8 @@ import butterknife.ButterKnife;
 import cn.xylink.mting.bean.Article;
 import cn.xylink.mting.speech.SpeechService;
 import cn.xylink.mting.speech.SpeechServiceProxy;
+import cn.xylink.mting.speech.SpeechSettingService;
+import cn.xylink.mting.speech.Speechor;
 import cn.xylink.mting.speech.ui.PanelViewAdapter;
 import cn.xylink.mting.ui.dialog.UpgradeConfirmDialog;
 import cn.xylink.mting.upgrade.UpgradeManager;
@@ -112,15 +114,26 @@ public abstract class BaseActivity extends AppCompatActivity {
             checkOnlineUpgrade();
         }
         //界面创建时需要注册广播
-        IntentFilter filter=new IntentFilter();
+        IntentFilter filter = new IntentFilter();
         filter.addAction(EXITACTION);
-        registerReceiver(exitReceiver,filter);
+        registerReceiver(exitReceiver, filter);
         TCAgent.onPageStart(this, this.getComponentName().getClassName());
+    }
+
+    protected SpeechSettingService getSpeechService() {
+        if(isSpeechServiceAvailable()) {
+            return SpeechSettingService.create(speechServiceWeakReference.get());
+        }
+        return null;
     }
 
 
     protected boolean enableSpeechService() {
         return false;
+    }
+
+    public boolean isSpeechServiceEnabled() {
+        return enableSpeechService();
     }
 
     protected void onSpeechServiceAvailable() {
@@ -136,21 +149,19 @@ public abstract class BaseActivity extends AppCompatActivity {
                     //绑定activity和service，创建ui组件
                     panelViewAdapter.attach(BaseActivity.this, service);
                     //如果当前正在播放某个文章，那么立即更新，不要等SpeechEvent
-                    if(service.getSelected() != null && !(service.getState() == SpeechService.SpeechServiceState.Paused && PanelViewAdapter.isUserClosed == true)) {
+                    if (service.getSelected() != null && !(service.getState() == SpeechService.SpeechServiceState.Paused && PanelViewAdapter.isUserClosed == true)) {
                         panelViewAdapter.validatePanelView();
                     }
-                    if(articleShouldPlayWhenServiceAvailable != null) {
+                    if (articleShouldPlayWhenServiceAvailable != null) {
                         try {
                             service.loadAndPlay(articleShouldPlayWhenServiceAvailable);
-                        }
-                        catch (Exception ex) {
+                        } catch (Exception ex) {
                             Toast.makeText(BaseActivity.this, ex.getMessage(), Toast.LENGTH_SHORT).show();
                         }
                     }
                     //相关资源就绪，ui就绪后，通知子类，可以开始使用SpeechService的相关调用
                     onSpeechServiceAvailable();
-                }
-                else {
+                } else {
                     speechServiceWeakReference = null;
                     speechServiceConnected = false;
                 }
@@ -160,31 +171,31 @@ public abstract class BaseActivity extends AppCompatActivity {
     }
 
     protected boolean isSpeechServiceAvailable() {
-        return speechServiceConnected && speechServiceWeakReference.get() != null;
+        return speechServiceConnected && speechServiceWeakReference != null && speechServiceWeakReference.get() != null;
     }
 
 
     private Article articleShouldPlayWhenServiceAvailable = null;
+
     public boolean postToSpeechService(Article article) {
-        if(article == null
+        if (article == null
                 || article.getBroadcastId() == null
                 || article.getArticleId() == null
                 || enableSpeechService() == false) {
             return false;
         }
         //如果服务没有连接上， 可能在连接中，可能失败了
-        if(isSpeechServiceAvailable() == false) {
-            if(proxy.isBinding() == true) {
+        if (isSpeechServiceAvailable() == false) {
+            if (proxy.isBinding() == true) {
                 articleShouldPlayWhenServiceAvailable = article;
                 return true;
             }
         }
-        if(speechServiceWeakReference.get() != null) {
+        if (speechServiceWeakReference.get() != null) {
             articleShouldPlayWhenServiceAvailable = null;
             try {
                 speechServiceWeakReference.get().loadAndPlay(article);
-            }
-            catch (Exception ex) {
+            } catch (Exception ex) {
                 Toast.makeText(BaseActivity.this, ex.getMessage(), Toast.LENGTH_SHORT).show();
             }
             return true;
@@ -194,7 +205,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     }
 
     public Article getPlayingArticle() {
-        if(enableSpeechService() == false || isSpeechServiceAvailable() == false) {
+        if (enableSpeechService() == false || isSpeechServiceAvailable() == false) {
             return null;
         }
         return speechServiceWeakReference.get().getSelected();
@@ -335,6 +346,12 @@ public abstract class BaseActivity extends AppCompatActivity {
         T.showCustomToast(msg);
     }
 
+    /**
+     * 弹出一个3s显示的toast框到中间
+     */
+    public void toastCenterShort(String msg) {
+        T.showCustomCenterToast(msg);
+    }
 
     /*
      * 描述：跳转Activity不传值，不返回数据

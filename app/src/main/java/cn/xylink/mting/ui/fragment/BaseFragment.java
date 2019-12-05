@@ -74,5 +74,11 @@ public abstract class BaseFragment extends Fragment {
     public void toastShort(String msg) {
         T.showCustomToast(msg);
     }
+    /**
+     * 弹出一个3s显示的toast框到中间
+     */
+    public void toastCenterShort(String msg) {
+        T.showCustomCenterToast(msg);
+    }
 
 }

@@ -12,4 +12,19 @@
         <item>yangkeduo.com</item>
         <item>pinduoduo.com</item>
     </string-array>
+    <string-array name="fade_type1">
+        <item>产品建议</item>
+        <item>语音朗读不正确</item>
+        <item>文章内容不正确</item>
+        <item>用户体验</item>
+        <item>其他</item>
+    </string-array>
+    <string-array name="fade_type2">
+        <item>语音朗读不正确</item>
+        <item>产品建议</item>
+        <item>文章内容不正确</item>
+        <item>用户体验</item>
+        <item>其他</item>
+    </string-array>
+
 </resources>

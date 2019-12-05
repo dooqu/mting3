@@ -79,6 +79,11 @@ public abstract class BasePresenterActivity<T extends BasePresenter> extends Bas
     }
 
     @Override
+    public void toastCenterShort(String msg) {
+        cn.xylink.mting.utils.T.showCustomCenterToast(msg);
+    }
+
+    @Override
     protected void onResume() {
         super.onResume();
         L.v();

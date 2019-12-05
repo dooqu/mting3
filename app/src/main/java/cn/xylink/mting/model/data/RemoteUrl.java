@@ -311,4 +311,9 @@ public class RemoteUrl {
     public static String getShare2WorldUrl() {
         return URL_BASE + "/api/art/v1/broadcast/share";
     }
+    //文章反馈
+    public static String getFeedbackSaveUrl() {
+        return URL_BASE + "/api/art/v1/feedback/save";
+    }
+
 }
