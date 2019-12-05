@@ -123,6 +123,10 @@ public abstract class BaseActivity extends AppCompatActivity {
         return false;
     }
 
+    public boolean isSpeechServiceEnabled() {
+        return enableSpeechService();
+    }
+
     protected void onSpeechServiceAvailable() {
     }
 
