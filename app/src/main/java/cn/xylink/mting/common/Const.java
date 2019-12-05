@@ -45,7 +45,7 @@ public class Const {
 
     public static final String USERPROTOCOL_URL = "http://service.xylink.net/article/html/agreement.html";
 
-    public class BottomDialogItem{
+    public class BottomDialogItem {
         public static final String SET_TOP = "置顶";
         public static final String CANEL_TOP = "取消置顶";
         public static final String SUBSCRIBE = "订阅";
@@ -54,10 +54,11 @@ public class Const {
         public static final String EDIT_BROADCAST = "编辑播单";
         public static final String REPORT = "举报";
         public static final String BATCH = "批量操作";
-        public static final String FEEDBACK = "批量操作";
+        public static final String FEEDBACK = "反馈";
+        public static final String BROWER = "用其他浏览器打开";
     }
 
-    public class SystemBroadcast{
+    public class SystemBroadcast {
         public static final String SYSTEMBROADCAST_UNREAD = "-1";
         public static final String SYSTEMBROADCAST_READED = "-2";
         public static final String SYSTEMBROADCAST_STORE = "-3";
