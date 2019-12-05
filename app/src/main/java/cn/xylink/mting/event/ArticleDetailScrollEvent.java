@@ -6,11 +6,20 @@ package cn.xylink.mting.event;
  */
 public class ArticleDetailScrollEvent {
     private String motion;
+
     public ArticleDetailScrollEvent() {
         super();
     }
 
     public ArticleDetailScrollEvent(String motion) {
+        this.motion = motion;
+    }
+
+    public String getMotion() {
+        return motion;
+    }
+
+    public void setMotion(String motion) {
         this.motion = motion;
     }
 }

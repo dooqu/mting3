@@ -91,12 +91,12 @@ public class ArticleDetailActivity extends BasePresenterActivity implements Arti
         scrollView.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
             @Override
             public void onScrollChange(NestedScrollView nestedScrollView, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
-                if (scrollY > oldScrollY) {
-                    L.v("下滑......");
+                if (scrollY < oldScrollY) {
+                    L.v("手指上滑......");
                     EventBus.getDefault().post(new ArticleDetailScrollEvent("glide"));
                 }
-                if (scrollY < oldScrollY) {
-                    L.v("上滑......");
+                if (scrollY > oldScrollY) {
+                    L.v("手指下滑......");
                     EventBus.getDefault().post(new ArticleDetailScrollEvent("upGlide"));
                 }
             }
