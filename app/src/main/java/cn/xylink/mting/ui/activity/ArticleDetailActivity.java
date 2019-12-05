@@ -32,8 +32,8 @@ import cn.xylink.mting.event.ArticleDetailScrollEvent;
 import cn.xylink.mting.presenter.AddStorePresenter;
 import cn.xylink.mting.presenter.ArticleDetailPresenter;
 import cn.xylink.mting.presenter.DelStorePreesenter;
-import cn.xylink.mting.speech.SpeechService;
 import cn.xylink.mting.speech.SpeechServiceProxy;
+import cn.xylink.mting.speech.SpeechSettingService;
 import cn.xylink.mting.speech.Speechor;
 import cn.xylink.mting.ui.dialog.BottomTingDialog;
 import cn.xylink.mting.ui.dialog.BottomTingItemModle;
@@ -79,8 +79,8 @@ public class ArticleDetailActivity extends BasePresenterActivity implements Arti
     private DelStorePreesenter mDelStorePresenter;
     private BottomTingDialog mBottomTingDialog;
     private int inType;
-    private SpeechService service;
     private SpeechServiceProxy proxy;
+    private SpeechSettingService service;
 
     @Override
     protected void preView() {
@@ -341,6 +341,7 @@ public class ArticleDetailActivity extends BasePresenterActivity implements Arti
                 bundle.putString("type", "detail");
                 bundle.putString("aid", articleId);
                 int sound = 0;
+                service = getSpeechService();
                 if (null != service) {
                     Speechor.SpeechorRole role = service.getRole();
                     switch (role) {
