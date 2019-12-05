@@ -141,6 +141,8 @@ public class SearchActivity extends BasePresenterActivity implements SearchConta
     @OnEditorAction(R.id.et_search)
     boolean onEditorAction(KeyEvent key) {
         if (!TextUtils.isEmpty(mEditView.getText().toString()) && key.getAction() == KeyEvent.ACTION_DOWN) {
+            mArticleData=null;
+            mBroadcastData=null;
             mAdapter.clearData();
             loadData(1);
         }

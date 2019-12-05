@@ -135,6 +135,7 @@ public class WorldFragment extends BasePresenterFragment implements WorldListCon
     @Override
     public void onWorldListError(int code, String errorMsg, boolean isLoadMore) {
         mRefreshLayout.finishLoadMore(false);
+        mRefreshLayout.setRefreshContent(View.inflate(getActivity(),R.layout.item_broadcast_header,null));
     }
 
     @Override
