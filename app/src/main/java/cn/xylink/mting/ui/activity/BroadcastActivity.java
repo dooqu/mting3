@@ -203,7 +203,7 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
         List<BroadcastInfo> data = baseResponse.data;
         if (!isLoadMore && data.size() == 0) {
             showEmptyLayout();
-        }else {
+        } else {
             mEmptylayout.setVisibility(View.GONE);
         }
         if (isLoadMore) {
@@ -245,7 +245,11 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
 
     @Override
     public void onBroadcastDetailError(int code, String errorMsg) {
-        if (code == 9999) {
+        if (code == -960) {
+
+        } else if (code == -961) {
+
+        } else if (code == 9999) {
             showNetworlError();
         } else {
             showLoadFail();
@@ -302,7 +306,7 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
         Intent intent = new Intent(this, ArticleDetailActivity.class);
         intent.putExtra(ArticleDetailActivity.BROADCAST_ID_DETAIL, getIntent().getStringExtra(EXTRA_BROADCASTID));
         intent.putExtra(ArticleDetailActivity.ARTICLE_ID_DETAIL, article.getArticleId());
-        intent.putExtra(ArticleDetailActivity.BROADCAST_TITLE_DETAIL, mDetailInfo.getName());
+        intent.putExtra(ArticleDetailActivity.BROADCAST_TITLE_DETAIL, getIntent().getStringExtra(EXTRA_TITLE));
         startActivity(intent);
     }
 
@@ -330,7 +334,7 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
 
     private BottomTingDialog mBottomTingDialog;
 
-    @OnClick({R.id.iv_titlebar_share, R.id.iv_titlebar_menu, R.id.iv_titlebar_back, R.id.ll_empty})
+    @OnClick({R.id.iv_titlebar_share, R.id.iv_titlebar_menu, R.id.iv_titlebar_back, R.id.ll_empty, R.id.tv_look_studio})
     void onClick(View view) {
         switch (view.getId()) {
             case R.id.ll_empty:
