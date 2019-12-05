@@ -54,6 +54,16 @@ public class T {
         toast.show();
     }
 
+    public static void showCustomCenterToast(String textStr) {
+        View layout = LayoutInflater.from(MTing.getInstance()).inflate(R.layout.toast_center, null);
+        TextView text = (TextView) layout.findViewById(R.id.toast_text_tv);
+        text.setText(textStr);
+        toast = new Toast(MTing.getInstance());
+        toast.setDuration(Toast.LENGTH_SHORT);
+        toast.setView(layout);
+        toast.setGravity(Gravity.CENTER, 0, 0);
+        toast.show();
+    }
 
     public static void toastCancel() {
         if (toast != null) {
@@ -82,7 +92,7 @@ public class T {
 //
 //-2....-100：业务逻辑校验错误，客户端逻辑处理
     public static void showServerErrorToast(int code) {
-            switch (code) {
+        switch (code) {
             case -1:
                 showCustomToast("服务器异常，请稍后再试");
                 return;
