@@ -42,14 +42,25 @@
         android:layout_height="1px"
         android:background="@color/cf0f0f0" />
 
-    <com.scwang.smartrefresh.layout.SmartRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/refreshLayout"
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/rv_tab_world"
+        <com.scwang.smartrefresh.layout.SmartRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/refreshLayout"
             android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/rv_tab_world"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+        </com.scwang.smartrefresh.layout.SmartRefreshLayout>
+
+        <include
+            layout="@layout/layout_empty"
+            android:layout_width="match_parent"
+            android:layout_marginTop="100dp"
             android:layout_height="match_parent" />
-    </com.scwang.smartrefresh.layout.SmartRefreshLayout>
+    </FrameLayout>
 </LinearLayout>

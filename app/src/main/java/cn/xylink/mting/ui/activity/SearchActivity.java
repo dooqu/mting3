@@ -11,6 +11,9 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.scwang.smartrefresh.layout.footer.ClassicsFooter;
@@ -42,6 +45,12 @@ public class SearchActivity extends BasePresenterActivity implements SearchConta
     @BindView(R.id.et_search)
     EditText mEditView;
     private int mCurrentPage = 1;
+    @BindView(R.id.ll_empty)
+    LinearLayout mEmptylayout;
+    @BindView(R.id.iv_empty)
+    ImageView mEmptyImageView;
+    @BindView(R.id.tv_empty)
+    TextView mEmptyTextView;
 
     @Override
     protected void preView() {
@@ -141,17 +150,29 @@ public class SearchActivity extends BasePresenterActivity implements SearchConta
     @OnEditorAction(R.id.et_search)
     boolean onEditorAction(KeyEvent key) {
         if (!TextUtils.isEmpty(mEditView.getText().toString()) && key.getAction() == KeyEvent.ACTION_DOWN) {
-            mArticleData=null;
-            mBroadcastData=null;
+            mArticleData = null;
+            mBroadcastData = null;
             mAdapter.clearData();
             loadData(1);
         }
         return true;
     }
 
-    @OnClick(R.id.tv_search_cancel)
+    @OnClick({R.id.tv_search_cancel, R.id.ll_empty})
     void onClick(View v) {
-        this.finish();
+        switch (v.getId()) {
+            case R.id.tv_search_cancel:
+                this.finish();
+                break;
+            case R.id.ll_empty:
+                mArticleData = null;
+                mBroadcastData = null;
+                mAdapter.clearData();
+                loadData(1);
+                mEmptylayout.setEnabled(false);
+                break;
+            default:
+        }
     }
 
     private List<SearchInfo> mArticleData;
@@ -160,7 +181,14 @@ public class SearchActivity extends BasePresenterActivity implements SearchConta
     @Override
     public void onSearchArticleSuccess(List<SearchInfo> response) {
         hideLoading();
-        if (mCurrentPage>1) {
+        if (mCurrentPage == 1) {
+            if (response != null && response.size() == 0) {
+                showSearchEmpty();
+            } else {
+                mEmptylayout.setVisibility(View.GONE);
+            }
+        }
+        if (mCurrentPage > 1) {
             mRefreshLayout.finishLoadMore(true);
             if (response.size() < 20) {
                 mRefreshLayout.finishLoadMoreWithNoMoreData();
@@ -178,6 +206,15 @@ public class SearchActivity extends BasePresenterActivity implements SearchConta
     public void onSearchArticleError(int code, String errorMsg) {
         hideLoading();
         isLoading = false;
+        mEmptylayout.setVisibility(View.VISIBLE);
+        mEmptylayout.setEnabled(true);
+        mAdapter.clearData();
+        mAdapter.notifyDataSetChanged();
+        if (code == 9999) {
+            showNetworlError();
+        } else {
+            showLoadFail();
+        }
     }
 
     @Override
@@ -228,4 +265,23 @@ public class SearchActivity extends BasePresenterActivity implements SearchConta
             startActivity(intent);
         }
     }
+
+    private void showLoadFail() {
+        mEmptylayout.setVisibility(View.VISIBLE);
+        mEmptyImageView.setImageResource(R.mipmap.bg_load_fail);
+        mEmptyTextView.setText("加载失败");
+    }
+
+    private void showNetworlError() {
+        mEmptylayout.setVisibility(View.VISIBLE);
+        mEmptyImageView.setImageResource(R.mipmap.bg_network_error);
+        mEmptyTextView.setText("网络开小差了，等会试试吧");
+    }
+
+    private void showSearchEmpty() {
+        mEmptylayout.setVisibility(View.VISIBLE);
+        mEmptyImageView.setImageResource(R.mipmap.bg_empty_search);
+        mEmptyTextView.setText("没有找到内容，换个关键词试试？");
+    }
+
 }

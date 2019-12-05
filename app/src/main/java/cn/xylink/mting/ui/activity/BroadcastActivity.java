@@ -338,7 +338,11 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
     void onClick(View view) {
         switch (view.getId()) {
             case R.id.ll_empty:
-                initList();
+                if (mDetailInfo != null) {
+                    initList();
+                } else {
+                    initDetail();
+                }
                 break;
             case R.id.tv_look_studio:
                 Intent intent = new Intent(this, PlayerActivity.class);

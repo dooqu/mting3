@@ -4,7 +4,10 @@ import android.content.Intent;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.scwang.smartrefresh.layout.api.RefreshLayout;
@@ -47,6 +50,12 @@ public class WorldFragment extends BasePresenterFragment implements WorldListCon
     SmartRefreshLayout mRefreshLayout;
     @BindView(R.id.iv_world_add)
     ImageView mMenuImageView;
+    @BindView(R.id.ll_empty)
+    LinearLayout mEmptylayout;
+    @BindView(R.id.iv_empty)
+    ImageView mEmptyImageView;
+    @BindView(R.id.tv_empty)
+    TextView mEmptyTextView;
 
     public static WorldFragment newInstance() {
         return new WorldFragment();
@@ -92,14 +101,16 @@ public class WorldFragment extends BasePresenterFragment implements WorldListCon
     }
 
     private void loadMoreData() {
-        WorldRequest request = new WorldRequest();
-        request.setEvent(WorldRequest.EVENT.OLD.name().toLowerCase());
-        request.setLastAt(mAdapter.getArticleList().get(mAdapter.getArticleList().size() - 1).getLastAt());
-        request.doSign();
-        mWorldListPresenter.getWorldList(request, true);
+        if (mAdapter.getArticleList() != null && mAdapter.getArticleList().size() > 0) {
+            WorldRequest request = new WorldRequest();
+            request.setEvent(WorldRequest.EVENT.OLD.name().toLowerCase());
+            request.setLastAt(mAdapter.getArticleList().get(mAdapter.getArticleList().size() - 1).getLastAt());
+            request.doSign();
+            mWorldListPresenter.getWorldList(request, true);
+        }
     }
 
-    @OnClick({R.id.iv_world_add, R.id.tv_world_search})
+    @OnClick({R.id.iv_world_add, R.id.tv_world_search, R.id.ll_empty})
     void onClick(View view) {
         switch (view.getId()) {
             case R.id.iv_world_add:
@@ -109,13 +120,18 @@ public class WorldFragment extends BasePresenterFragment implements WorldListCon
             case R.id.tv_world_search:
                 getActivity().startActivity(new Intent(getActivity(), SearchActivity.class));
                 break;
+            case R.id.ll_empty:
+                initData();
+                mEmptylayout.setEnabled(false);
+                break;
             default:
         }
     }
 
     @Override
     public void onWorldListSuccess(List<WorldInfo> data, boolean isLoadMore) {
-        L.v(data.size()+"******************************************");
+        L.v(data.size() + "******************************************");
+        mEmptylayout.setVisibility(View.GONE);
         if (isLoadMore) {
             mRefreshLayout.finishLoadMore(true);
             if (data.size() < 20) {
@@ -135,7 +151,17 @@ public class WorldFragment extends BasePresenterFragment implements WorldListCon
     @Override
     public void onWorldListError(int code, String errorMsg, boolean isLoadMore) {
         mRefreshLayout.finishLoadMore(false);
-        mRefreshLayout.setRefreshContent(View.inflate(getActivity(),R.layout.item_broadcast_header,null));
+        mRefreshLayout.finishRefresh(true);
+        mEmptylayout.setVisibility(View.VISIBLE);
+        mEmptylayout.setEnabled(true);
+        mAdapter.clearData();
+        mAdapter.notifyDataSetChanged();
+        if (code == 9999) {
+            showNetworlError();
+        } else {
+            showLoadFail();
+        }
+
     }
 
     @Override
@@ -172,8 +198,21 @@ public class WorldFragment extends BasePresenterFragment implements WorldListCon
     @Override
     public void onItemClick(WorldInfo article) {
         Intent intent = new Intent(getActivity(), ArticleDetailActivity.class);
-        intent.putExtra(ArticleDetailActivity.BROADCAST_ID_DETAIL,article.getBroadcastId());
-        intent.putExtra(ArticleDetailActivity.ARTICLE_ID_DETAIL,article.getArticleId());
+        intent.putExtra(ArticleDetailActivity.BROADCAST_ID_DETAIL, article.getBroadcastId());
+        intent.putExtra(ArticleDetailActivity.ARTICLE_ID_DETAIL, article.getArticleId());
         startActivity(intent);
     }
+
+    private void showLoadFail() {
+        mEmptylayout.setVisibility(View.VISIBLE);
+        mEmptyImageView.setImageResource(R.mipmap.bg_load_fail);
+        mEmptyTextView.setText("加载失败");
+    }
+
+    private void showNetworlError() {
+        mEmptylayout.setVisibility(View.VISIBLE);
+        mEmptyImageView.setImageResource(R.mipmap.bg_network_error);
+        mEmptyTextView.setText("网络开小差了，等会试试吧");
+    }
+
 }
