@@ -121,11 +121,13 @@
         android:visibility="invisible" />
 
     <RelativeLayout
+        android:id="@+id/rv_play"
         android:layout_width="match_parent"
         android:layout_height="76dp"
         android:layout_alignParentBottom="true"
         android:layout_marginTop="16dp"
         android:background="@drawable/bg_white"
+        android:visibility="invisible"
         >
 
         <FrameLayout

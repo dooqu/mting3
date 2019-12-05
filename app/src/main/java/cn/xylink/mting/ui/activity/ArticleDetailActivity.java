@@ -1,17 +1,19 @@
 package cn.xylink.mting.ui.activity;
 
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.v4.widget.NestedScrollView;
 import android.text.TextUtils;
 import android.util.TypedValue;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.tendcloud.tenddata.TCAgent;
+
 import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -22,14 +24,18 @@ import cn.xylink.mting.bean.Article;
 import cn.xylink.mting.bean.ArticleDetail2Info;
 import cn.xylink.mting.bean.ArticleDetailRequest;
 import cn.xylink.mting.bean.ArticleIdsRequest;
+import cn.xylink.mting.common.Const;
 import cn.xylink.mting.contract.AddStoreContact;
 import cn.xylink.mting.contract.ArticleDetailContract;
 import cn.xylink.mting.contract.DelStoreContact;
 import cn.xylink.mting.event.ArticleDetailScrollEvent;
-import cn.xylink.mting.event.ArticleFontSizeEvent;
 import cn.xylink.mting.presenter.AddStorePresenter;
 import cn.xylink.mting.presenter.ArticleDetailPresenter;
 import cn.xylink.mting.presenter.DelStorePreesenter;
+import cn.xylink.mting.speech.SpeechService;
+import cn.xylink.mting.speech.Speechor;
+import cn.xylink.mting.ui.dialog.BottomTingDialog;
+import cn.xylink.mting.ui.dialog.BottomTingItemModle;
 import cn.xylink.mting.utils.ContentManager;
 import cn.xylink.mting.utils.L;
 
@@ -37,7 +43,7 @@ import cn.xylink.mting.utils.L;
  * @author wjn
  * @date 2019/11/28
  */
-public class ArticleDetailActivity extends BasePresenterActivity implements ArticleDetailContract.IArticleDetailView, AddStoreContact.IAddStoreView, DelStoreContact.IDelStoreView {
+public class ArticleDetailActivity extends BasePresenterActivity implements ArticleDetailContract.IArticleDetailView, AddStoreContact.IAddStoreView, DelStoreContact.IDelStoreView, BottomTingDialog.OnBottomTingListener {
     @BindView(R.id.btn_edit)
     ImageButton btnEdit;
     @BindView(R.id.tv_article_title)
@@ -54,6 +60,8 @@ public class ArticleDetailActivity extends BasePresenterActivity implements Arti
     ImageView icoAddTo;
     @BindView(R.id.scrollView_detail)
     NestedScrollView scrollView;
+    @BindView(R.id.rv_play)
+    RelativeLayout rvPlay;
 
     private ArticleDetailPresenter mArticleDetailPresenter;
     public static String BROADCAST_TITLE_DETAIL = "BROADCAST_TITLE_DETAIL";
@@ -68,6 +76,9 @@ public class ArticleDetailActivity extends BasePresenterActivity implements Arti
     private boolean isFavor;
     private AddStorePresenter mAddStorePresenter;
     private DelStorePreesenter mDelStorePresenter;
+    private BottomTingDialog mBottomTingDialog;
+    private int inType;
+    private SpeechService service;
 
     @Override
     protected void preView() {
@@ -76,7 +87,6 @@ public class ArticleDetailActivity extends BasePresenterActivity implements Arti
 
     @Override
     protected void initView() {
-        EventBus.getDefault().register(this);
         Intent intent = getIntent();
         broadcastId = intent.getStringExtra(BROADCAST_ID_DETAIL);
         articleId = intent.getStringExtra(ARTICLE_ID_DETAIL);
@@ -101,6 +111,7 @@ public class ArticleDetailActivity extends BasePresenterActivity implements Arti
                 }
             }
         });
+        mBottomTingDialog = new BottomTingDialog(this, this);
     }
 
     @Override
@@ -109,6 +120,7 @@ public class ArticleDetailActivity extends BasePresenterActivity implements Arti
     }
 
     private void doGetArticleDetail() {
+        showLoading();
         ArticleDetailRequest request = new ArticleDetailRequest();
         request.setArticleId(articleId);
         if (!TextUtils.isEmpty(broadcastId)) {
@@ -116,14 +128,13 @@ public class ArticleDetailActivity extends BasePresenterActivity implements Arti
         }
         request.doSign();
         mArticleDetailPresenter.createArticleDetail(request);
-        showLoading();
-
     }
 
     @Override
     protected void initTitleBar() {
 
     }
+
 
     @OnClick({R.id.btn_left, R.id.btn_share, R.id.btn_more, R.id.btn_edit, R.id.view_detail_panel_favor, R.id.view_detail_panel_play, R.id.view_detail_panel_add_to})
     public void onclick(View view) {
@@ -135,7 +146,18 @@ public class ArticleDetailActivity extends BasePresenterActivity implements Arti
 
                 break;
             case R.id.btn_more:
-
+                if (inType == 1) {
+                    if (ContentManager.getInstance().getUserInfo().getUserId().equals(userId)) {//平台内自己创建
+                        mBottomTingDialog.setItemModle(new BottomTingItemModle(Const.BottomDialogItem.FEEDBACK, getResources().getDrawable(R.mipmap.icon_feedback_bar)));
+                    } else {
+                        mBottomTingDialog.setItemModle(new BottomTingItemModle(Const.BottomDialogItem.FEEDBACK, getResources().getDrawable(R.mipmap.icon_feedback_bar)),
+                                new BottomTingItemModle(Const.BottomDialogItem.REPORT, getResources().getDrawable(R.mipmap.icon_report_bar)));
+                    }
+                } else {
+                    mBottomTingDialog.setItemModle(new BottomTingItemModle(Const.BottomDialogItem.BROWER, getResources().getDrawable(R.mipmap.icon_browser_bar)),
+                            new BottomTingItemModle(Const.BottomDialogItem.FEEDBACK, getResources().getDrawable(R.mipmap.icon_feedback_bar)),
+                            new BottomTingItemModle(Const.BottomDialogItem.REPORT, getResources().getDrawable(R.mipmap.icon_report_bar)));
+                }
                 break;
             case R.id.btn_edit:
                 Intent intent = new Intent(ArticleDetailActivity.this, ArticleEditActivity.class);
@@ -178,14 +200,17 @@ public class ArticleDetailActivity extends BasePresenterActivity implements Arti
     @Override
     public void onSuccessArticleDetail(ArticleDetail2Info info) {
         initFontSize();
+        rvPlay.setVisibility(View.VISIBLE);
         tvArticleTitle.setText(info.getTitle());
         tvArticleContent.setText(info.getContent());
         userId = info.getUserId();
         articleTitle = info.getTitle();
+        //1手动创建,2录入链接创建,3分享链接创建
+        inType = info.getInType();
         //articleId应该跟其他activity接收过来的是一致的，不然就有问题，哈哈~
         this.articleId = info.getArticleId();
         //由此判断该文章是否是用户自己创建的,如果获取的文章的用户id跟userInfo中的一致，则表明该文章是自己创建的
-        if (ContentManager.getInstance().getUserInfo().getUserId().equals(userId)) {
+        if (ContentManager.getInstance().getUserInfo().getUserId().equals(userId) && inType == 1) {
             btnEdit.setVisibility(View.VISIBLE);
         } else {
             btnEdit.setVisibility(View.GONE);
@@ -250,7 +275,7 @@ public class ArticleDetailActivity extends BasePresenterActivity implements Arti
         mDelStorePresenter.delStore(request);
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
+  /*  @Subscribe(threadMode = ThreadMode.MAIN)
     public void onChangeFontSize(ArticleFontSizeEvent fontSizeEvent) {
         String fontSize = fontSizeEvent.getFontSize();
         switch (fontSize) {
@@ -273,7 +298,7 @@ public class ArticleDetailActivity extends BasePresenterActivity implements Arti
 //        EventBus.getDefault().post(new ArticleFontSizeEvent("default"));//默认字号
 //        EventBus.getDefault().post(new ArticleFontSizeEvent("middle"));//中字号
 //        EventBus.getDefault().post(new ArticleFontSizeEvent("big"));//大字号
-    }
+    }*/
 
     private void initFontSize() {
         int size = ContentManager.getInstance().getTextSize();
@@ -299,6 +324,59 @@ public class ArticleDetailActivity extends BasePresenterActivity implements Arti
     @Override
     public void onDestroy() {
         super.onDestroy();
-        EventBus.getDefault().unregister(this);
+    }
+
+    @Override
+    public void onBottomTingItemClick(BottomTingItemModle modle) {
+        switch (modle.getName()) {
+            case Const.BottomDialogItem.BROWER:
+
+                break;
+            case Const.BottomDialogItem.FEEDBACK:
+                //点击反馈按钮，传参数到反馈页面
+                Bundle bundle = new Bundle();
+                bundle.putString("type", "detail");
+                bundle.putString("aid", articleId);
+                Speechor.SpeechorRole role = service.getRole();
+                int sound = 0;
+                switch (role) {
+                    case XiaoIce:
+                        sound = 1;
+                        break;
+                    case XiaoMei:
+                        sound = 2;
+                        break;
+                    case XiaoYao:
+                        sound = 3;
+                        break;
+                    case XiaoYu:
+                        sound = 4;
+                        break;
+                }
+                bundle.putInt("sound", sound);
+                Speechor.SpeechorSpeed speed = service.getSpeed();
+                float sp = 0;
+                switch (speed) {
+                    case SPEECH_SPEED_HALF:
+                        sp = 0.5f;
+                        break;
+                    case SPEECH_SPEED_NORMAL:
+                        sp = 1f;
+                        break;
+                    case SPEECH_SPEED_MULTIPLE_1_POINT_5:
+                        sp = 1.5f;
+                        break;
+                    case SPEECH_SPEED_MULTIPLE_2:
+                        sp = 2f;
+                        break;
+                }
+                bundle.putFloat("speed", sp);
+                jumpActivity(FeedBackActivity.class, bundle);
+                TCAgent.onEvent(this, "articleDetails_feedback");
+                break;
+            case Const.BottomDialogItem.REPORT:
+
+                break;
+        }
     }
 }
