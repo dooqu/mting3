@@ -153,22 +153,14 @@ public class ArticleDataProvider {
                     @Override
                     public void onSuccess(SpeechListResponse response) {
                         if (response.getCode() == 200) {
-                            new Thread(() -> {
-                                try {
-                                    Thread.sleep(3000);
-
-                                    List<Article> list = response.getData();
-                                    for (Article articleFinded : list) {
-                                        articleFinded.setBroadcastId(article.getBroadcastId());
-                                        articleFinded.setBroadcastTitle(article.getBroadcastTitle());
-                                    }
-                                    if (callback != null) {
-                                        callback.invoke(0, response.getData());
-                                    }
-                                }
-                                catch (Exception ex) {
-                                }
-                            }).start();
+                            List<Article> list = response.getData();
+                            for (Article articleFinded : list) {
+                                articleFinded.setBroadcastId(article.getBroadcastId());
+                                articleFinded.setBroadcastTitle(article.getBroadcastTitle());
+                            }
+                            if (callback != null) {
+                                callback.invoke(0, response.getData());
+                            }
                         }
                         else {
                             onFailure(response.getCode(), response.getMessage());
@@ -281,7 +273,6 @@ public class ArticleDataProvider {
                     }
                 });
     }
-
 
 
     public void unfavorArticle(Article article, ArticleLoader<Article> callback) {

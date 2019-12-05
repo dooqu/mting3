@@ -13,10 +13,13 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import java.lang.ref.WeakReference;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import cn.xylink.mting.MainActivity;
 import cn.xylink.mting.R;
 import cn.xylink.mting.bean.Article;
+import cn.xylink.mting.event.ArticleDetailScrollEvent;
 import cn.xylink.mting.speech.SpeechError;
 import cn.xylink.mting.speech.SpeechService;
 import cn.xylink.mting.speech.event.SpeechBufferingEvent;
@@ -77,8 +80,8 @@ public class PanelViewAdapter {
     protected void onCreatePanelView() {
         speechPanelView = View.inflate(contextRef.get(), R.layout.view_control_panel, null);
         RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
-        if(!(contextRef.get() instanceof MainActivity)) {
-            speechPanelView.setPadding(speechPanelView.getPaddingLeft(), speechPanelView.getPaddingTop(), speechPanelView.getPaddingRight(), (contextRef.get() instanceof ArticleDetailActivity)? DensityUtil.dip2pxComm(contextRef.get(), 88) : speechPanelView.getPaddingRight());
+        if (!(contextRef.get() instanceof MainActivity)) {
+            speechPanelView.setPadding(speechPanelView.getPaddingLeft(), speechPanelView.getPaddingTop(), speechPanelView.getPaddingRight(), (contextRef.get() instanceof ArticleDetailActivity) ? DensityUtil.dip2pxComm(contextRef.get(), 88) : speechPanelView.getPaddingRight());
         }
 
         speechPanelView.setLayoutParams(layoutParams);
@@ -122,7 +125,7 @@ public class PanelViewAdapter {
             public void onClick(View v) {
                 speechPanelView.setVisibility(View.INVISIBLE);
                 SpeechPanelClosedEvent event = new SpeechPanelClosedEvent();
-                if(speechServiceWeakReference.get() != null) {
+                if (speechServiceWeakReference.get() != null) {
                     event.setArticle(speechServiceWeakReference.get().getSelected());
                 }
                 EventBus.getDefault().post(event);
@@ -149,12 +152,12 @@ public class PanelViewAdapter {
         Log.d(TAG, "setVisile,currentState=" + currentState);
         if (article != null) {
             articleTitle.setText(article.getTitle());
-            broadcastTitle.setText("-1".equals(article.getBroadcastId())? "待读播单" : (article.getBroadcastTitle() != null? article.getBroadcastTitle() : article.getBroadcastId()));
+            broadcastTitle.setText("-1".equals(article.getBroadcastId()) ? "待读播单" : (article.getBroadcastTitle() != null ? article.getBroadcastTitle() : article.getBroadcastId()));
         }
         else if (event != null && event instanceof SpeechSerieLoaddingEvent && event.getArticle() != null) {
             Article eventArticle = event.getArticle();
             articleTitle.setText(eventArticle.getTitle());
-            broadcastTitle.setText("-1".equals(eventArticle.getBroadcastId())? "待读播单" : eventArticle.getBroadcastTitle());
+            broadcastTitle.setText("-1".equals(eventArticle.getBroadcastId()) ? "待读播单" : eventArticle.getBroadcastTitle());
         }
         else {
             articleTitle.setText("正在加载...");
@@ -229,9 +232,91 @@ public class PanelViewAdapter {
             }
             Toast.makeText(contextRef.get(), ((SpeechErrorEvent) event).getMessage(), Toast.LENGTH_SHORT).show();
         }
-        else if(event instanceof SpeechPanelClosedEvent) {
+        else if (event instanceof SpeechPanelClosedEvent) {
             isUserClosed = true;
             speechPanelView.setVisibility(View.INVISIBLE);
         }
+    }
+
+
+    enum DetailContextState {
+        UpScrolling,
+        DownScrolling,
+        Static
+    }
+
+
+    DetailContextState detailContextState = DetailContextState.Static;
+    Timer scrollTimer = new Timer();
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onArticleTextScrollEvent(ArticleDetailScrollEvent event) {
+        if (contextRef.get() == null
+                || !(contextRef.get() instanceof ArticleDetailActivity)
+                || speechServiceWeakReference.get() == null
+                || speechServiceWeakReference.get().getState() == SpeechService.SpeechServiceState.Stoped
+                || isUserClosed) {
+            return;
+        }
+
+        switch (event.getMotion()) {
+            case "glide":
+                //downscroll内容向下滚动，显示panel
+                /*
+                if (detailContextState != DetailContextState.DownScrolling) {
+                    Log.d(TAG, "内容向下滚动，向标题滚，显示panel");
+                    detailContextState = DetailContextState.DownScrolling;
+
+                }
+
+                 */
+                speechPanelView.setVisibility(View.VISIBLE);
+                break;
+
+            case "upGlide":
+                /*
+                if (detailContextState != DetailContextState.UpScrolling) {
+                    Log.d(TAG, "内容向上滚动， 向页尾滚，隐藏panel");
+                    detailContextState = DetailContextState.UpScrolling;
+
+                }
+
+                 */
+                speechPanelView.setVisibility(View.INVISIBLE);
+                break;
+        }
+
+        /*
+        scrollTimer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                switch (detailContextState) {
+                    case UpScrolling:
+                        Log.d(TAG, "内容上滚");
+                        if (speechPanelView.getAlpha() > 0f) {
+                            speechPanelView.setAlpha(speechPanelView.getAlpha() - 0.05f);
+                        }
+                        else {
+                            detailContextState = DetailContextState.Static;
+                            scrollTimer.cancel();
+                            speechPanelView.setAlpha(1.0f);
+                            speechPanelView.setVisibility(View.INVISIBLE);
+                        }
+                        break;
+                    case DownScrolling:
+                        Log.d(TAG, "内容下滚");
+                        if (speechPanelView.getAlpha() < 1.0) {
+                            speechPanelView.setAlpha(speechPanelView.getAlpha() + 0.05f);
+                        }
+                        else {
+                            scrollTimer.cancel();
+                            detailContextState = DetailContextState.Static;
+                        }
+                        break;
+                }
+            }
+        }, 300, 50);
+
+         */
     }
 }
