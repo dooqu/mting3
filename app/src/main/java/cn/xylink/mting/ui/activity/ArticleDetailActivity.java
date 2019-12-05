@@ -33,6 +33,7 @@ import cn.xylink.mting.presenter.AddStorePresenter;
 import cn.xylink.mting.presenter.ArticleDetailPresenter;
 import cn.xylink.mting.presenter.DelStorePreesenter;
 import cn.xylink.mting.speech.SpeechService;
+import cn.xylink.mting.speech.SpeechServiceProxy;
 import cn.xylink.mting.speech.Speechor;
 import cn.xylink.mting.ui.dialog.BottomTingDialog;
 import cn.xylink.mting.ui.dialog.BottomTingItemModle;
@@ -79,6 +80,7 @@ public class ArticleDetailActivity extends BasePresenterActivity implements Arti
     private BottomTingDialog mBottomTingDialog;
     private int inType;
     private SpeechService service;
+    private SpeechServiceProxy proxy;
 
     @Override
     protected void preView() {
@@ -158,6 +160,7 @@ public class ArticleDetailActivity extends BasePresenterActivity implements Arti
                             new BottomTingItemModle(Const.BottomDialogItem.FEEDBACK, getResources().getDrawable(R.mipmap.icon_feedback_bar)),
                             new BottomTingItemModle(Const.BottomDialogItem.REPORT, getResources().getDrawable(R.mipmap.icon_report_bar)));
                 }
+                mBottomTingDialog.show();
                 break;
             case R.id.btn_edit:
                 Intent intent = new Intent(ArticleDetailActivity.this, ArticleEditActivity.class);
@@ -337,38 +340,42 @@ public class ArticleDetailActivity extends BasePresenterActivity implements Arti
                 Bundle bundle = new Bundle();
                 bundle.putString("type", "detail");
                 bundle.putString("aid", articleId);
-                Speechor.SpeechorRole role = service.getRole();
                 int sound = 0;
-                switch (role) {
-                    case XiaoIce:
-                        sound = 1;
-                        break;
-                    case XiaoMei:
-                        sound = 2;
-                        break;
-                    case XiaoYao:
-                        sound = 3;
-                        break;
-                    case XiaoYu:
-                        sound = 4;
-                        break;
+                if (null != service) {
+                    Speechor.SpeechorRole role = service.getRole();
+                    switch (role) {
+                        case XiaoIce:
+                            sound = 1;
+                            break;
+                        case XiaoMei:
+                            sound = 2;
+                            break;
+                        case XiaoYao:
+                            sound = 3;
+                            break;
+                        case XiaoYu:
+                            sound = 4;
+                            break;
+                    }
                 }
                 bundle.putInt("sound", sound);
-                Speechor.SpeechorSpeed speed = service.getSpeed();
                 float sp = 0;
-                switch (speed) {
-                    case SPEECH_SPEED_HALF:
-                        sp = 0.5f;
-                        break;
-                    case SPEECH_SPEED_NORMAL:
-                        sp = 1f;
-                        break;
-                    case SPEECH_SPEED_MULTIPLE_1_POINT_5:
-                        sp = 1.5f;
-                        break;
-                    case SPEECH_SPEED_MULTIPLE_2:
-                        sp = 2f;
-                        break;
+                if (null != service) {
+                    Speechor.SpeechorSpeed speed = service.getSpeed();
+                    switch (speed) {
+                        case SPEECH_SPEED_HALF:
+                            sp = 0.5f;
+                            break;
+                        case SPEECH_SPEED_NORMAL:
+                            sp = 1f;
+                            break;
+                        case SPEECH_SPEED_MULTIPLE_1_POINT_5:
+                            sp = 1.5f;
+                            break;
+                        case SPEECH_SPEED_MULTIPLE_2:
+                            sp = 2f;
+                            break;
+                    }
                 }
                 bundle.putFloat("speed", sp);
                 jumpActivity(FeedBackActivity.class, bundle);
