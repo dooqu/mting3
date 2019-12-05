@@ -40,6 +40,7 @@ import butterknife.ButterKnife;
 import cn.xylink.mting.bean.Article;
 import cn.xylink.mting.speech.SpeechService;
 import cn.xylink.mting.speech.SpeechServiceProxy;
+import cn.xylink.mting.speech.Speechor;
 import cn.xylink.mting.speech.ui.PanelViewAdapter;
 import cn.xylink.mting.ui.dialog.UpgradeConfirmDialog;
 import cn.xylink.mting.upgrade.UpgradeManager;
@@ -118,6 +119,13 @@ public abstract class BaseActivity extends AppCompatActivity {
         TCAgent.onPageStart(this, this.getComponentName().getClassName());
     }
 
+    protected  SpeechService getSpeechService() {
+        if(isSpeechServiceAvailable()) {
+            return speechServiceWeakReference.get();
+        }
+        return null;
+    }
+
 
     protected boolean enableSpeechService() {
         return false;
@@ -162,7 +170,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     }
 
     protected boolean isSpeechServiceAvailable() {
-        return speechServiceConnected && speechServiceWeakReference.get() != null;
+        return speechServiceConnected && speechServiceWeakReference != null && speechServiceWeakReference.get() != null;
     }
 
 
