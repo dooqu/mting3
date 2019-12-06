@@ -71,40 +71,104 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_below="@+id/top_title_layout"
             android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/tv_article_title"
+            <RelativeLayout
+                android:id="@+id/rv_broadcast_detail"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="16dp"
-                android:lineSpacingMultiplier="1.5"
-                android:textColor="@color/color_333333"
-                android:textSize="24sp" />
+                android:layout_height="84dp"
+                android:background="@drawable/bg_detail_title"
+                android:visibility="gone">
 
-            <TextView
-                android:id="@+id/tv_article_source"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="16dp"
-                android:layout_marginTop="-2dp"
-                android:lineSpacingMultiplier="1.5"
-                android:textColor="@color/color_999999"
-                android:textSize="14sp" />
+                <ImageView
+                    android:id="@+id/imv_broadcast_detail"
+                    android:layout_width="64dp"
+                    android:layout_height="64dp"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="16dp" />
 
-            <TextView
-                android:id="@+id/tv_article_content"
+                <TextView
+                    android:id="@+id/tv_broadcast_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="12dp"
+                    android:layout_marginTop="19dp"
+                    android:layout_marginRight="12dp"
+                    android:layout_toLeftOf="@+id/btn_broadcast_enter"
+                    android:layout_toRightOf="@+id/imv_broadcast_detail"
+                    android:singleLine="true"
+                    android:text=""
+                    android:textColor="#ff333333"
+                    android:textSize="18sp" />
+
+                <TextView
+                    android:id="@+id/tv_broadcast_author"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/tv_broadcast_title"
+                    android:layout_alignLeft="@+id/tv_broadcast_title"
+                    android:layout_marginTop="12dp"
+                    android:layout_marginRight="12dp"
+                    android:layout_toLeftOf="@+id/btn_broadcast_enter"
+                    android:singleLine="true"
+                    android:text=""
+                    android:textColor="#ff999999"
+                    android:textSize="15sp" />
+
+                <Button
+                    android:id="@+id/btn_broadcast_enter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="16dp"
+                    android:background="@mipmap/bg_btn_blue"
+                    android:text="进入播单"
+                    android:textColor="@color/white"
+                    android:textSize="15sp" />
+
+            </RelativeLayout>
+
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="16dp"
-                android:layout_marginTop="21dp"
-                android:layout_marginRight="16dp"
-                android:lineSpacingMultiplier="1.5"
-                android:textColor="@color/color_333333"
-                android:textSize="18sp" />
+                android:layout_height="match_parent"
+                android:layout_below="@+id/top_title_layout"
+                android:orientation="vertical">
 
+                <TextView
+                    android:id="@+id/tv_article_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="16dp"
+                    android:lineSpacingMultiplier="1.5"
+                    android:textColor="@color/color_333333"
+                    android:textSize="24sp" />
+
+                <TextView
+                    android:id="@+id/tv_article_source"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginTop="-2dp"
+                    android:lineSpacingMultiplier="1.5"
+                    android:textColor="@color/color_999999"
+                    android:textSize="14sp" />
+
+                <TextView
+                    android:id="@+id/tv_article_content"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginTop="21dp"
+                    android:layout_marginRight="16dp"
+                    android:lineSpacingMultiplier="1.5"
+                    android:textColor="@color/color_333333"
+                    android:textSize="18sp" />
+
+            </LinearLayout>
         </LinearLayout>
+
+
     </android.support.v4.widget.NestedScrollView>
 
     <ImageButton
@@ -127,8 +191,7 @@
         android:layout_alignParentBottom="true"
         android:layout_marginTop="16dp"
         android:background="@drawable/bg_white"
-        android:visibility="invisible"
-        >
+        android:visibility="invisible">
 
         <FrameLayout
             android:id="@+id/view_detail_panel_play"
