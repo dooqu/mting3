@@ -27,17 +27,17 @@ public class WxUtil {
 		if (needRecycle) {
 			bmp.recycle();
 		}
-		
+
 		byte[] result = output.toByteArray();
 		try {
 			output.close();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
+
 		return result;
 	}
-	
+
 	public static byte[] getHtmlByteArray(final String url) {
 		 URL htmlUrl = null;
 		 InputStream inStream = null;

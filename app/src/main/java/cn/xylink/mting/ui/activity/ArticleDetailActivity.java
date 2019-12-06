@@ -45,6 +45,7 @@ import cn.xylink.mting.presenter.DelStorePreesenter;
 import cn.xylink.mting.speech.SpeechServiceProxy;
 import cn.xylink.mting.speech.SpeechSettingService;
 import cn.xylink.mting.speech.Speechor;
+import cn.xylink.mting.ui.dialog.ArticleDetailShareDialog;
 import cn.xylink.mting.ui.dialog.BottomTingDialog;
 import cn.xylink.mting.ui.dialog.BottomTingItemModle;
 import cn.xylink.mting.utils.ContentManager;
@@ -179,7 +180,11 @@ public class ArticleDetailActivity extends BasePresenterActivity implements Arti
                 finish();
                 break;
             case R.id.btn_share:
-
+                if (articleDetail2Info != null) {
+                    ArticleDetailShareDialog dialog = new ArticleDetailShareDialog(this);
+                    dialog.setDetailInfo(articleDetail2Info);
+                    dialog.show();
+                }
                 break;
             case R.id.btn_more:
                 if (inType == 1) {
@@ -246,8 +251,11 @@ public class ArticleDetailActivity extends BasePresenterActivity implements Arti
         }
     }
 
+    private ArticleDetail2Info articleDetail2Info;
+
     @Override
     public void onSuccessArticleDetail(ArticleDetail2Info info) {
+        articleDetail2Info = info;
         initFontSize();
         rvPlay.setVisibility(View.VISIBLE);
         tvArticleTitle.setText(info.getTitle());
