@@ -15,6 +15,8 @@ import com.tendcloud.tenddata.TCAgent;
 
 import org.greenrobot.eventbus.EventBus;
 
+import java.util.List;
+
 import butterknife.BindView;
 import butterknife.OnClick;
 import cn.xylink.mting.R;
@@ -24,27 +26,37 @@ import cn.xylink.mting.bean.Article;
 import cn.xylink.mting.bean.ArticleDetail2Info;
 import cn.xylink.mting.bean.ArticleDetailRequest;
 import cn.xylink.mting.bean.ArticleIdsRequest;
+import cn.xylink.mting.bean.BroadcastDetailInfo;
+import cn.xylink.mting.bean.BroadcastIdRequest;
+import cn.xylink.mting.bean.BroadcastItemAddInfo;
+import cn.xylink.mting.bean.BroadcastItemAddRequest;
 import cn.xylink.mting.common.Const;
 import cn.xylink.mting.contract.AddStoreContact;
 import cn.xylink.mting.contract.ArticleDetailContract;
+import cn.xylink.mting.contract.BroadcastDetailContact;
+import cn.xylink.mting.contract.BroadcastItemAddContact;
 import cn.xylink.mting.contract.DelStoreContact;
 import cn.xylink.mting.event.ArticleDetailScrollEvent;
 import cn.xylink.mting.presenter.AddStorePresenter;
 import cn.xylink.mting.presenter.ArticleDetailPresenter;
+import cn.xylink.mting.presenter.BroadcastDetailPresenter;
+import cn.xylink.mting.presenter.BroadcastItemAddPresenter;
 import cn.xylink.mting.presenter.DelStorePreesenter;
 import cn.xylink.mting.speech.SpeechServiceProxy;
 import cn.xylink.mting.speech.SpeechSettingService;
 import cn.xylink.mting.speech.Speechor;
+import cn.xylink.mting.ui.dialog.ArticleDetailShareDialog;
 import cn.xylink.mting.ui.dialog.BottomTingDialog;
 import cn.xylink.mting.ui.dialog.BottomTingItemModle;
 import cn.xylink.mting.utils.ContentManager;
+import cn.xylink.mting.utils.ImageUtils;
 import cn.xylink.mting.utils.L;
 
 /**
  * @author wjn
  * @date 2019/11/28
  */
-public class ArticleDetailActivity extends BasePresenterActivity implements ArticleDetailContract.IArticleDetailView, AddStoreContact.IAddStoreView, DelStoreContact.IDelStoreView, BottomTingDialog.OnBottomTingListener {
+public class ArticleDetailActivity extends BasePresenterActivity implements ArticleDetailContract.IArticleDetailView, AddStoreContact.IAddStoreView, DelStoreContact.IDelStoreView, BottomTingDialog.OnBottomTingListener, BroadcastDetailContact.IBroadcastDetailView, BroadcastItemAddContact.IBroadcastItemAddView {
     @BindView(R.id.btn_edit)
     ImageButton btnEdit;
     @BindView(R.id.tv_article_title)
@@ -63,6 +75,15 @@ public class ArticleDetailActivity extends BasePresenterActivity implements Arti
     NestedScrollView scrollView;
     @BindView(R.id.rv_play)
     RelativeLayout rvPlay;
+    @BindView(R.id.rv_broadcast_detail)
+    RelativeLayout rvBroadcastDetail;
+    @BindView(R.id.imv_broadcast_detail)
+    ImageView imgBroadcast;
+    @BindView(R.id.tv_broadcast_title)
+    TextView tvBroadcastTitle;
+    @BindView(R.id.tv_broadcast_author)
+    TextView tvBroadcastAuthor;
+
 
     private ArticleDetailPresenter mArticleDetailPresenter;
     public static String BROADCAST_TITLE_DETAIL = "BROADCAST_TITLE_DETAIL";
@@ -77,6 +98,8 @@ public class ArticleDetailActivity extends BasePresenterActivity implements Arti
     private boolean isFavor;
     private AddStorePresenter mAddStorePresenter;
     private DelStorePreesenter mDelStorePresenter;
+    private BroadcastDetailPresenter mBroadcastDetailPresenter;
+    private BroadcastItemAddPresenter mBroadcastItemAddPresenter;
     private BottomTingDialog mBottomTingDialog;
     private int inType;
     private SpeechServiceProxy proxy;
@@ -89,16 +112,28 @@ public class ArticleDetailActivity extends BasePresenterActivity implements Arti
 
     @Override
     protected void initView() {
-        Intent intent = getIntent();
-        broadcastId = intent.getStringExtra(BROADCAST_ID_DETAIL);
-        articleId = intent.getStringExtra(ARTICLE_ID_DETAIL);
-        broadcastTitle = intent.getStringExtra(BROADCAST_TITLE_DETAIL);
+        mBroadcastDetailPresenter = (BroadcastDetailPresenter) createPresenter(BroadcastDetailPresenter.class);
+        mBroadcastDetailPresenter.attachView(this);
         mArticleDetailPresenter = (ArticleDetailPresenter) createPresenter(ArticleDetailPresenter.class);
         mArticleDetailPresenter.attachView(this);
         mAddStorePresenter = (AddStorePresenter) createPresenter(AddStorePresenter.class);
         mAddStorePresenter.attachView(this);
         mDelStorePresenter = (DelStorePreesenter) createPresenter(DelStorePreesenter.class);
         mDelStorePresenter.attachView(this);
+        mBroadcastItemAddPresenter = (BroadcastItemAddPresenter) createPresenter(BroadcastItemAddPresenter.class);
+        mBroadcastItemAddPresenter.attachView(this);
+        Intent intent = getIntent();
+        broadcastId = intent.getStringExtra(BROADCAST_ID_DETAIL);
+        articleId = intent.getStringExtra(ARTICLE_ID_DETAIL);
+        broadcastTitle = intent.getStringExtra(BROADCAST_TITLE_DETAIL);
+        //显示栏 显示的条件: 有broadcastId&&不是-1234
+        if (broadcastId != null) {
+            if (!broadcastId.equals("-1") && !broadcastId.equals("-2") && !broadcastId.equals("-3") && !broadcastId.equals("-4")) {
+                rvBroadcastDetail.setVisibility(View.VISIBLE);
+                doGetBroadcastDetail(broadcastId);
+            }
+        } else rvBroadcastDetail.setVisibility(View.GONE);
+
         doGetArticleDetail();
         scrollView.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
             @Override
@@ -138,14 +173,18 @@ public class ArticleDetailActivity extends BasePresenterActivity implements Arti
     }
 
 
-    @OnClick({R.id.btn_left, R.id.btn_share, R.id.btn_more, R.id.btn_edit, R.id.view_detail_panel_favor, R.id.view_detail_panel_play, R.id.view_detail_panel_add_to})
+    @OnClick({R.id.btn_left, R.id.btn_share, R.id.btn_more, R.id.btn_edit, R.id.view_detail_panel_favor, R.id.view_detail_panel_play, R.id.view_detail_panel_add_to, R.id.btn_broadcast_enter})
     public void onclick(View view) {
         switch (view.getId()) {
             case R.id.btn_left:
                 finish();
                 break;
             case R.id.btn_share:
-
+                if (articleDetail2Info != null) {
+                    ArticleDetailShareDialog dialog = new ArticleDetailShareDialog(this);
+                    dialog.setDetailInfo(articleDetail2Info);
+                    dialog.show();
+                }
                 break;
             case R.id.btn_more:
                 if (inType == 1) {
@@ -181,12 +220,18 @@ public class ArticleDetailActivity extends BasePresenterActivity implements Arti
                 }
                 break;
             case R.id.view_detail_panel_play:
-                Article article = new Article();
-                article.setBroadcastId(broadcastId);
-                article.setArticleId(articleId);
-                article.setBroadcastTitle(broadcastTitle);
-                article.setTitle(articleTitle);
-                postToSpeechService(article);
+                //播放器播放， 如果有broadcastId,就跟之前一样，没有，就添加待读，然后broadcastid=-1传进去
+                if (null != broadcastId) {
+                    Article article = new Article();
+                    article.setBroadcastId(broadcastId);
+                    article.setArticleId(articleId);
+                    article.setBroadcastTitle(broadcastTitle);
+                    article.setTitle(articleTitle);
+                    postToSpeechService(article);
+                } else {
+                    doAdd2Unread();
+                }
+
                 break;
             case R.id.view_detail_panel_add_to:
                 Intent intent2 = new Intent(this, BroadcastItemAddActivity.class);
@@ -194,14 +239,23 @@ public class ArticleDetailActivity extends BasePresenterActivity implements Arti
                 startActivity(intent2);
                 this.finish();
                 break;
-
+            case R.id.btn_broadcast_enter:
+                Intent intent3 = new Intent(ArticleDetailActivity.this, BroadcastActivity.class);
+                intent3.putExtra(BroadcastActivity.EXTRA_BROADCASTID, broadcastId);
+                intent3.putExtra(BroadcastActivity.EXTRA_TITLE, broadcastTitle);
+                ArticleDetailActivity.this.startActivity(intent3);
+                ArticleDetailActivity.this.finish();
+                break;
             default:
                 break;
         }
     }
 
+    private ArticleDetail2Info articleDetail2Info;
+
     @Override
     public void onSuccessArticleDetail(ArticleDetail2Info info) {
+        articleDetail2Info = info;
         initFontSize();
         rvPlay.setVisibility(View.VISIBLE);
         tvArticleTitle.setText(info.getTitle());
@@ -386,5 +440,72 @@ public class ArticleDetailActivity extends BasePresenterActivity implements Arti
 
                 break;
         }
+    }
+
+    private void doGetBroadcastDetail(String broadcastId) {
+        showLoading();
+        BroadcastIdRequest request = new BroadcastIdRequest();
+        request.setBroadcastId(broadcastId);
+        request.doSign();
+        mBroadcastDetailPresenter.getBroadcastDetail(request);
+    }
+
+    @Override
+    public void onBroadcastDetailSuccess(BroadcastDetailInfo data) {
+        hideLoading();
+        String picture = data.getPicture();
+        String name = data.getName();
+        String createName = data.getCreateName();
+        if (TextUtils.isEmpty(picture)) {
+            imgBroadcast.setImageResource(R.mipmap.cjbd_img_fm_default);
+        } else {
+            ImageUtils.get().load(imgBroadcast, picture);
+        }
+        tvBroadcastTitle.setText(name);
+        tvBroadcastAuthor.setText(createName);
+
+    }
+
+    @Override
+    public void onBroadcastDetailError(int code, String errorMsg) {
+        //如果获取播单详情失败 就不显示播单这块儿的布局
+        rvBroadcastDetail.setVisibility(View.GONE);
+
+    }
+
+    private void doAdd2Unread() {
+        showLoading();
+        BroadcastItemAddRequest request = new BroadcastItemAddRequest();
+        request.setBroadcastId("-1");
+        request.setArticleIds(articleId);
+        request.doSign();
+        mBroadcastItemAddPresenter.getBroadcastItemAdd(request);
+    }
+
+    @Override
+    public void onBroadcastItemAddListSuccess(List<BroadcastItemAddInfo> data) {
+
+    }
+
+    @Override
+    public void onBroadcastItemAddListError(int code, String errorMsg) {
+
+    }
+
+    @Override
+    public void onBroadcastItemAddSuccess(BaseResponse<String> baseResponse) {
+        hideLoading();
+        Article article = new Article();
+        article.setBroadcastId(broadcastId);
+        article.setArticleId(articleId);
+        article.setBroadcastTitle(broadcastTitle);
+        article.setTitle(articleTitle);
+        postToSpeechService(article);
+
+    }
+
+    @Override
+    public void onBroadcastItemAddError(int code, String errorMsg) {
+
     }
 }
