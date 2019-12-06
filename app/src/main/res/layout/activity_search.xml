@@ -22,11 +22,11 @@
             android:layout_weight="1"
             android:background="@drawable/bg_search_world"
             android:drawableLeft="@mipmap/icon_search_b"
-            android:imeOptions="actionSearch"
             android:drawablePadding="8dp"
-            android:paddingRight="8dp"
+            android:imeOptions="actionSearch"
             android:lines="1"
-            android:paddingLeft="8dp" />
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp" />
 
         <TextView
             android:id="@+id/tv_search_cancel"
@@ -70,16 +70,26 @@
             android:textSize="18sp" />
     </RadioGroup>
 
-    <com.scwang.smartrefresh.layout.SmartRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/refreshLayout"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:background="#f8f9fd"
         android:layout_height="match_parent">
 
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/rv_search"
+        <com.scwang.smartrefresh.layout.SmartRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/refreshLayout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            />
-    </com.scwang.smartrefresh.layout.SmartRefreshLayout>
+            android:layout_height="match_parent"
+            android:background="#f8f9fd">
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/rv_search"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </com.scwang.smartrefresh.layout.SmartRefreshLayout>
+
+        <include
+            layout="@layout/layout_empty"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="100dp" />
+    </FrameLayout>
 </LinearLayout>
