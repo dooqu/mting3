@@ -149,7 +149,7 @@ public class BroadcastAdapter extends RecyclerView.Adapter<BroadcastAdapter.View
         }
     }
 
-    public void setShare2World(){
+    public void setShare2World() {
         mDetailInfo.setShare(1);
         notifyItemChanged(0);
     }
@@ -213,6 +213,30 @@ public class BroadcastAdapter extends RecyclerView.Adapter<BroadcastAdapter.View
             ite.remove();
         }
         notifyItemRemoved(position);
+    }
+
+    public void notifyItemRemoe(String id) {
+        if (mData != null && mData.size() > 0 && !TextUtils.isEmpty(id)) {
+            for (int i = 0; i < mData.size(); i++) {
+                if (id.equals(mData.get(i).getArticleId())) {
+                    ListIterator<BroadcastInfo> ite = mData.listIterator(i);
+                    ite.next();
+                    ite.remove();
+                    notifyItemRemoved(i);
+                }
+            }
+        }
+    }
+
+    public void notifyItemChangeStore(String id) {
+        if (mData != null && mData.size() > 0 && !TextUtils.isEmpty(id)) {
+            for (int i = 0; i < mData.size(); i++) {
+                if (id.equals(mData.get(i).getArticleId())) {
+                    mData.get(i).setStore(mData.get(i).getStore() ^ 1);
+                    notifyItemChanged(i);
+                }
+            }
+        }
     }
 
     public List<BroadcastInfo> getArticleList() {
