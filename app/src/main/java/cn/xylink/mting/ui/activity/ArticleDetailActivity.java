@@ -15,6 +15,8 @@ import com.tendcloud.tenddata.TCAgent;
 
 import org.greenrobot.eventbus.EventBus;
 
+import java.util.List;
+
 import butterknife.BindView;
 import butterknife.OnClick;
 import cn.xylink.mting.R;
@@ -26,15 +28,19 @@ import cn.xylink.mting.bean.ArticleDetailRequest;
 import cn.xylink.mting.bean.ArticleIdsRequest;
 import cn.xylink.mting.bean.BroadcastDetailInfo;
 import cn.xylink.mting.bean.BroadcastIdRequest;
+import cn.xylink.mting.bean.BroadcastItemAddInfo;
+import cn.xylink.mting.bean.BroadcastItemAddRequest;
 import cn.xylink.mting.common.Const;
 import cn.xylink.mting.contract.AddStoreContact;
 import cn.xylink.mting.contract.ArticleDetailContract;
 import cn.xylink.mting.contract.BroadcastDetailContact;
+import cn.xylink.mting.contract.BroadcastItemAddContact;
 import cn.xylink.mting.contract.DelStoreContact;
 import cn.xylink.mting.event.ArticleDetailScrollEvent;
 import cn.xylink.mting.presenter.AddStorePresenter;
 import cn.xylink.mting.presenter.ArticleDetailPresenter;
 import cn.xylink.mting.presenter.BroadcastDetailPresenter;
+import cn.xylink.mting.presenter.BroadcastItemAddPresenter;
 import cn.xylink.mting.presenter.DelStorePreesenter;
 import cn.xylink.mting.speech.SpeechServiceProxy;
 import cn.xylink.mting.speech.SpeechSettingService;
@@ -49,7 +55,7 @@ import cn.xylink.mting.utils.L;
  * @author wjn
  * @date 2019/11/28
  */
-public class ArticleDetailActivity extends BasePresenterActivity implements ArticleDetailContract.IArticleDetailView, AddStoreContact.IAddStoreView, DelStoreContact.IDelStoreView, BottomTingDialog.OnBottomTingListener, BroadcastDetailContact.IBroadcastDetailView {
+public class ArticleDetailActivity extends BasePresenterActivity implements ArticleDetailContract.IArticleDetailView, AddStoreContact.IAddStoreView, DelStoreContact.IDelStoreView, BottomTingDialog.OnBottomTingListener, BroadcastDetailContact.IBroadcastDetailView, BroadcastItemAddContact.IBroadcastItemAddView {
     @BindView(R.id.btn_edit)
     ImageButton btnEdit;
     @BindView(R.id.tv_article_title)
@@ -92,6 +98,7 @@ public class ArticleDetailActivity extends BasePresenterActivity implements Arti
     private AddStorePresenter mAddStorePresenter;
     private DelStorePreesenter mDelStorePresenter;
     private BroadcastDetailPresenter mBroadcastDetailPresenter;
+    private BroadcastItemAddPresenter mBroadcastItemAddPresenter;
     private BottomTingDialog mBottomTingDialog;
     private int inType;
     private SpeechServiceProxy proxy;
@@ -106,22 +113,25 @@ public class ArticleDetailActivity extends BasePresenterActivity implements Arti
     protected void initView() {
         mBroadcastDetailPresenter = (BroadcastDetailPresenter) createPresenter(BroadcastDetailPresenter.class);
         mBroadcastDetailPresenter.attachView(this);
-        Intent intent = getIntent();
-        broadcastId = intent.getStringExtra(BROADCAST_ID_DETAIL);
-        articleId = intent.getStringExtra(ARTICLE_ID_DETAIL);
-        broadcastTitle = intent.getStringExtra(BROADCAST_TITLE_DETAIL);
-        if (broadcastId != null) {
-            if (!broadcastId.equals("-1") && !broadcastId.equals("-2") && !broadcastId.equals("-3") && !broadcastId.equals("-4")) {
-                rvBroadcastDetail.setVisibility(View.VISIBLE);
-                doGetBroadcastDetail(broadcastId);
-            }
-        } else rvBroadcastDetail.setVisibility(View.GONE);
         mArticleDetailPresenter = (ArticleDetailPresenter) createPresenter(ArticleDetailPresenter.class);
         mArticleDetailPresenter.attachView(this);
         mAddStorePresenter = (AddStorePresenter) createPresenter(AddStorePresenter.class);
         mAddStorePresenter.attachView(this);
         mDelStorePresenter = (DelStorePreesenter) createPresenter(DelStorePreesenter.class);
         mDelStorePresenter.attachView(this);
+        mBroadcastItemAddPresenter = (BroadcastItemAddPresenter) createPresenter(BroadcastItemAddPresenter.class);
+        mBroadcastItemAddPresenter.attachView(this);
+        Intent intent = getIntent();
+        broadcastId = intent.getStringExtra(BROADCAST_ID_DETAIL);
+        articleId = intent.getStringExtra(ARTICLE_ID_DETAIL);
+        broadcastTitle = intent.getStringExtra(BROADCAST_TITLE_DETAIL);
+        //显示栏 显示的条件: 有broadcastId&&不是-1234
+        if (broadcastId != null) {
+            if (!broadcastId.equals("-1") && !broadcastId.equals("-2") && !broadcastId.equals("-3") && !broadcastId.equals("-4")) {
+                rvBroadcastDetail.setVisibility(View.VISIBLE);
+                doGetBroadcastDetail(broadcastId);
+            }
+        } else rvBroadcastDetail.setVisibility(View.GONE);
 
         doGetArticleDetail();
         scrollView.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
@@ -205,12 +215,18 @@ public class ArticleDetailActivity extends BasePresenterActivity implements Arti
                 }
                 break;
             case R.id.view_detail_panel_play:
-                Article article = new Article();
-                article.setBroadcastId(broadcastId);
-                article.setArticleId(articleId);
-                article.setBroadcastTitle(broadcastTitle);
-                article.setTitle(articleTitle);
-                postToSpeechService(article);
+                //播放器播放， 如果有broadcastId,就跟之前一样，没有，就添加待读，然后broadcastid=-1传进去
+                if (null != broadcastId) {
+                    Article article = new Article();
+                    article.setBroadcastId(broadcastId);
+                    article.setArticleId(articleId);
+                    article.setBroadcastTitle(broadcastTitle);
+                    article.setTitle(articleTitle);
+                    postToSpeechService(article);
+                } else {
+                    doAdd2Unread();
+                }
+
                 break;
             case R.id.view_detail_panel_add_to:
                 Intent intent2 = new Intent(this, BroadcastItemAddActivity.class);
@@ -446,6 +462,42 @@ public class ArticleDetailActivity extends BasePresenterActivity implements Arti
     public void onBroadcastDetailError(int code, String errorMsg) {
         //如果获取播单详情失败 就不显示播单这块儿的布局
         rvBroadcastDetail.setVisibility(View.GONE);
+
+    }
+
+    private void doAdd2Unread() {
+        showLoading();
+        BroadcastItemAddRequest request = new BroadcastItemAddRequest();
+        request.setBroadcastId("-1");
+        request.setArticleIds(articleId);
+        request.doSign();
+        mBroadcastItemAddPresenter.getBroadcastItemAdd(request);
+    }
+
+    @Override
+    public void onBroadcastItemAddListSuccess(List<BroadcastItemAddInfo> data) {
+
+    }
+
+    @Override
+    public void onBroadcastItemAddListError(int code, String errorMsg) {
+
+    }
+
+    @Override
+    public void onBroadcastItemAddSuccess(BaseResponse<String> baseResponse) {
+        hideLoading();
+        Article article = new Article();
+        article.setBroadcastId(broadcastId);
+        article.setArticleId(articleId);
+        article.setBroadcastTitle(broadcastTitle);
+        article.setTitle(articleTitle);
+        postToSpeechService(article);
+
+    }
+
+    @Override
+    public void onBroadcastItemAddError(int code, String errorMsg) {
 
     }
 }
