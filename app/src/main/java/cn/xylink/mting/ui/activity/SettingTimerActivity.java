@@ -1,5 +1,6 @@
 package cn.xylink.mting.ui.activity;
 
+import android.content.Intent;
 import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.RadioGroup;
@@ -11,6 +12,7 @@ import com.tendcloud.tenddata.TCAgent;
 
 import butterknife.BindView;
 import cn.xylink.mting.R;
+import cn.xylink.mting.common.Const;
 import cn.xylink.mting.speech.SpeechService;
 import cn.xylink.mting.speech.SpeechServiceProxy;
 import cn.xylink.mting.utils.ContentManager;
@@ -44,6 +46,12 @@ public class SettingTimerActivity extends BasePresenterActivity {
 
     @Override
     protected void initView() {
+        if (ContentManager.getInstance().getVisitor().equals("0")) {//表示是游客登录
+            Intent intent = new Intent(new Intent(SettingTimerActivity.this, LoginActivity.class));
+            intent.putExtra(LoginActivity.LOGIN_ACTIVITY, Const.visitor);
+            startActivity(intent);
+            finish();
+        }
         proxy = new SpeechServiceProxy(this) {
             @Override
             protected void onConnected(boolean connected, SpeechService service) {
