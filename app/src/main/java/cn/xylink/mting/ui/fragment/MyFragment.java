@@ -15,6 +15,7 @@ import cn.xylink.mting.R;
 import cn.xylink.mting.bean.UserInfo;
 import cn.xylink.mting.common.Const;
 import cn.xylink.mting.ui.activity.BroadcastActivity;
+import cn.xylink.mting.ui.activity.FeedBackActivity;
 import cn.xylink.mting.ui.activity.LoginActivity;
 import cn.xylink.mting.ui.activity.PersonalInfoActivity;
 import cn.xylink.mting.ui.activity.PlayerActivity;
@@ -71,7 +72,7 @@ public class MyFragment extends BaseFragment {
         }
     }
 
-    @OnClick({R.id.ll_click_login, R.id.ll_setting_system, R.id.tv_out_account, R.id.tv_out_application, R.id.ll_collect, R.id.ll_read, R.id.ll_my_create, R.id.ll_app_get_fun})
+    @OnClick({R.id.ll_click_login, R.id.ll_setting_system, R.id.tv_out_account, R.id.tv_out_application, R.id.ll_collect, R.id.ll_read, R.id.ll_my_create, R.id.ll_app_get_fun, R.id.ll_feedback})
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.ll_click_login:
@@ -118,6 +119,9 @@ public class MyFragment extends BaseFragment {
                     startActivity(intent);
                 }, 200);
 
+                break;
+            case R.id.ll_feedback:
+                startActivity(new Intent(getActivity(), FeedBackActivity.class));
                 break;
         }
     }
