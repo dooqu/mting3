@@ -6,6 +6,12 @@ import android.graphics.drawable.Drawable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.view.ViewPropertyAnimator;
+import android.view.animation.AnimationSet;
+import android.view.animation.AnimationUtils;
+import android.view.animation.CycleInterpolator;
+import android.view.animation.RotateAnimation;
+import android.view.animation.ScaleAnimation;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -156,10 +162,17 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
         drawable = getResources().getDrawable(R.color.white);
         mBottomTingDialog = new BottomTingDialog(this, this);
 
-//        mRefreshLayout.setRefreshContent(this.getLayoutInflater().inflate(R.layout.dialog_tip,null));
-//        mRefreshLayout.setRefreshContent(mRecyclerView);
         isTopIntent = getIntent().getIntExtra(EXTRA_ISTOP, 0);
         EventBus.getDefault().register(this);
+
+//        RotateAnimation animation = new RotateAnimation(-18,18,RotateAnimation.RELATIVE_TO_SELF,0.4f,RotateAnimation.RELATIVE_TO_SELF,0.5f);
+        ScaleAnimation animation = new ScaleAnimation(1,1.2f,1,1.2f,RotateAnimation.RELATIVE_TO_SELF,0.5f,RotateAnimation.RELATIVE_TO_SELF,0.5f);
+        animation.setRepeatMode(AnimationSet.REVERSE);
+        animation.setRepeatCount(AnimationSet.INFINITE);
+        animation.setDuration(1000);
+//        animation.setInterpolator( new CycleInterpolator(1.5f));
+//        mMenuImageView.startAnimation(animation);
+        mShareImageView.startAnimation(animation);
     }
 
 
