@@ -69,6 +69,7 @@
             android:layout_height="wrap_content"
             android:paddingLeft="8dp"
             android:paddingRight="16dp"
+            android:scaleType="center"
             android:src="@mipmap/icon_menu_w" />
     </LinearLayout>
 
