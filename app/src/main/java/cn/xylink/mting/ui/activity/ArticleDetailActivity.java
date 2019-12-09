@@ -14,6 +14,8 @@ import android.widget.TextView;
 import com.tendcloud.tenddata.TCAgent;
 
 import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.List;
 
@@ -37,6 +39,7 @@ import cn.xylink.mting.contract.BroadcastDetailContact;
 import cn.xylink.mting.contract.BroadcastItemAddContact;
 import cn.xylink.mting.contract.DelStoreContact;
 import cn.xylink.mting.event.ArticleDetailScrollEvent;
+import cn.xylink.mting.event.StoreRefreshEvent;
 import cn.xylink.mting.presenter.AddStorePresenter;
 import cn.xylink.mting.presenter.ArticleDetailPresenter;
 import cn.xylink.mting.presenter.BroadcastDetailPresenter;
@@ -112,6 +115,7 @@ public class ArticleDetailActivity extends BasePresenterActivity implements Arti
 
     @Override
     protected void initView() {
+        EventBus.getDefault().register(this);
         mBroadcastDetailPresenter = (BroadcastDetailPresenter) createPresenter(BroadcastDetailPresenter.class);
         mBroadcastDetailPresenter.attachView(this);
         mArticleDetailPresenter = (ArticleDetailPresenter) createPresenter(ArticleDetailPresenter.class);
@@ -214,9 +218,17 @@ public class ArticleDetailActivity extends BasePresenterActivity implements Arti
                 if (isFavor) {
                     icoFavor.setImageResource(R.mipmap.ico_dialog_favor);
                     addStore(articleId);
+//                    StoreRefreshEvent event = new StoreRefreshEvent();
+//                    event.setArticleID(articleId);
+//                    event.setStroe(1);
+//                    EventBus.getDefault().post(event);
                 } else {
                     icoFavor.setImageResource(R.mipmap.ico_dialog_unfavor);
                     delStore(articleId);
+//                    StoreRefreshEvent event = new StoreRefreshEvent();
+//                    event.setArticleID(articleId);
+//                    event.setStroe(0);
+//                    EventBus.getDefault().post(event);
                 }
                 break;
             case R.id.view_detail_panel_play:
@@ -305,12 +317,19 @@ public class ArticleDetailActivity extends BasePresenterActivity implements Arti
 
     @Override
     public void onAddStoreError(int code, String errorMsg) {
+        StoreRefreshEvent event = new StoreRefreshEvent();
+        event.setArticleID(articleId);
+        event.setStroe(1);
+        EventBus.getDefault().post(event);
 
     }
 
     @Override
     public void onDelStoreSuccess(BaseResponse response) {
-
+        StoreRefreshEvent event = new StoreRefreshEvent();
+        event.setArticleID(articleId);
+        event.setStroe(0);
+        EventBus.getDefault().post(event);
     }
 
     @Override
@@ -332,30 +351,20 @@ public class ArticleDetailActivity extends BasePresenterActivity implements Arti
         mDelStorePresenter.delStore(request);
     }
 
-  /*  @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onChangeFontSize(ArticleFontSizeEvent fontSizeEvent) {
-        String fontSize = fontSizeEvent.getFontSize();
-        switch (fontSize) {
-            case "default":
-                tvArticleTitle.setTextSize(TypedValue.COMPLEX_UNIT_SP, 24);
-                tvArticleSource.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
-                tvArticleContent.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void getStoreState(StoreRefreshEvent storeRefreshEvent) {
+        int storeState = storeRefreshEvent.getStroe();
+        switch (storeState) {
+            case 0:
+                isFavor = false;
+                icoFavor.setImageResource(R.mipmap.ico_dialog_unfavor);
                 break;
-            case "middle":
-                tvArticleTitle.setTextSize(TypedValue.COMPLEX_UNIT_SP, 27);
-                tvArticleSource.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
-                tvArticleContent.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
-                break;
-            case "big":
-                tvArticleTitle.setTextSize(TypedValue.COMPLEX_UNIT_SP, 30);
-                tvArticleSource.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
-                tvArticleContent.setTextSize(TypedValue.COMPLEX_UNIT_SP, 24);
+            case 1:
+                isFavor = true;
+                icoFavor.setImageResource(R.mipmap.ico_dialog_favor);
                 break;
         }
-//        EventBus.getDefault().post(new ArticleFontSizeEvent("default"));//默认字号
-//        EventBus.getDefault().post(new ArticleFontSizeEvent("middle"));//中字号
-//        EventBus.getDefault().post(new ArticleFontSizeEvent("big"));//大字号
-    }*/
+    }
 
     private void initFontSize() {
         int size = ContentManager.getInstance().getTextSize();
@@ -381,6 +390,7 @@ public class ArticleDetailActivity extends BasePresenterActivity implements Arti
     @Override
     public void onDestroy() {
         super.onDestroy();
+        EventBus.getDefault().unregister(this);
     }
 
     @Override
@@ -508,4 +518,5 @@ public class ArticleDetailActivity extends BasePresenterActivity implements Arti
     public void onBroadcastItemAddError(int code, String errorMsg) {
 
     }
+
 }
