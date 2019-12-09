@@ -217,7 +217,9 @@ public class SplashActivity extends BasePresenterActivity implements CheckTokenC
                         } else {
                             if (code != -999) {
                                 if (TextUtils.isEmpty(ContentManager.getInstance().getLoginToken())) {
-                                    startActivity(new Intent(SplashActivity.this, LoginActivity.class));
+                                    Intent intent = new Intent(new Intent(SplashActivity.this, LoginActivity.class));
+                                    intent.putExtra(LoginActivity.LOGIN_ACTIVITY, "SplashActivity");
+                                    startActivity(intent);
                                     finish();
                                 } else {
                                     TCAgent.onLogin(ContentManager.getInstance().getUserInfo().getUserId(), TDAccount.AccountType.ANONYMOUS,"");
@@ -225,7 +227,9 @@ public class SplashActivity extends BasePresenterActivity implements CheckTokenC
                                     finish();
                                 }
                             } else {
-                                startActivity(new Intent(SplashActivity.this, LoginActivity.class));
+                                Intent intent = new Intent(new Intent(SplashActivity.this, LoginActivity.class));
+                                intent.putExtra(LoginActivity.LOGIN_ACTIVITY, "SplashActivity");
+                                startActivity(intent);
                                 finish();
                             }
                         }

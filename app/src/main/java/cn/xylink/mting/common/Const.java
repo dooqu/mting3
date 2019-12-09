@@ -36,6 +36,7 @@ public class Const {
     public static final String QQ_ID = "1107912298";
     public static final String WX_URL_BASE = "https://api.weixin.qq.com/sns/";
     public static final int PAGE_SIZE = 20;
+    public static final String visitor = "visitor";
 
     public static String isUnReadFlag = "";//用于识别是否是分享过来的文章
     public static String nextPagePlay;

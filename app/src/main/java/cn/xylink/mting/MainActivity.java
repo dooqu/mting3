@@ -57,7 +57,7 @@ public class MainActivity extends BasePresenterActivity implements ViewPager.OnP
         mSyncDataPresenter = (VisitorSyncDataPresenter) createPresenter(VisitorSyncDataPresenter.class);
         mSyncDataPresenter.attachView(this);
         Intent intent = getIntent();
-        int newUser = intent.getIntExtra(IS_NEW_USER, 0);//0-否，1-是
+        int newUser = intent.getIntExtra(IS_NEW_USER, -1);//0-否，1-是
         //如游客登录过并且不是新用户才手动同步数据
         if (newUser == 0&&!("".equals(ContentManager.getInstance().getVisitorToken())) ) {
             mSyncDataDialog = new VisitorSyncDataDialog(this);

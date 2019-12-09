@@ -35,9 +35,11 @@ import cn.xylink.mting.R;
 import cn.xylink.mting.base.BaseResponse;
 import cn.xylink.mting.bean.BroadcastCreateInfo;
 import cn.xylink.mting.bean.BroadcastCreateRequest;
+import cn.xylink.mting.common.Const;
 import cn.xylink.mting.contract.BroadcastCreateContact;
 import cn.xylink.mting.event.TingRefreshEvent;
 import cn.xylink.mting.presenter.BroadcastCreatePresenter;
+import cn.xylink.mting.utils.ContentManager;
 import cn.xylink.mting.utils.ImageUtils;
 import cn.xylink.mting.utils.L;
 import cn.xylink.mting.widget.EditTextWidthClear;
@@ -71,6 +73,12 @@ public class BroadcastCreateActivity extends BasePresenterActivity implements Br
 
     @Override
     protected void initView() {
+        if (ContentManager.getInstance().getVisitor().equals("0")) {//表示是游客登录
+            Intent intent = new Intent(new Intent(BroadcastCreateActivity.this, LoginActivity.class));
+            intent.putExtra(LoginActivity.LOGIN_ACTIVITY, Const.visitor);
+            startActivity(intent);
+            finish();
+        }
 
     }
 

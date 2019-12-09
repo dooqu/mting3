@@ -113,7 +113,9 @@ public class GuideActivity extends BaseActivity {
         switch (view.getId()) {
             case R.id.btn_guide:
             case R.id.tv_break:
-                startActivity(new Intent(GuideActivity.this, LoginActivity.class));
+                Intent intent = new Intent(new Intent(GuideActivity.this, LoginActivity.class));
+                intent.putExtra(LoginActivity.LOGIN_ACTIVITY, "GuideActivity");
+                startActivity(intent);
                 finish();
                 break;
         }
