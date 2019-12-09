@@ -315,5 +315,9 @@ public class RemoteUrl {
     public static String getFeedbackSaveUrl() {
         return URL_BASE + "/api/art/v1/feedback/save";
     }
+    //文章举报
+    public static String getReportSaveUrl() {
+        return URL_BASE + "/api/art/v1/report/save";
+    }
 
 }
