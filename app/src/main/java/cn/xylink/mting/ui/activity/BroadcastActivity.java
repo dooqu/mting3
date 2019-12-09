@@ -155,6 +155,7 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
         mTableBarTitleTextView.setText(getIntent().getStringExtra(EXTRA_TITLE));
         if (!getIntent().getStringExtra(EXTRA_BROADCASTID).startsWith("-")) {
             initDetail();
+            startShareAnim();
         } else {
             mShareImageView.setVisibility(View.INVISIBLE);
             initList();
@@ -165,14 +166,7 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
         isTopIntent = getIntent().getIntExtra(EXTRA_ISTOP, 0);
         EventBus.getDefault().register(this);
 
-//        RotateAnimation animation = new RotateAnimation(-18,18,RotateAnimation.RELATIVE_TO_SELF,0.4f,RotateAnimation.RELATIVE_TO_SELF,0.5f);
-        ScaleAnimation animation = new ScaleAnimation(1,1.2f,1,1.2f,RotateAnimation.RELATIVE_TO_SELF,0.5f,RotateAnimation.RELATIVE_TO_SELF,0.5f);
-        animation.setRepeatMode(AnimationSet.REVERSE);
-        animation.setRepeatCount(AnimationSet.INFINITE);
-        animation.setDuration(1000);
-//        animation.setInterpolator( new CycleInterpolator(1.5f));
-//        mMenuImageView.startAnimation(animation);
-        mShareImageView.startAnimation(animation);
+
     }
 
 
@@ -209,6 +203,17 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
     @Override
     protected void initTitleBar() {
 
+    }
+
+    private void startShareAnim(){
+        //        RotateAnimation animation = new RotateAnimation(-18,18,RotateAnimation.RELATIVE_TO_SELF,0.4f,RotateAnimation.RELATIVE_TO_SELF,0.5f);
+        ScaleAnimation animation = new ScaleAnimation(1,1.2f,1,1.2f,RotateAnimation.RELATIVE_TO_SELF,0.5f,RotateAnimation.RELATIVE_TO_SELF,0.5f);
+        animation.setRepeatMode(AnimationSet.REVERSE);
+        animation.setRepeatCount(AnimationSet.INFINITE);
+        animation.setDuration(1000);
+//        animation.setInterpolator( new CycleInterpolator(1.5f));
+//        mMenuImageView.startAnimation(animation);
+        mShareImageView.startAnimation(animation);
     }
 
     private boolean isUsed = false;
