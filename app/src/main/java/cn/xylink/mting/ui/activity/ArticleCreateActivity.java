@@ -15,8 +15,10 @@ import cn.xylink.mting.base.BaseResponse;
 import cn.xylink.mting.bean.Article;
 import cn.xylink.mting.bean.ArticleCreateInputInfo;
 import cn.xylink.mting.bean.ArticleCreateInputRequest;
+import cn.xylink.mting.common.Const;
 import cn.xylink.mting.contract.ArticleCreateContact;
 import cn.xylink.mting.presenter.ArticleCreatePresenter;
+import cn.xylink.mting.utils.ContentManager;
 import cn.xylink.mting.widget.EditTextWidthClear;
 
 /**
@@ -41,6 +43,12 @@ public class ArticleCreateActivity extends BasePresenterActivity implements Text
 
     @Override
     protected void initView() {
+        if (ContentManager.getInstance().getVisitor().equals("0")) {//表示是游客登录
+            Intent intent = new Intent(new Intent(ArticleCreateActivity.this, LoginActivity.class));
+            intent.putExtra(LoginActivity.LOGIN_ACTIVITY, Const.visitor);
+            startActivity(intent);
+            finish();
+        }
         articleCreatePresenter = (ArticleCreatePresenter) createPresenter(ArticleCreatePresenter.class);
         articleCreatePresenter.attachView(this);
     }

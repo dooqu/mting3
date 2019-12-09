@@ -1,5 +1,6 @@
 package cn.xylink.mting.ui.activity;
 
+import android.content.Intent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -10,9 +11,11 @@ import android.widget.Toast;
 import butterknife.BindView;
 import butterknife.OnClick;
 import cn.xylink.mting.R;
+import cn.xylink.mting.common.Const;
 import cn.xylink.mting.speech.SpeechService;
 import cn.xylink.mting.speech.SpeechServiceProxy;
 import cn.xylink.mting.speech.Speechor;
+import cn.xylink.mting.utils.ContentManager;
 import cn.xylink.mting.utils.SharedPreHelper;
 
 /**
@@ -52,6 +55,12 @@ public class SettingVoiceActivity extends BasePresenterActivity {
 
     @Override
     protected void initView() {
+        if (ContentManager.getInstance().getVisitor().equals("0")) {//表示是游客登录
+            Intent intent = new Intent(new Intent(SettingVoiceActivity.this, LoginActivity.class));
+            intent.putExtra(LoginActivity.LOGIN_ACTIVITY, Const.visitor);
+            startActivity(intent);
+            finish();
+        }
         proxy = new SpeechServiceProxy(this) {
             @Override
             protected void onConnected(boolean connected, SpeechService service) {
@@ -136,73 +145,73 @@ public class SettingVoiceActivity extends BasePresenterActivity {
                 mCheck4.setVisibility(View.VISIBLE);
                 break;
         }
-            SharedPreHelper.getInstance(getApplicationContext()).put("SPEECH_ROLE", String.valueOf(service.getRole()));
-        }
+        SharedPreHelper.getInstance(getApplicationContext()).put("SPEECH_ROLE", String.valueOf(service.getRole()));
+    }
 
-        public void setLoading ( boolean tf, Speechor.SpeechorRole role){
-            mpb1.setVisibility(View.INVISIBLE);
-            mpb2.setVisibility(View.INVISIBLE);
-            mpb3.setVisibility(View.INVISIBLE);
-            mpb4.setVisibility(View.INVISIBLE);
-            if (tf) {
-                switch (role) {
-                    case XiaoIce:
-                        mpb1.setVisibility(View.VISIBLE);
-                        break;
-                    case XiaoMei:
-                        mpb2.setVisibility(View.VISIBLE);
-                        break;
-                    case XiaoYao:
-                        mpb3.setVisibility(View.VISIBLE);
-                        break;
-                    case XiaoYu:
-                        mpb4.setVisibility(View.VISIBLE);
-                        break;
-                }
-            }
-        }
-
-        public void setCheckRole (Speechor.SpeechorRole role){
-            closeAll();
-            if (null != role) {
-                switch (role) {
-                    case XiaoIce:
-                        mCheck1.setVisibility(View.VISIBLE);
-                        break;
-                    case XiaoMei:
-                        mCheck2.setVisibility(View.VISIBLE);
-                        break;
-                    case XiaoYao:
-                        mCheck3.setVisibility(View.VISIBLE);
-                        break;
-                    case XiaoYu:
-                        mCheck4.setVisibility(View.VISIBLE);
-                        break;
-                }
-            }
-        }
-
-        private void setCheckSpeed (Speechor.SpeechorSpeed speed){
-            switch (speed) {
-                case SPEECH_SPEED_HALF:
-                    rgSpeed.check(R.id.rb_half);
+    public void setLoading(boolean tf, Speechor.SpeechorRole role) {
+        mpb1.setVisibility(View.INVISIBLE);
+        mpb2.setVisibility(View.INVISIBLE);
+        mpb3.setVisibility(View.INVISIBLE);
+        mpb4.setVisibility(View.INVISIBLE);
+        if (tf) {
+            switch (role) {
+                case XiaoIce:
+                    mpb1.setVisibility(View.VISIBLE);
                     break;
-                case SPEECH_SPEED_NORMAL:
-                    rgSpeed.check(R.id.rb_normal);
+                case XiaoMei:
+                    mpb2.setVisibility(View.VISIBLE);
                     break;
-                case SPEECH_SPEED_MULTIPLE_1_POINT_5:
-                    rgSpeed.check(R.id.rb_1_5);
+                case XiaoYao:
+                    mpb3.setVisibility(View.VISIBLE);
                     break;
-                case SPEECH_SPEED_MULTIPLE_2:
-                    rgSpeed.check(R.id.rb_2);
+                case XiaoYu:
+                    mpb4.setVisibility(View.VISIBLE);
                     break;
             }
-        }
-
-        @Override
-        protected void onDestroy () {
-            super.onDestroy();
-            //断开服务
-            proxy.unbind();
         }
     }
+
+    public void setCheckRole(Speechor.SpeechorRole role) {
+        closeAll();
+        if (null != role) {
+            switch (role) {
+                case XiaoIce:
+                    mCheck1.setVisibility(View.VISIBLE);
+                    break;
+                case XiaoMei:
+                    mCheck2.setVisibility(View.VISIBLE);
+                    break;
+                case XiaoYao:
+                    mCheck3.setVisibility(View.VISIBLE);
+                    break;
+                case XiaoYu:
+                    mCheck4.setVisibility(View.VISIBLE);
+                    break;
+            }
+        }
+    }
+
+    private void setCheckSpeed(Speechor.SpeechorSpeed speed) {
+        switch (speed) {
+            case SPEECH_SPEED_HALF:
+                rgSpeed.check(R.id.rb_half);
+                break;
+            case SPEECH_SPEED_NORMAL:
+                rgSpeed.check(R.id.rb_normal);
+                break;
+            case SPEECH_SPEED_MULTIPLE_1_POINT_5:
+                rgSpeed.check(R.id.rb_1_5);
+                break;
+            case SPEECH_SPEED_MULTIPLE_2:
+                rgSpeed.check(R.id.rb_2);
+                break;
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        //断开服务
+        proxy.unbind();
+    }
+}

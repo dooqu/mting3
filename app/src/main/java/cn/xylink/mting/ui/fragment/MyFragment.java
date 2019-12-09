@@ -9,16 +9,16 @@ import android.widget.TextView;
 
 import com.tendcloud.tenddata.TCAgent;
 
-import org.w3c.dom.Text;
-
 import butterknife.BindView;
 import butterknife.OnClick;
 import cn.xylink.mting.R;
 import cn.xylink.mting.bean.UserInfo;
 import cn.xylink.mting.common.Const;
 import cn.xylink.mting.ui.activity.BroadcastActivity;
+import cn.xylink.mting.ui.activity.FeedBackActivity;
 import cn.xylink.mting.ui.activity.LoginActivity;
 import cn.xylink.mting.ui.activity.PersonalInfoActivity;
+import cn.xylink.mting.ui.activity.PlayerActivity;
 import cn.xylink.mting.ui.activity.SettingSystemActivity;
 import cn.xylink.mting.utils.ContentManager;
 import cn.xylink.mting.utils.ImageUtils;
@@ -72,12 +72,14 @@ public class MyFragment extends BaseFragment {
         }
     }
 
-    @OnClick({R.id.ll_click_login, R.id.ll_setting_system, R.id.tv_out_account, R.id.tv_out_application,R.id.ll_collect,R.id.ll_read,R.id.ll_my_create})
+    @OnClick({R.id.ll_click_login, R.id.ll_setting_system, R.id.tv_out_account, R.id.tv_out_application, R.id.ll_collect, R.id.ll_read, R.id.ll_my_create, R.id.ll_app_get_fun, R.id.ll_feedback})
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.ll_click_login:
                 if (ContentManager.getInstance().getVisitor().equals("0")) {
-                    startActivity(new Intent(getActivity(), LoginActivity.class));
+                    Intent intent = new Intent(new Intent(getActivity(), LoginActivity.class));
+                    intent.putExtra(LoginActivity.LOGIN_ACTIVITY, "MyFragment");
+                    startActivity(intent);
                     getActivity().finish();
                 } else {
                     startActivity(new Intent(getActivity(), PersonalInfoActivity.class));
@@ -90,26 +92,41 @@ public class MyFragment extends BaseFragment {
                 TCAgent.onEvent(getActivity(), "account_exit");
                 ContentManager.getInstance().setUserInfo(null);
                 ContentManager.getInstance().setLoginToken("");
+                ContentManager.getInstance().setVisitorToken("0");//设置成游客
                 Intent intents = new Intent(getActivity(), LoginActivity.class);
                 intents.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                intents.putExtra(LoginActivity.LOGIN_ACTIVITY, "outAccount");
                 startActivity(intents);
+                getActivity().finish();
                 break;
             case R.id.tv_out_application:
                 getActivity().sendBroadcast(new Intent("action2exit"));
                 break;
             case R.id.ll_collect:
-                openBroadcast(Const.SystemBroadcast.SYSTEMBROADCAST_STORE,"收藏");
+                openBroadcast(Const.SystemBroadcast.SYSTEMBROADCAST_STORE, "收藏");
                 break;
             case R.id.ll_read:
-                openBroadcast(Const.SystemBroadcast.SYSTEMBROADCAST_READED,"已读");
+                openBroadcast(Const.SystemBroadcast.SYSTEMBROADCAST_READED, "已读");
                 break;
             case R.id.ll_my_create:
-                openBroadcast(Const.SystemBroadcast.SYSTEMBROADCAST_MY_CREATE_ARTICLE,"我创建的文章");
+                openBroadcast(Const.SystemBroadcast.SYSTEMBROADCAST_MY_CREATE_ARTICLE, "我创建的文章");
+                break;
+            case R.id.ll_app_get_fun:
+                mHeadImageView.postDelayed(() -> {
+                    Intent intent = new Intent(getActivity(), PlayerActivity.class);
+                    intent.putExtra(PlayerActivity.EXTRA_HTML, PlayerActivity.PROTOCOL_URL);
+                    intent.putExtra(PlayerActivity.EXTRA_TITLE, getResources().getString(R.string.player_mting));
+                    startActivity(intent);
+                }, 200);
+
+                break;
+            case R.id.ll_feedback:
+                startActivity(new Intent(getActivity(), FeedBackActivity.class));
                 break;
         }
     }
 
-    private void openBroadcast(String id,String name){
+    private void openBroadcast(String id, String name) {
         Intent intent = new Intent(getActivity(), BroadcastActivity.class);
         intent.putExtra(BroadcastActivity.EXTRA_BROADCASTID, id);
         intent.putExtra(BroadcastActivity.EXTRA_TITLE, name);

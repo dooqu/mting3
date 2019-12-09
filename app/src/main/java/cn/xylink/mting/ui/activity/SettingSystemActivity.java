@@ -46,7 +46,7 @@ public class SettingSystemActivity extends BasePresenterActivity {
                 startActivity(new Intent(this, SettingVoiceActivity.class));
                 break;
             case R.id.ll_time:
-
+                startActivity(new Intent(this, SettingTimerActivity.class));
                 break;
             case R.id.ll_font:
 

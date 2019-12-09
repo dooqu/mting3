@@ -45,6 +45,7 @@ import cn.xylink.mting.utils.SharedPreHelper;
  * @date 2019/10/21
  */
 public class LoginActivity extends BasePresenterActivity implements ThirdLoginContact.IThirdLoginView, VisitorRegisterContact.IVisitorRegisterView {
+    public static String LOGIN_ACTIVITY = "loginActivity";
     private Tencent mTencent;
 
     private ThirdLoginPresenter thirdLoginPresenter;
@@ -76,7 +77,13 @@ public class LoginActivity extends BasePresenterActivity implements ThirdLoginCo
 
     @Override
     protected void initView() {
-
+        Intent intent = getIntent();
+        String flag = intent.getStringExtra(LOGIN_ACTIVITY);
+        if (flag.equals(Const.visitor)) {
+            toastCenterShort("请先登录");
+        } else {
+            L.v(flag);
+        }
     }
 
     @Override
