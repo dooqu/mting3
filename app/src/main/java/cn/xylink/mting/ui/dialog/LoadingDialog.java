@@ -1,12 +1,13 @@
 package cn.xylink.mting.ui.dialog;
 
+import android.app.Activity;
 import android.content.Context;
 import android.view.View;
 
 import cn.xylink.mting.R;
 
 
-/*
+/**
  *loading
  *
  * -----------------------------------------------------------------
@@ -25,5 +26,6 @@ public class LoadingDialog extends BaseDimDialog {
 
     @Override
     public void onBackPressed() {
+        ((Activity)mContext).finish();
     }
 }

@@ -15,6 +15,7 @@ import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.scwang.smartrefresh.layout.footer.ClassicsFooter;
 
 import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
 
 import java.util.List;
 
@@ -42,6 +43,8 @@ import cn.xylink.mting.contract.DelStoreContact;
 import cn.xylink.mting.contract.SetTopContact;
 import cn.xylink.mting.contract.Share2WorldContact;
 import cn.xylink.mting.contract.SubscribeContact;
+import cn.xylink.mting.event.BroadcastRefreshEvent;
+import cn.xylink.mting.event.StoreRefreshEvent;
 import cn.xylink.mting.event.TingRefreshEvent;
 import cn.xylink.mting.presenter.AddStorePresenter;
 import cn.xylink.mting.presenter.BroadcastAllDelPresenter;
@@ -55,6 +58,7 @@ import cn.xylink.mting.ui.adapter.BroadcastAdapter;
 import cn.xylink.mting.ui.dialog.BottomTingDialog;
 import cn.xylink.mting.ui.dialog.BottomTingItemModle;
 import cn.xylink.mting.ui.dialog.BroadcastItemMenuDialog;
+import cn.xylink.mting.ui.dialog.WarningTipDialog;
 import cn.xylink.mting.utils.ContentManager;
 import cn.xylink.mting.utils.L;
 import cn.xylink.mting.widget.EndlessRecyclerOnScrollListener;
@@ -155,6 +159,7 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
 //        mRefreshLayout.setRefreshContent(this.getLayoutInflater().inflate(R.layout.dialog_tip,null));
 //        mRefreshLayout.setRefreshContent(mRecyclerView);
         isTopIntent = getIntent().getIntExtra(EXTRA_ISTOP, 0);
+        EventBus.getDefault().register(this);
     }
 
 
@@ -241,14 +246,18 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
         if (mAdapter != null) {
             mAdapter.setDetailInfo(data);
         }
+
     }
 
     @Override
     public void onBroadcastDetailError(int code, String errorMsg) {
         if (code == -960) {
-
+            WarningTipDialog dialog = new WarningTipDialog(this);
+            dialog.setMsg("播单不存在");
+            dialog.show();
         } else if (code == -961) {
-
+            WarningTipDialog dialog = new WarningTipDialog(this);
+            dialog.show();
         } else if (code == 9999) {
             showNetworlError();
         } else {
@@ -299,6 +308,7 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
         if (mRecyclerView != null) {
             mRecyclerView.removeOnScrollListener(endlessScrollListener);
         }
+        EventBus.getDefault().unregister(this);
     }
 
     @Override
@@ -643,5 +653,22 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
         mLookStudioTextView.setVisibility(View.GONE);
     }
 
+    @Subscribe
+    public void eventRefresh(BroadcastRefreshEvent event) {
+        initList();
+    }
+
+    @Subscribe
+    public void eventStoreRefresh(StoreRefreshEvent event) {
+        if (Const.SystemBroadcast.SYSTEMBROADCAST_STORE.equals(getIntent().getStringExtra(EXTRA_BROADCASTID))) {
+            if (event.getStroe() == 1) {
+                initList();
+            }else {
+                mAdapter.notifyItemRemoe(event.getArticleID());
+            }
+        }else {
+            mAdapter.notifyItemChangeStore(event.getArticleID());
+        }
+    }
 
 }
