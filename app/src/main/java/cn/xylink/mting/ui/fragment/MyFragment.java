@@ -17,6 +17,7 @@ import cn.xylink.mting.common.Const;
 import cn.xylink.mting.ui.activity.BroadcastActivity;
 import cn.xylink.mting.ui.activity.LoginActivity;
 import cn.xylink.mting.ui.activity.PersonalInfoActivity;
+import cn.xylink.mting.ui.activity.PlayerActivity;
 import cn.xylink.mting.ui.activity.SettingSystemActivity;
 import cn.xylink.mting.utils.ContentManager;
 import cn.xylink.mting.utils.ImageUtils;
@@ -70,7 +71,7 @@ public class MyFragment extends BaseFragment {
         }
     }
 
-    @OnClick({R.id.ll_click_login, R.id.ll_setting_system, R.id.tv_out_account, R.id.tv_out_application, R.id.ll_collect, R.id.ll_read, R.id.ll_my_create})
+    @OnClick({R.id.ll_click_login, R.id.ll_setting_system, R.id.tv_out_account, R.id.tv_out_application, R.id.ll_collect, R.id.ll_read, R.id.ll_my_create, R.id.ll_app_get_fun})
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.ll_click_login:
@@ -108,6 +109,15 @@ public class MyFragment extends BaseFragment {
                 break;
             case R.id.ll_my_create:
                 openBroadcast(Const.SystemBroadcast.SYSTEMBROADCAST_MY_CREATE_ARTICLE, "我创建的文章");
+                break;
+            case R.id.ll_app_get_fun:
+                mHeadImageView.postDelayed(() -> {
+                    Intent intent = new Intent(getActivity(), PlayerActivity.class);
+                    intent.putExtra(PlayerActivity.EXTRA_HTML, PlayerActivity.PROTOCOL_URL);
+                    intent.putExtra(PlayerActivity.EXTRA_TITLE, getResources().getString(R.string.player_mting));
+                    startActivity(intent);
+                }, 200);
+
                 break;
         }
     }

@@ -122,9 +122,9 @@
                 android:layout_marginLeft="@dimen/my_dimen_16"
                 android:layout_marginTop="@dimen/my_dimen_16"
                 android:layout_marginRight="@dimen/my_dimen_16"
+                android:layout_marginBottom="18dp"
                 android:background="@drawable/bg_my_white"
-                android:orientation="vertical"
-                android:layout_marginBottom="18dp">
+                android:orientation="vertical">
 
                 <LinearLayout
                     android:id="@+id/ll_my_create"
@@ -156,13 +156,16 @@
                         android:layout_marginRight="@dimen/my_dimen_10"
                         android:src="@mipmap/icon_right" />
                 </LinearLayout>
+
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/dimen_cutting_line"
-                    android:background="@color/cutting_line"
+                    android:layout_marginLeft="@dimen/my_dimen_12"
                     android:layout_marginRight="@dimen/my_dimen_12"
-                    android:layout_marginLeft="@dimen/my_dimen_12"/>
+                    android:background="@color/cutting_line" />
+
                 <LinearLayout
+                    android:id="@+id/ll_app_get_fun"
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/my_dimen_57"
                     android:orientation="horizontal">
@@ -256,11 +259,12 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/dimen_cutting_line"
-                    android:background="@color/cutting_line"
+                    android:layout_marginLeft="@dimen/my_dimen_12"
                     android:layout_marginRight="@dimen/my_dimen_12"
-                    android:layout_marginLeft="@dimen/my_dimen_12"/>
+                    android:background="@color/cutting_line" />
 
                 <LinearLayout
+                    android:id="@+id/ll_feedback"
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/my_dimen_57"
                     android:orientation="horizontal">
@@ -349,41 +353,44 @@
                         android:layout_marginRight="@dimen/my_dimen_10"
                         android:src="@mipmap/icon_right" />
                 </LinearLayout>
+
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/dimen_cutting_line"
-                    android:background="@color/cutting_line"
+                    android:layout_marginLeft="@dimen/my_dimen_12"
                     android:layout_marginRight="@dimen/my_dimen_12"
-                    android:layout_marginLeft="@dimen/my_dimen_12"/>
+                    android:background="@color/cutting_line" />
+
                 <LinearLayout
                     android:id="@+id/ll_login_out"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
+
                     <TextView
                         android:id="@+id/tv_out_application"
                         android:layout_width="match_parent"
                         android:layout_height="@dimen/my_dimen_57"
+                        android:gravity="center"
                         android:text="退出应用"
                         android:textColor="#ff333333"
-                        android:textSize="@dimen/my_font_15"
-                        android:gravity="center"
-                        />
+                        android:textSize="@dimen/my_font_15" />
+
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="@dimen/dimen_cutting_line"
-                        android:background="@color/cutting_line"
+                        android:layout_marginLeft="@dimen/my_dimen_12"
                         android:layout_marginRight="@dimen/my_dimen_12"
-                        android:layout_marginLeft="@dimen/my_dimen_12"/>
+                        android:background="@color/cutting_line" />
+
                     <TextView
                         android:id="@+id/tv_out_account"
                         android:layout_width="match_parent"
                         android:layout_height="@dimen/my_dimen_57"
+                        android:gravity="center"
                         android:text="退出登录账号"
                         android:textColor="#ff333333"
-                        android:textSize="@dimen/my_font_15"
-                        android:gravity="center"
-                        />
+                        android:textSize="@dimen/my_font_15" />
                 </LinearLayout>
             </LinearLayout>
 
