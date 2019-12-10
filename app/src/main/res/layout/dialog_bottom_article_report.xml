@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <View
+        android:id="@+id/v_top"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_dialog_report"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="32dp"
+            android:text="举报播单问题"
+            android:textColor="#ff333333"
+            android:textSize="18sp" />
+
+        <LinearLayout
+            android:id="@+id/ll_report1"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tv_vulgar"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:layout_gravity="center"
+                android:layout_marginTop="@dimen/my_dimen_12"
+                android:gravity="center_vertical"
+                android:paddingLeft="28dp"
+                android:text="低俗色情"
+                android:textColor="@color/c333333"
+                android:textSize="15sp" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:background="@color/white" />
+
+            <TextView
+                android:id="@+id/tv_illegal"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:layout_gravity="center"
+                android:layout_marginTop="@dimen/my_dimen_12"
+                android:gravity="center_vertical"
+                android:paddingLeft="28dp"
+                android:text="涉嫌违法犯罪"
+                android:textColor="@color/c333333"
+                android:textSize="15sp" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:background="@color/white" />
+
+            <TextView
+                android:id="@+id/tv_untrue"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:layout_gravity="center"
+                android:layout_marginTop="@dimen/my_dimen_12"
+                android:gravity="center_vertical"
+                android:paddingLeft="28dp"
+                android:text="内容不实"
+                android:textColor="@color/c333333"
+                android:textSize="15sp" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:background="@color/white" />
+
+            <TextView
+                android:id="@+id/tv_other"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:layout_gravity="center"
+                android:layout_marginTop="@dimen/my_dimen_12"
+                android:gravity="center_vertical"
+                android:paddingLeft="28dp"
+                android:text="其他"
+                android:textColor="@color/c333333"
+                android:textSize="15sp" />
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:background="@color/white" />
+
+            <Button
+                android:id="@+id/btn_finish"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:background="@color/white"
+                android:gravity="center"
+                android:text="完成"
+                android:textColor="@color/color_333333"
+                android:textSize="@dimen/text_18" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/ll_report2"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:visibility="gone">
+            <EditText
+                android:id="@+id/et_content"
+                android:layout_width="match_parent"
+                android:layout_height="70dp"
+                android:layout_marginLeft="12dp"
+                android:layout_marginTop="24dp"
+                android:layout_marginRight="12dp"
+                android:layout_marginBottom="24dp"
+                android:background="@drawable/bg_dialog_report_edit"
+                android:hint="请具体说明问题，我们将尽快处理"
+                android:lineSpacingExtra="10dp"
+                android:padding="16dp"
+                android:textColor="@color/c333333"
+                android:textColorHint="@color/c999999"
+                android:textSize="14sp"
+                />
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:background="@color/white" />
+
+            <Button
+                android:id="@+id/btn_commit"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:background="@color/white"
+                android:gravity="center"
+                android:text="提交"
+                android:textColor="@color/color_333333"
+                android:textSize="@dimen/text_18" />
+        </LinearLayout>
+
+
+    </LinearLayout>
+
+
+
+</LinearLayout>

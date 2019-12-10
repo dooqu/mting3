@@ -28,6 +28,7 @@ import cn.xylink.mting.bean.Article;
 import cn.xylink.mting.bean.ArticleDetail2Info;
 import cn.xylink.mting.bean.ArticleDetailRequest;
 import cn.xylink.mting.bean.ArticleIdsRequest;
+import cn.xylink.mting.bean.ArticleReportRequest;
 import cn.xylink.mting.bean.BroadcastDetailInfo;
 import cn.xylink.mting.bean.BroadcastIdRequest;
 import cn.xylink.mting.bean.BroadcastItemAddInfo;
@@ -35,6 +36,7 @@ import cn.xylink.mting.bean.BroadcastItemAddRequest;
 import cn.xylink.mting.common.Const;
 import cn.xylink.mting.contract.AddStoreContact;
 import cn.xylink.mting.contract.ArticleDetailContract;
+import cn.xylink.mting.contract.ArticleReportContact;
 import cn.xylink.mting.contract.BroadcastDetailContact;
 import cn.xylink.mting.contract.BroadcastItemAddContact;
 import cn.xylink.mting.contract.DelStoreContact;
@@ -42,6 +44,7 @@ import cn.xylink.mting.event.ArticleDetailScrollEvent;
 import cn.xylink.mting.event.StoreRefreshEvent;
 import cn.xylink.mting.presenter.AddStorePresenter;
 import cn.xylink.mting.presenter.ArticleDetailPresenter;
+import cn.xylink.mting.presenter.ArticleReportPresenter;
 import cn.xylink.mting.presenter.BroadcastDetailPresenter;
 import cn.xylink.mting.presenter.BroadcastItemAddPresenter;
 import cn.xylink.mting.presenter.DelStorePreesenter;
@@ -49,6 +52,7 @@ import cn.xylink.mting.speech.SpeechServiceProxy;
 import cn.xylink.mting.speech.SpeechSettingService;
 import cn.xylink.mting.speech.Speechor;
 import cn.xylink.mting.ui.dialog.ArticleDetailShareDialog;
+import cn.xylink.mting.ui.dialog.BottomArticleReportDialog;
 import cn.xylink.mting.ui.dialog.BottomTingDialog;
 import cn.xylink.mting.ui.dialog.BottomTingItemModle;
 import cn.xylink.mting.utils.ContentManager;
@@ -59,7 +63,7 @@ import cn.xylink.mting.utils.L;
  * @author wjn
  * @date 2019/11/28
  */
-public class ArticleDetailActivity extends BasePresenterActivity implements ArticleDetailContract.IArticleDetailView, AddStoreContact.IAddStoreView, DelStoreContact.IDelStoreView, BottomTingDialog.OnBottomTingListener, BroadcastDetailContact.IBroadcastDetailView, BroadcastItemAddContact.IBroadcastItemAddView {
+public class ArticleDetailActivity extends BasePresenterActivity implements ArticleDetailContract.IArticleDetailView, AddStoreContact.IAddStoreView, DelStoreContact.IDelStoreView, ArticleReportContact.IDelStoreView, BottomTingDialog.OnBottomTingListener, BroadcastDetailContact.IBroadcastDetailView, BroadcastItemAddContact.IBroadcastItemAddView {
     @BindView(R.id.btn_edit)
     ImageButton btnEdit;
     @BindView(R.id.tv_article_title)
@@ -103,10 +107,12 @@ public class ArticleDetailActivity extends BasePresenterActivity implements Arti
     private DelStorePreesenter mDelStorePresenter;
     private BroadcastDetailPresenter mBroadcastDetailPresenter;
     private BroadcastItemAddPresenter mBroadcastItemAddPresenter;
+    private ArticleReportPresenter mArticleReportPresenter;
     private BottomTingDialog mBottomTingDialog;
     private int inType;
     private SpeechServiceProxy proxy;
     private SpeechSettingService service;
+    private BottomArticleReportDialog mReportDialog;
 
     @Override
     protected void preView() {
@@ -126,6 +132,8 @@ public class ArticleDetailActivity extends BasePresenterActivity implements Arti
         mDelStorePresenter.attachView(this);
         mBroadcastItemAddPresenter = (BroadcastItemAddPresenter) createPresenter(BroadcastItemAddPresenter.class);
         mBroadcastItemAddPresenter.attachView(this);
+        mArticleReportPresenter = (ArticleReportPresenter) createPresenter(ArticleReportPresenter.class);
+        mArticleReportPresenter.attachView(this);
         Intent intent = getIntent();
         broadcastId = intent.getStringExtra(BROADCAST_ID_DETAIL);
         articleId = intent.getStringExtra(ARTICLE_ID_DETAIL);
@@ -218,17 +226,9 @@ public class ArticleDetailActivity extends BasePresenterActivity implements Arti
                 if (isFavor) {
                     icoFavor.setImageResource(R.mipmap.ico_dialog_favor);
                     addStore(articleId);
-//                    StoreRefreshEvent event = new StoreRefreshEvent();
-//                    event.setArticleID(articleId);
-//                    event.setStroe(1);
-//                    EventBus.getDefault().post(event);
                 } else {
                     icoFavor.setImageResource(R.mipmap.ico_dialog_unfavor);
                     delStore(articleId);
-//                    StoreRefreshEvent event = new StoreRefreshEvent();
-//                    event.setArticleID(articleId);
-//                    event.setStroe(0);
-//                    EventBus.getDefault().post(event);
                 }
                 break;
             case R.id.view_detail_panel_play:
@@ -447,9 +447,50 @@ public class ArticleDetailActivity extends BasePresenterActivity implements Arti
                 TCAgent.onEvent(this, "articleDetails_feedback");
                 break;
             case Const.BottomDialogItem.REPORT:
-
+                showReportDialog();
                 break;
         }
+    }
+
+    private void showReportDialog() {
+        BottomArticleReportDialog dialog = new BottomArticleReportDialog(this);
+        dialog.onClickListener(new BottomArticleReportDialog.OnBottomSelectDialogListener() {
+            @Override
+            public void onFirstClick() {
+                dialog.dismiss();
+                doArticleReport("低俗色情", "");
+            }
+
+            @Override
+            public void onSecondClick() {
+                dialog.dismiss();
+                doArticleReport("涉嫌违法犯罪", "");
+
+            }
+
+            @Override
+            public void onThirdClick() {
+                dialog.dismiss();
+                doArticleReport("低俗色内容不实情", "");
+
+            }
+
+            @Override
+            public void onCommitClick(String content) {
+                dialog.dismiss();
+                doArticleReport("", content);
+            }
+        });
+        dialog.show();
+    }
+
+    private void doArticleReport(String type, String content) {
+        ArticleReportRequest reportRequest = new ArticleReportRequest();
+        reportRequest.setArticleId(articleId);
+        reportRequest.setContent(content);
+        reportRequest.setType(type);
+        reportRequest.doSign();
+        mArticleReportPresenter.getArticleReport(reportRequest);
     }
 
     private void doGetBroadcastDetail(String broadcastId) {
@@ -519,4 +560,13 @@ public class ArticleDetailActivity extends BasePresenterActivity implements Arti
 
     }
 
+    @Override
+    public void onArticleReportSuccess(BaseResponse response) {
+
+    }
+
+    @Override
+    public void onArticleReportError(int code, String errorMsg) {
+
+    }
 }
