@@ -1,14 +1,9 @@
 package cn.xylink.mting.ui.dialog;
 
 import android.content.Context;
-import android.text.TextUtils;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.TextView;
-
-import java.nio.channels.NonReadableChannelException;
 
 import butterknife.BindView;
 import butterknife.OnClick;
