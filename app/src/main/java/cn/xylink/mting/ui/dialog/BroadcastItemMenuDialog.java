@@ -13,6 +13,7 @@ import butterknife.OnClick;
 import cn.xylink.mting.R;
 import cn.xylink.mting.bean.BroadcastDetailInfo;
 import cn.xylink.mting.bean.BroadcastInfo;
+import cn.xylink.mting.model.data.RemoteUrl;
 import cn.xylink.mting.openapi.QQApi;
 import cn.xylink.mting.openapi.WXapi;
 import cn.xylink.mting.utils.ContentManager;
@@ -66,10 +67,18 @@ public class BroadcastItemMenuDialog extends BaseDimDialog {
     }
 
     public void setDetailInfo(BroadcastDetailInfo info) {
-        mTitleTextView.setText("分享播单");
+        mTitleTextView.setText("分享");
         mShareUrl = info.getShareUrl();
         mShareTitle = info.getName() + "——" + info.getCreateName();
         mShareDes = info.getInfo();
+        mBrLayout.setVisibility(View.GONE);
+    }
+
+    public void setAppinfo(){
+        mTitleTextView.setText("分享播单");
+        mShareUrl = RemoteUrl.getShareUrl();
+        mShareTitle = "轩辕听";
+        mShareDes = "帮你读文章的软件，读朋友圈、读新闻的APP";
         mBrLayout.setVisibility(View.GONE);
     }
 
