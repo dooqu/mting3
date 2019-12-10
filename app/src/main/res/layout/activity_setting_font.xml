@@ -9,105 +9,134 @@
 
     <include layout="@layout/title_include" />
 
-    <TextView
-        android:id="@+id/tv_content"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="44dp"
+        android:layout_height="48dp"
+        android:layout_marginTop="32dp"
         android:gravity="center"
-        android:text="字体大小"
-        android:textColor="@color/color_333333"
-        android:textSize="@dimen/text_18" />
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="0.5dp"
-        android:background="@color/color_dedede" />
-
-    <RelativeLayout
-        android:id="@+id/rl_small"
-        android:layout_width="match_parent"
-        android:layout_height="44dp">
+        android:orientation="horizontal">
 
         <TextView
-            android:id="@+id/tv_font_small"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:text="小"
-            android:textSize="16sp" />
+            android:text="A"
+            android:textColor="@color/c333333"
+            android:textSize="18sp" />
 
-        <ImageView
-            android:id="@+id/iv_small"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
+        <FrameLayout
+            android:layout_width="243dp"
+            android:layout_height="match_parent"
             android:layout_marginLeft="16dp"
-            android:layout_toRightOf="@id/tv_font_small"
-            android:src="@mipmap/ico_font_check"
-            android:visibility="invisible" />
-    </RelativeLayout>
+            android:layout_marginRight="16dp">
 
-    <RelativeLayout
-        android:id="@+id/rl_normal"
-        android:layout_width="match_parent"
-        android:layout_height="44dp">
+            <RadioGroup
+                android:layout_width="243dp"
+                android:layout_height="match_parent"
+                android:background="@drawable/bg_font_setting_scroll"
+                android:orientation="horizontal">
+
+                <RadioButton
+                    android:id="@+id/rb_font_setting_1"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:background="@drawable/selector_arrange_check"
+                    android:button="@null" />
+
+                <RadioButton
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:button="@null"
+                    android:checked="false"
+                    android:enabled="false"
+                    android:focusable="false" />
+
+                <RadioButton
+                    android:id="@+id/rb_font_setting_2"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:background="@drawable/selector_arrange_check"
+                    android:button="@null" />
+
+                <RadioButton
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:button="@null"
+                    android:checked="false"
+                    android:enabled="false"
+                    android:focusable="false" />
+
+                <RadioButton
+                    android:id="@+id/rb_font_setting_3"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:background="@drawable/selector_arrange_check"
+                    android:button="@null" />
+            </RadioGroup>
+
+            <android.support.v7.widget.AppCompatSeekBar
+                android:id="@+id/sb_font_setting"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:max="30"
+                android:progress="0"
+                android:background="@color/transparent"
+                android:progressDrawable="@color/transparent"
+                android:thumb="@color/transparent" />
+        </FrameLayout>
 
         <TextView
-            android:id="@+id/tv_font_middle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:text="中"
-            android:textSize="21sp" />
-
-        <ImageView
-            android:id="@+id/iv_normal"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_marginLeft="16dp"
-            android:layout_toRightOf="@id/tv_font_middle"
-            android:src="@mipmap/ico_font_check"
-            android:visibility="invisible" />
-    </RelativeLayout>
-
-    <RelativeLayout
-        android:id="@+id/rl_large"
-        android:layout_width="match_parent"
-        android:layout_height="44dp">
-
-        <TextView
-            android:id="@+id/tv_font_max"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:text="大"
-            android:textSize="26sp" />
-
-        <ImageView
-            android:id="@+id/iv_large"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_marginLeft="16dp"
-            android:layout_toRightOf="@id/tv_font_max"
-            android:src="@mipmap/ico_font_check"
-            android:visibility="invisible" />
-    </RelativeLayout>
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="0.5dp"
-        android:background="@color/color_dedede" />
+            android:text="A"
+            android:textColor="@color/c333333"
+            android:textSize="28sp" />
+    </LinearLayout>
 
     <TextView
-        android:id="@+id/tv_cancel"
-        android:layout_width="match_parent"
-        android:layout_height="44dp"
-        android:gravity="center"
-        android:text="关闭"
-        android:textColor="@color/color_999999"
-        android:textSize="@dimen/text_15" />
+        android:id="@+id/tv_font_setting_type"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="20dp"
+        android:text="默认"
+        android:textColor="@color/c333333"
+        android:textSize="18sp" />
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="32dp"
+        android:text="注：字体大小只针对文章内容进行调整"
+        android:textColor="@color/c999999"
+        android:textSize="13.5sp" />
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="32dp"
+        android:background="@color/bg_default"
+        android:orientation="vertical"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp">
+
+        <TextView
+            android:id="@+id/tv_font_setting_show_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:text="轩辕听介绍"
+            android:textColor="@color/c333333"
+            android:textSize="24sp" />
+
+        <TextView
+            android:id="@+id/tv_font_setting_show_content"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="帮你读文章的软件，读朋友圈、读新闻、读小说的APP。"
+            android:textSize="14sp" />
+    </LinearLayout>
 
 </LinearLayout>
