@@ -1,6 +1,7 @@
 package cn.xylink.mting.ui.activity;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.widget.NestedScrollView;
 import android.text.TextUtils;
@@ -102,6 +103,7 @@ public class ArticleDetailActivity extends BasePresenterActivity implements Arti
     private String userId;
     private String articleTitle;
     private String broadcastTitle;
+    private String articleURL;
     private boolean isFavor;
     private AddStorePresenter mAddStorePresenter;
     private DelStorePreesenter mDelStorePresenter;
@@ -112,7 +114,6 @@ public class ArticleDetailActivity extends BasePresenterActivity implements Arti
     private int inType;
     private SpeechServiceProxy proxy;
     private SpeechSettingService service;
-    private BottomArticleReportDialog mReportDialog;
 
     @Override
     protected void preView() {
@@ -274,6 +275,7 @@ public class ArticleDetailActivity extends BasePresenterActivity implements Arti
         tvArticleContent.setText(info.getContent());
         userId = info.getUserId();
         articleTitle = info.getTitle();
+        articleURL = info.getUrl();
         //1手动创建,2录入链接创建,3分享链接创建
         inType = info.getInType();
         //articleId应该跟其他activity接收过来的是一致的，不然就有问题，哈哈~
@@ -397,7 +399,11 @@ public class ArticleDetailActivity extends BasePresenterActivity implements Arti
     public void onBottomTingItemClick(BottomTingItemModle modle) {
         switch (modle.getName()) {
             case Const.BottomDialogItem.BROWER:
-
+                if (!TextUtils.isEmpty(articleURL)) {
+                    Uri uri = Uri.parse(articleURL);
+                    Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                    startActivity(intent);
+                }
                 break;
             case Const.BottomDialogItem.FEEDBACK:
                 //点击反馈按钮，传参数到反馈页面
