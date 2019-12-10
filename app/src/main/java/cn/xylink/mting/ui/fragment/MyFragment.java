@@ -93,7 +93,7 @@ public class MyFragment extends BaseFragment {
                 TCAgent.onEvent(getActivity(), "account_exit");
                 ContentManager.getInstance().setUserInfo(null);
                 ContentManager.getInstance().setLoginToken("");
-                ContentManager.getInstance().setVisitorToken("0");//设置成游客
+                ContentManager.getInstance().setVisitor("0");//设置成游客
                 Intent intents = new Intent(getActivity(), LoginActivity.class);
                 intents.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                 intents.putExtra(LoginActivity.LOGIN_ACTIVITY, "outAccount");
