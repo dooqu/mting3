@@ -27,7 +27,7 @@ public class AddFeedbackPresenter extends BasePresenter<AddFeedbackContact.IAddF
     public void onFeedBackForm(List<File> files, HttpParams param) {
         param.put("timestamp", System.currentTimeMillis());
         param.put("token", ContentManager.getInstance().getLoginToken());
-        String url = RemoteUrl.feedbackUrlv2();
+        String url = RemoteUrl.getFeedbackSaveUrl();
         OkHttpClient.Builder builder = new OkHttpClient.Builder();
         //全局的读取超时时间  基于前面的通道建立完成后，客户端终于可以向服务端发送数据了
         builder.readTimeout(OkGo.DEFAULT_MILLISECONDS, TimeUnit.MILLISECONDS);
