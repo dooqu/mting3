@@ -29,7 +29,7 @@ import cn.xylink.mting.bean.Article;
 import cn.xylink.mting.bean.ArticleDetail2Info;
 import cn.xylink.mting.bean.ArticleDetailRequest;
 import cn.xylink.mting.bean.ArticleIdsRequest;
-import cn.xylink.mting.bean.ArticleReportRequest;
+import cn.xylink.mting.bean.ReportRequest;
 import cn.xylink.mting.bean.BroadcastDetailInfo;
 import cn.xylink.mting.bean.BroadcastIdRequest;
 import cn.xylink.mting.bean.BroadcastItemAddInfo;
@@ -37,7 +37,7 @@ import cn.xylink.mting.bean.BroadcastItemAddRequest;
 import cn.xylink.mting.common.Const;
 import cn.xylink.mting.contract.AddStoreContact;
 import cn.xylink.mting.contract.ArticleDetailContract;
-import cn.xylink.mting.contract.ArticleReportContact;
+import cn.xylink.mting.contract.ReportContact;
 import cn.xylink.mting.contract.BroadcastDetailContact;
 import cn.xylink.mting.contract.BroadcastItemAddContact;
 import cn.xylink.mting.contract.DelStoreContact;
@@ -45,7 +45,7 @@ import cn.xylink.mting.event.ArticleDetailScrollEvent;
 import cn.xylink.mting.event.StoreRefreshEvent;
 import cn.xylink.mting.presenter.AddStorePresenter;
 import cn.xylink.mting.presenter.ArticleDetailPresenter;
-import cn.xylink.mting.presenter.ArticleReportPresenter;
+import cn.xylink.mting.presenter.ReportPresenter;
 import cn.xylink.mting.presenter.BroadcastDetailPresenter;
 import cn.xylink.mting.presenter.BroadcastItemAddPresenter;
 import cn.xylink.mting.presenter.DelStorePreesenter;
@@ -64,7 +64,7 @@ import cn.xylink.mting.utils.L;
  * @author wjn
  * @date 2019/11/28
  */
-public class ArticleDetailActivity extends BasePresenterActivity implements ArticleDetailContract.IArticleDetailView, AddStoreContact.IAddStoreView, DelStoreContact.IDelStoreView, ArticleReportContact.IDelStoreView, BottomTingDialog.OnBottomTingListener, BroadcastDetailContact.IBroadcastDetailView, BroadcastItemAddContact.IBroadcastItemAddView {
+public class ArticleDetailActivity extends BasePresenterActivity implements ArticleDetailContract.IArticleDetailView, AddStoreContact.IAddStoreView, DelStoreContact.IDelStoreView, ReportContact.IDelStoreView, BottomTingDialog.OnBottomTingListener, BroadcastDetailContact.IBroadcastDetailView, BroadcastItemAddContact.IBroadcastItemAddView {
     @BindView(R.id.btn_edit)
     ImageButton btnEdit;
     @BindView(R.id.tv_article_title)
@@ -109,7 +109,7 @@ public class ArticleDetailActivity extends BasePresenterActivity implements Arti
     private DelStorePreesenter mDelStorePresenter;
     private BroadcastDetailPresenter mBroadcastDetailPresenter;
     private BroadcastItemAddPresenter mBroadcastItemAddPresenter;
-    private ArticleReportPresenter mArticleReportPresenter;
+    private ReportPresenter mArticleReportPresenter;
     private BottomTingDialog mBottomTingDialog;
     private int inType;
     private SpeechServiceProxy proxy;
@@ -133,7 +133,7 @@ public class ArticleDetailActivity extends BasePresenterActivity implements Arti
         mDelStorePresenter.attachView(this);
         mBroadcastItemAddPresenter = (BroadcastItemAddPresenter) createPresenter(BroadcastItemAddPresenter.class);
         mBroadcastItemAddPresenter.attachView(this);
-        mArticleReportPresenter = (ArticleReportPresenter) createPresenter(ArticleReportPresenter.class);
+        mArticleReportPresenter = (ReportPresenter) createPresenter(ReportPresenter.class);
         mArticleReportPresenter.attachView(this);
         Intent intent = getIntent();
         broadcastId = intent.getStringExtra(BROADCAST_ID_DETAIL);
@@ -491,7 +491,7 @@ public class ArticleDetailActivity extends BasePresenterActivity implements Arti
     }
 
     private void doArticleReport(String type, String content) {
-        ArticleReportRequest reportRequest = new ArticleReportRequest();
+        ReportRequest reportRequest = new ReportRequest();
         reportRequest.setArticleId(articleId);
         reportRequest.setContent(content);
         reportRequest.setType(type);

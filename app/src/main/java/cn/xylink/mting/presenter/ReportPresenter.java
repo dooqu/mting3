@@ -4,8 +4,8 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import cn.xylink.mting.base.BaseResponse;
-import cn.xylink.mting.bean.ArticleReportRequest;
-import cn.xylink.mting.contract.ArticleReportContact;
+import cn.xylink.mting.bean.ReportRequest;
+import cn.xylink.mting.contract.ReportContact;
 import cn.xylink.mting.model.data.OkGoUtils;
 import cn.xylink.mting.model.data.RemoteUrl;
 
@@ -13,9 +13,9 @@ import cn.xylink.mting.model.data.RemoteUrl;
  * @author wjn
  * @date 2019/12/10
  */
-public class ArticleReportPresenter extends BasePresenter<ArticleReportContact.IDelStoreView> implements ArticleReportContact.Presenter {
+public class ReportPresenter extends BasePresenter<ReportContact.IDelStoreView> implements ReportContact.Presenter {
     @Override
-    public void getArticleReport(ArticleReportRequest request) {
+    public void getArticleReport(ReportRequest request) {
         OkGoUtils.getInstance().postData(mView, RemoteUrl.getReportSaveUrl(), new Gson().toJson(request),
                 new TypeToken<BaseResponse>() {
 

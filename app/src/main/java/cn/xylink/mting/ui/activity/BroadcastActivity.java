@@ -6,10 +6,7 @@ import android.graphics.drawable.Drawable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
-import android.view.ViewPropertyAnimator;
 import android.view.animation.AnimationSet;
-import android.view.animation.AnimationUtils;
-import android.view.animation.CycleInterpolator;
 import android.view.animation.RotateAnimation;
 import android.view.animation.ScaleAnimation;
 import android.widget.ImageView;
@@ -31,6 +28,7 @@ import cn.xylink.mting.R;
 import cn.xylink.mting.base.BaseResponse;
 import cn.xylink.mting.base.BaseResponseArray;
 import cn.xylink.mting.bean.AddStoreRequest;
+import cn.xylink.mting.bean.ReportRequest;
 import cn.xylink.mting.bean.BroadcastDetailInfo;
 import cn.xylink.mting.bean.BroadcastIdRequest;
 import cn.xylink.mting.bean.BroadcastInfo;
@@ -46,6 +44,7 @@ import cn.xylink.mting.contract.BroadcastAllDelContact;
 import cn.xylink.mting.contract.BroadcastDetailContact;
 import cn.xylink.mting.contract.BroadcastListContact;
 import cn.xylink.mting.contract.DelStoreContact;
+import cn.xylink.mting.contract.ReportContact;
 import cn.xylink.mting.contract.SetTopContact;
 import cn.xylink.mting.contract.Share2WorldContact;
 import cn.xylink.mting.contract.SubscribeContact;
@@ -57,6 +56,7 @@ import cn.xylink.mting.presenter.BroadcastAllDelPresenter;
 import cn.xylink.mting.presenter.BroadcastDetailPresenter;
 import cn.xylink.mting.presenter.BroadcastListPresenter;
 import cn.xylink.mting.presenter.DelStorePreesenter;
+import cn.xylink.mting.presenter.ReportPresenter;
 import cn.xylink.mting.presenter.SetTopPresenter;
 import cn.xylink.mting.presenter.Share2WorldPresenter;
 import cn.xylink.mting.presenter.SubscribePresenter;
@@ -64,6 +64,7 @@ import cn.xylink.mting.ui.adapter.BroadcastAdapter;
 import cn.xylink.mting.ui.dialog.BottomTingDialog;
 import cn.xylink.mting.ui.dialog.BottomTingItemModle;
 import cn.xylink.mting.ui.dialog.BroadcastItemMenuDialog;
+import cn.xylink.mting.ui.dialog.ReportDialog;
 import cn.xylink.mting.ui.dialog.WarningTipDialog;
 import cn.xylink.mting.utils.ContentManager;
 import cn.xylink.mting.utils.L;
@@ -77,7 +78,7 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
         BroadcastDetailContact.IBroadcastDetailView, BroadcastAdapter.OnItemClickListener, BroadcastItemMenuDialog.OnBroadcastItemMenuListener
         , AddStoreContact.IAddStoreView, DelStoreContact.IDelStoreView, BottomTingDialog.OnBottomTingListener
         , SetTopContact.ISetTopView, SubscribeContact.ISubscribeView, BroadcastAllDelContact.IBroadcastAllDelView
-        , Share2WorldContact.ISetTopView {
+        , Share2WorldContact.ISetTopView , ReportContact.IDelStoreView{
 
     public static final String EXTRA_BROADCASTID = "extra_broadcast_id";
     public static final String EXTRA_TITLE = "extra_title";
@@ -115,6 +116,7 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
     private BroadcastAllDelPresenter mBroadcastAllDelPresenter;
     private Drawable drawable;
     private Share2WorldPresenter mShare2WorldPresenter;
+    private ReportPresenter mReportPresenter;
 
     @Override
     protected void preView() {
@@ -139,6 +141,8 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
         mBroadcastAllDelPresenter.attachView(this);
         mShare2WorldPresenter = (Share2WorldPresenter) createPresenter(Share2WorldPresenter.class);
         mShare2WorldPresenter.attachView(this);
+        mReportPresenter = (ReportPresenter) createPresenter(ReportPresenter.class);
+        mReportPresenter.attachView(this);
         mRecyclerView.setItemAnimator(null);
         mAdapter = new BroadcastAdapter(this, getIntent().getStringExtra(EXTRA_BROADCASTID));
         mAdapter.setOnItemClickListener(this);
@@ -549,12 +553,26 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
                 startActivity(intent);
                 break;
             case Const.BottomDialogItem.REPORT:
+                ReportDialog dialog = new ReportDialog(this);
+                dialog.setOnClickListener((type, content) -> {
+                    doArticleReport(type,content);
+                });
+                dialog.show();
                 break;
             case Const.BottomDialogItem.DELETE:
                 delBroadcast();
                 break;
             default:
         }
+    }
+
+    private void doArticleReport(String type, String content) {
+        ReportRequest reportRequest = new ReportRequest();
+        reportRequest.setBroadcastId(getIntent().getStringExtra(EXTRA_BROADCASTID));
+        reportRequest.setContent(content);
+        reportRequest.setType(type);
+        reportRequest.doSign();
+        mReportPresenter.getArticleReport(reportRequest);
     }
 
     private void delBroadcast() {
@@ -689,4 +707,13 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
         }
     }
 
+    @Override
+    public void onArticleReportSuccess(BaseResponse response) {
+
+    }
+
+    @Override
+    public void onArticleReportError(int code, String errorMsg) {
+
+    }
 }
