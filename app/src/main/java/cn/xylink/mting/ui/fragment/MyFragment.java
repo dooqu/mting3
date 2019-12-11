@@ -14,6 +14,7 @@ import butterknife.OnClick;
 import cn.xylink.mting.R;
 import cn.xylink.mting.bean.UserInfo;
 import cn.xylink.mting.common.Const;
+import cn.xylink.mting.ui.activity.AboutVersion;
 import cn.xylink.mting.ui.activity.BroadcastActivity;
 import cn.xylink.mting.ui.activity.FeedBackActivity;
 import cn.xylink.mting.ui.activity.LoginActivity;
@@ -74,8 +75,8 @@ public class MyFragment extends BaseFragment {
         }
     }
 
-    @OnClick({R.id.ll_my_share,R.id.ll_click_login, R.id.ll_setting_system, R.id.tv_out_account, R.id.tv_out_application,
-            R.id.ll_collect, R.id.ll_read, R.id.ll_my_create, R.id.ll_app_get_fun, R.id.ll_feedback,R.id.ll_app_star_grade})
+    @OnClick({R.id.ll_my_share, R.id.ll_click_login, R.id.ll_setting_system, R.id.tv_out_account, R.id.tv_out_application,
+            R.id.ll_collect, R.id.ll_read, R.id.ll_my_create, R.id.ll_app_get_fun, R.id.ll_feedback, R.id.ll_app_star_grade,R.id.ll_about_ting})
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.ll_click_login:
@@ -126,13 +127,16 @@ public class MyFragment extends BaseFragment {
             case R.id.ll_feedback:
                 startActivity(new Intent(getActivity(), FeedBackActivity.class));
                 break;
-             case R.id.ll_my_share:
-                 BroadcastItemMenuDialog shareDialog = new BroadcastItemMenuDialog(getActivity());
-                 shareDialog.setAppinfo();
-                 shareDialog.show();
+            case R.id.ll_my_share:
+                BroadcastItemMenuDialog shareDialog = new BroadcastItemMenuDialog(getActivity());
+                shareDialog.setAppinfo();
+                shareDialog.show();
                 break;
             case R.id.ll_app_star_grade:
                 TingUtils.goToMarket(getContext());
+                break;
+            case R.id.ll_about_ting:
+                mHeadImageView.postDelayed(() -> startActivity(new Intent(getActivity(), AboutVersion.class)), 200);
                 break;
         }
     }
