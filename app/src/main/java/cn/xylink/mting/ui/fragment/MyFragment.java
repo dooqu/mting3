@@ -24,6 +24,7 @@ import cn.xylink.mting.ui.dialog.BroadcastItemMenuDialog;
 import cn.xylink.mting.utils.ContentManager;
 import cn.xylink.mting.utils.ImageUtils;
 import cn.xylink.mting.utils.L;
+import cn.xylink.mting.utils.TingUtils;
 
 public class MyFragment extends BaseFragment {
     @BindView(R.id.ll_setting_system)
@@ -73,7 +74,8 @@ public class MyFragment extends BaseFragment {
         }
     }
 
-    @OnClick({R.id.ll_my_share,R.id.ll_click_login, R.id.ll_setting_system, R.id.tv_out_account, R.id.tv_out_application, R.id.ll_collect, R.id.ll_read, R.id.ll_my_create, R.id.ll_app_get_fun, R.id.ll_feedback})
+    @OnClick({R.id.ll_my_share,R.id.ll_click_login, R.id.ll_setting_system, R.id.tv_out_account, R.id.tv_out_application,
+            R.id.ll_collect, R.id.ll_read, R.id.ll_my_create, R.id.ll_app_get_fun, R.id.ll_feedback,R.id.ll_app_star_grade})
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.ll_click_login:
@@ -128,6 +130,9 @@ public class MyFragment extends BaseFragment {
                  BroadcastItemMenuDialog shareDialog = new BroadcastItemMenuDialog(getActivity());
                  shareDialog.setAppinfo();
                  shareDialog.show();
+                break;
+            case R.id.ll_app_star_grade:
+                TingUtils.goToMarket(getContext());
                 break;
         }
     }
