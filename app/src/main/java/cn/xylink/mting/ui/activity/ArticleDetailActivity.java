@@ -57,6 +57,7 @@ import cn.xylink.mting.ui.dialog.BottomArticleReportDialog;
 import cn.xylink.mting.ui.dialog.BottomTingDialog;
 import cn.xylink.mting.ui.dialog.BottomTingItemModle;
 import cn.xylink.mting.utils.ContentManager;
+import cn.xylink.mting.utils.DensityUtil;
 import cn.xylink.mting.utils.ImageUtils;
 import cn.xylink.mting.utils.L;
 
@@ -151,11 +152,11 @@ public class ArticleDetailActivity extends BasePresenterActivity implements Arti
         scrollView.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
             @Override
             public void onScrollChange(NestedScrollView nestedScrollView, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
-                if (scrollY < oldScrollY) {
+                if (oldScrollY - scrollY > DensityUtil.dip2sp(ArticleDetailActivity.this,5)) {
                     L.v("手指上滑......");
                     EventBus.getDefault().post(new ArticleDetailScrollEvent("glide"));
                 }
-                if (scrollY > oldScrollY) {
+                if (scrollY - oldScrollY > DensityUtil.dip2sp(ArticleDetailActivity.this,5)) {
                     L.v("手指下滑......");
                     EventBus.getDefault().post(new ArticleDetailScrollEvent("upGlide"));
                 }
