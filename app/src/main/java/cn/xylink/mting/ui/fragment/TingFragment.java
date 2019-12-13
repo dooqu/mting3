@@ -124,7 +124,7 @@ public class TingFragment extends BasePresenterFragment implements TingListConta
 
     @Override
     public void onTingListError(int code, String errorMsg) {
-
+        mRefreshLayout.finishRefresh(true);
     }
 
     @Override
