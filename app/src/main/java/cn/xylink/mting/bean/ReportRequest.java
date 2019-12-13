@@ -6,10 +6,19 @@ import cn.xylink.mting.base.BaseRequest;
  * @author wjn
  * @date 2019/12/10
  */
-public class ArticleReportRequest extends BaseRequest {
+public class ReportRequest extends BaseRequest {
     private String articleId;
+    private String broadcastId;
     private String content;
     private String type;
+
+    public String getBroadcastId() {
+        return broadcastId;
+    }
+
+    public void setBroadcastId(String broadcastId) {
+        this.broadcastId = broadcastId;
+    }
 
     public String getArticleId() {
         return articleId;

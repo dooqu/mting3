@@ -1,13 +1,13 @@
 package cn.xylink.mting.contract;
 
 import cn.xylink.mting.base.BaseResponse;
-import cn.xylink.mting.bean.ArticleReportRequest;
+import cn.xylink.mting.bean.ReportRequest;
 
 /**
  * @author wjn
  * @date 2019/12/10
  */
-public interface ArticleReportContact {
+public interface ReportContact {
     interface IDelStoreView extends IBaseView {
         void onArticleReportSuccess(BaseResponse response);
 
@@ -15,6 +15,6 @@ public interface ArticleReportContact {
     }
 
     interface Presenter<T> {
-        void getArticleReport(ArticleReportRequest request);
+        void getArticleReport(ReportRequest request);
     }
 }
