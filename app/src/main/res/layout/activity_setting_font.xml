@@ -39,7 +39,8 @@
                     android:id="@+id/rb_font_setting_1"
                     android:layout_width="48dp"
                     android:layout_height="48dp"
-                    android:background="@drawable/selector_arrange_check"
+                    android:checked="true"
+                    android:background="@drawable/selector_setting_font"
                     android:button="@null" />
 
                 <RadioButton
@@ -54,7 +55,7 @@
                     android:id="@+id/rb_font_setting_2"
                     android:layout_width="48dp"
                     android:layout_height="48dp"
-                    android:background="@drawable/selector_arrange_check"
+                    android:background="@drawable/selector_setting_font"
                     android:button="@null" />
 
                 <RadioButton
@@ -69,7 +70,7 @@
                     android:id="@+id/rb_font_setting_3"
                     android:layout_width="48dp"
                     android:layout_height="48dp"
-                    android:background="@drawable/selector_arrange_check"
+                    android:background="@drawable/selector_setting_font"
                     android:button="@null" />
             </RadioGroup>
 
