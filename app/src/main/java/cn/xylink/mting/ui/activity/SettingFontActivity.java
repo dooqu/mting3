@@ -44,7 +44,7 @@ public class SettingFontActivity extends BasePresenterActivity implements SeekBa
     @Override
     protected void initView() {
         mSeekBar.setOnSeekBarChangeListener(this);
-
+        setMode(ContentManager.getInstance().getTextSize());
     }
 
     @Override
@@ -65,23 +65,41 @@ public class SettingFontActivity extends BasePresenterActivity implements SeekBa
     @Override
     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
         if (progress<10){
-            m1RadioButton.setChecked(true);
-            mTypeTextView.setText("默认");
-            mShowTitleTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 24);
-            mShowContentTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
-//            tvArticleContent.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
+            setMode(0);
+            ContentManager.getInstance().setTextSize(0);
         }else if (progress>20){
-            m3RadioButton.setChecked(true);
-            mTypeTextView.setText("大号");
-            mShowTitleTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 30);
-            mShowContentTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
-//            tvArticleContent.setTextSize(TypedValue.COMPLEX_UNIT_SP, 24);
+            setMode(2);
+            ContentManager.getInstance().setTextSize(2);
         }else {
-            m2RadioButton.setChecked(true);
-            mTypeTextView.setText("中号");
-            mShowTitleTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 27);
-            mShowContentTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
+            setMode(1);
+            ContentManager.getInstance().setTextSize(1);
+        }
+    }
+
+
+    private void setMode(int type){
+        switch (type){
+            case 0:
+                m1RadioButton.setChecked(true);
+                mTypeTextView.setText("默认");
+                mShowTitleTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 24);
+                mShowContentTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
+//            tvArticleContent.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
+                break;
+            case 1:
+                m2RadioButton.setChecked(true);
+                mTypeTextView.setText("中号");
+                mShowTitleTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 27);
+                mShowContentTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
 //            tvArticleContent.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
+                break;
+            case 2:
+                m3RadioButton.setChecked(true);
+                mTypeTextView.setText("大号");
+                mShowTitleTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 30);
+                mShowContentTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
+//            tvArticleContent.setTextSize(TypedValue.COMPLEX_UNIT_SP, 24);
+                break;
         }
     }
 

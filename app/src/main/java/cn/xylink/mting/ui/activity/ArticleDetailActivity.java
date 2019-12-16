@@ -7,6 +7,9 @@ import android.support.v4.widget.NestedScrollView;
 import android.text.TextUtils;
 import android.util.TypedValue;
 import android.view.View;
+import android.view.animation.AnimationSet;
+import android.view.animation.RotateAnimation;
+import android.view.animation.ScaleAnimation;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -163,11 +166,20 @@ public class ArticleDetailActivity extends BasePresenterActivity implements Arti
             }
         });
         mBottomTingDialog = new BottomTingDialog(this, this);
+        startShareAnim();
     }
 
     @Override
     protected void initData() {
 
+    }
+
+    private void startShareAnim(){
+        ScaleAnimation animation = new ScaleAnimation(1,1.2f,1,1.2f, RotateAnimation.RELATIVE_TO_SELF,0.5f,RotateAnimation.RELATIVE_TO_SELF,0.5f);
+        animation.setRepeatMode(AnimationSet.REVERSE);
+        animation.setRepeatCount(AnimationSet.INFINITE);
+        animation.setDuration(1000);
+        findViewById(R.id.btn_share).startAnimation(animation);
     }
 
     private void doGetArticleDetail() {
