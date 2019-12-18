@@ -21,6 +21,7 @@ import cn.xylink.mting.ui.activity.LoginActivity;
 import cn.xylink.mting.ui.activity.PersonalInfoActivity;
 import cn.xylink.mting.ui.activity.PlayerActivity;
 import cn.xylink.mting.ui.activity.SettingSystemActivity;
+import cn.xylink.mting.ui.dialog.BottomAccountLogoutDialog;
 import cn.xylink.mting.ui.dialog.BroadcastItemMenuDialog;
 import cn.xylink.mting.utils.ContentManager;
 import cn.xylink.mting.utils.ImageUtils;
@@ -76,7 +77,7 @@ public class MyFragment extends BaseFragment {
     }
 
     @OnClick({R.id.ll_my_share, R.id.ll_click_login, R.id.ll_setting_system, R.id.tv_out_account, R.id.tv_out_application,
-            R.id.ll_collect, R.id.ll_read, R.id.ll_my_create, R.id.ll_app_get_fun, R.id.ll_feedback, R.id.ll_app_star_grade,R.id.ll_about_ting})
+            R.id.ll_collect, R.id.ll_read, R.id.ll_my_create, R.id.ll_app_get_fun, R.id.ll_feedback, R.id.ll_app_star_grade, R.id.ll_about_ting, R.id.tv_out})
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.ll_click_login:
@@ -138,7 +139,38 @@ public class MyFragment extends BaseFragment {
             case R.id.ll_about_ting:
                 mHeadImageView.postDelayed(() -> startActivity(new Intent(getActivity(), AboutVersion.class)), 200);
                 break;
+            case R.id.tv_out:
+                if (ContentManager.getInstance().getVisitor().equals("0")) {//表示是游客登录
+                    getActivity().sendBroadcast(new Intent("action2exit"));
+                } else {
+                    showOutAccountDialog();
+                }
+                break;
         }
+    }
+
+    private void showOutAccountDialog() {
+        BottomAccountLogoutDialog dialog = new BottomAccountLogoutDialog(getActivity());
+        dialog.onClickListener(new BottomAccountLogoutDialog.OnBottomSelectDialogListener() {
+            @Override
+            public void onFirstClick() {
+                getActivity().sendBroadcast(new Intent("action2exit"));
+            }
+
+            @Override
+            public void onSecondClick() {
+                TCAgent.onEvent(getActivity(), "account_exit");
+                ContentManager.getInstance().setUserInfo(null);
+                ContentManager.getInstance().setLoginToken("");
+                ContentManager.getInstance().setVisitor("0");//设置成游客
+                Intent intents = new Intent(getActivity(), LoginActivity.class);
+                intents.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                intents.putExtra(LoginActivity.LOGIN_ACTIVITY, "outAccount");
+                startActivity(intents);
+                getActivity().finish();
+            }
+        });
+        dialog.show();
     }
 
     private void openBroadcast(String id, String name) {
