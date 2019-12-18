@@ -363,12 +363,21 @@
                     android:layout_marginLeft="@dimen/my_dimen_12"
                     android:layout_marginRight="@dimen/my_dimen_12"
                     android:background="@color/cutting_line" />
+                <TextView
+                    android:id="@+id/tv_out"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/my_dimen_57"
+                    android:gravity="center"
+                    android:text="退出"
+                    android:textColor="#ff333333"
+                    android:textSize="@dimen/my_font_15" />
 
                 <LinearLayout
                     android:id="@+id/ll_login_out"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    android:visibility="gone">
 
                     <TextView
                         android:id="@+id/tv_out_application"
