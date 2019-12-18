@@ -99,17 +99,21 @@ public class BroadcastAdapter extends RecyclerView.Adapter<BroadcastAdapter.View
                 holder.mDesTextView.setText(mDetailInfo.getInfo());
                 ImageUtils.get().load(holder.mImageView, 0, 0, 8, mDetailInfo.getPicture());
                 ImageUtils.get().load(holder.mTopLayout, mDetailInfo.getPicture());
-                if (mDetailInfo.getCreateUserId().equals(ContentManager.getInstance().getUserInfo().getUserId())) {
-                    if (mDetailInfo.getShare() == 0) {
-                        holder.mShare2worldTextView.setVisibility(View.VISIBLE);
+                if (ContentManager.getInstance().getVisitor().equals("0")) {
+                    holder.mShare2worldTextView.setVisibility(View.VISIBLE);
+                } else {
+                    if (mDetailInfo.getCreateUserId().equals(ContentManager.getInstance().getUserInfo().getUserId())) {
+                        if (mDetailInfo.getShare() == 0) {
+                            holder.mShare2worldTextView.setVisibility(View.VISIBLE);
+                        } else {
+                            holder.mShare2worldTextView.setVisibility(View.GONE);
+                            holder.mSubscribedTextView.setVisibility(View.VISIBLE);
+                            holder.mSubscribedTextView.setText("已定阅：" + getSubscribedNum(mDetailInfo.getSubscribeTotal()));
+                        }
                     } else {
-                        holder.mShare2worldTextView.setVisibility(View.GONE);
                         holder.mSubscribedTextView.setVisibility(View.VISIBLE);
                         holder.mSubscribedTextView.setText("已定阅：" + getSubscribedNum(mDetailInfo.getSubscribeTotal()));
                     }
-                } else {
-                    holder.mSubscribedTextView.setVisibility(View.VISIBLE);
-                    holder.mSubscribedTextView.setText("已定阅：" + getSubscribedNum(mDetailInfo.getSubscribeTotal()));
                 }
             }
             holder.mShare2worldTextView.setOnClickListener(new View.OnClickListener() {

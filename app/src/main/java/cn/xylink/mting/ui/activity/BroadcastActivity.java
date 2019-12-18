@@ -78,7 +78,7 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
         BroadcastDetailContact.IBroadcastDetailView, BroadcastAdapter.OnItemClickListener, BroadcastItemMenuDialog.OnBroadcastItemMenuListener
         , AddStoreContact.IAddStoreView, DelStoreContact.IDelStoreView, BottomTingDialog.OnBottomTingListener
         , SetTopContact.ISetTopView, SubscribeContact.ISubscribeView, BroadcastAllDelContact.IBroadcastAllDelView
-        , Share2WorldContact.ISetTopView , ReportContact.IDelStoreView{
+        , Share2WorldContact.ISetTopView, ReportContact.IDelStoreView {
 
     public static final String EXTRA_BROADCASTID = "extra_broadcast_id";
     public static final String EXTRA_TITLE = "extra_title";
@@ -209,9 +209,10 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
 
     }
 
-    private void startShareAnim(){
+    private void startShareAnim() {
         //        RotateAnimation animation = new RotateAnimation(-18,18,RotateAnimation.RELATIVE_TO_SELF,0.4f,RotateAnimation.RELATIVE_TO_SELF,0.5f);
-        ScaleAnimation animation = new ScaleAnimation(1,1.2f,1,1.2f,RotateAnimation.RELATIVE_TO_SELF,0.5f,RotateAnimation.RELATIVE_TO_SELF,0.5f);
+        ScaleAnimation animation = new ScaleAnimation(1, 1.2f, 1, 1.2f, RotateAnimation.RELATIVE_TO_SELF, 0.5f, RotateAnimation.RELATIVE_TO_SELF,
+                0.5f);
         animation.setRepeatMode(AnimationSet.REVERSE);
         animation.setRepeatCount(AnimationSet.INFINITE);
         animation.setDuration(1000);
@@ -358,6 +359,7 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
 
     @Override
     public void onShare2World() {
+        isVisitorlogin();
         BroadcastIdRequest request = new BroadcastIdRequest();
         request.setBroadcastId(getIntent().getStringExtra(EXTRA_BROADCASTID));
         request.doSign();
@@ -386,6 +388,7 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
                 this.finish();
                 break;
             case R.id.iv_titlebar_share:
+                isVisitorlogin();
                 if (mDetailInfo != null) {
                     BroadcastItemMenuDialog dialog = new BroadcastItemMenuDialog(this);
                     dialog.setDetailInfo(mDetailInfo);
@@ -443,6 +446,7 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
 
     @Override
     public void onItemCollect(BroadcastInfo info) {
+        isVisitorlogin();
         if (info.getStore() == 0) {
             addStore(info.getArticleId());
         } else {
@@ -473,6 +477,7 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
 
     @Override
     public void onItemDel(BroadcastInfo info) {
+        isVisitorlogin();
         ArticleIdsRequest request = new ArticleIdsRequest();
         request.setArticleIds(info.getArticleId());
         request.doSign();
@@ -523,6 +528,7 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
 
     @Override
     public void onBottomTingItemClick(BottomTingItemModle modle) {
+        isVisitorlogin();
         switch (modle.getName()) {
             case Const.BottomDialogItem.SET_TOP:
                 setTop(SetTopRequest.EVENT.TOP.name().toLowerCase());
@@ -555,7 +561,7 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
             case Const.BottomDialogItem.REPORT:
                 ReportDialog dialog = new ReportDialog(this);
                 dialog.setOnClickListener((type, content) -> {
-                    doArticleReport(type,content);
+                    doArticleReport(type, content);
                 });
                 dialog.show();
                 break;
@@ -699,10 +705,10 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
         if (Const.SystemBroadcast.SYSTEMBROADCAST_STORE.equals(getIntent().getStringExtra(EXTRA_BROADCASTID))) {
             if (event.getStroe() == 1) {
                 initList();
-            }else {
+            } else {
                 mAdapter.notifyItemRemoe(event.getArticleID());
             }
-        }else {
+        } else {
             mAdapter.notifyItemChangeStore(event.getArticleID());
         }
     }
@@ -715,5 +721,15 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
     @Override
     public void onArticleReportError(int code, String errorMsg) {
 
+    }
+
+    private void isVisitorlogin() {
+        if (ContentManager.getInstance().getVisitor().equals("0")) {
+            Intent intent = new Intent(new Intent(this, LoginActivity.class));
+            intent.putExtra(LoginActivity.LOGIN_ACTIVITY, Const.visitor);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+            this.finish();
+        }
     }
 }
