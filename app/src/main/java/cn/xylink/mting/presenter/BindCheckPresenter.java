@@ -5,6 +5,7 @@ import com.google.gson.reflect.TypeToken;
 
 import cn.xylink.mting.MTing;
 import cn.xylink.mting.base.BaseResponse;
+import cn.xylink.mting.bean.BindCheckInfo;
 import cn.xylink.mting.contract.BindCheckContact;
 import cn.xylink.mting.model.BindCheckRequest;
 import cn.xylink.mting.model.data.Const;
@@ -19,7 +20,7 @@ public class BindCheckPresenter extends BasePresenter<BindCheckContact.IBindChec
         L.v("request",request);
         String json = new Gson().toJson(request);
         L.v("json",json);
-        OkGoUtils.getInstance().postData(mView, RemoteUrl.bindCheckUrl(),json , new TypeToken<BaseResponse<String>>() {
+        OkGoUtils.getInstance().postData(mView, RemoteUrl.bindCheckUrl(),json , new TypeToken<BaseResponse<BindCheckInfo>>() {
 
         }.getType(), new OkGoUtils.ICallback() {
             @Override
@@ -29,7 +30,7 @@ public class BindCheckPresenter extends BasePresenter<BindCheckContact.IBindChec
 
             @Override
             public void onSuccess(Object data) {
-                BaseResponse<String> baseResponse = (BaseResponse<String>) data;
+                BaseResponse<BindCheckInfo> baseResponse = (BaseResponse<BindCheckInfo>) data;
                 int code = baseResponse.code;
                 L.v("baseResponse",baseResponse);
                     mView.onBindCheckSuccess(baseResponse);
