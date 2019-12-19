@@ -21,7 +21,7 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:background="@color/white" />
+        android:background="@color/cutting_line" />
         <Button
             android:id="@+id/btn_bottom_select_second"
             android:layout_width="match_parent"
@@ -33,7 +33,7 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:background="@color/white" />
+        android:background="@color/cutting_line" />
 
     <Button
         android:id="@+id/btn_bottom_select_cancel"
