@@ -372,7 +372,7 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
     void onClick(View view) {
         switch (view.getId()) {
             case R.id.ll_empty:
-                if (mDetailInfo != null) {
+                if (mDetailInfo != null||getIntent().getStringExtra(EXTRA_BROADCASTID).startsWith("-")) {
                     initList();
                 } else {
                     initDetail();

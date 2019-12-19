@@ -40,6 +40,7 @@ import cn.xylink.mting.ui.activity.SearchActivity;
 import cn.xylink.mting.ui.adapter.TingAdapter;
 import cn.xylink.mting.ui.dialog.BottomTingDialog;
 import cn.xylink.mting.ui.dialog.BottomTingItemModle;
+import cn.xylink.mting.ui.dialog.InputDialog;
 import cn.xylink.mting.ui.dialog.MainAddMenuPop;
 import cn.xylink.mting.ui.dialog.SubscribeTipDialog;
 import cn.xylink.mting.utils.ContentManager;
@@ -193,7 +194,8 @@ public class TingFragment extends BasePresenterFragment implements TingListConta
 
     @Override
     public void onPut() {
-
+        InputDialog dialog = new InputDialog(getActivity());
+        dialog.show();
     }
 
     @Override

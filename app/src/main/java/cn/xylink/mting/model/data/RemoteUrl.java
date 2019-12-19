@@ -1,9 +1,9 @@
 package cn.xylink.mting.model.data;
 
 public class RemoteUrl {
-//    private static final String URL_BASE = "http://test.xylink.cn";//外网2019-4-9
+//    public static final String URL_BASE = "http://test.xylink.cn";//外网2019-4-9
 
-    private static final String URL_BASE = "http://test.xylink.cn";//外网2019-4-9
+    public static final String URL_BASE = "http://test.xylink.cn";//外网2019-4-9
 
 
     //获取短信验证码
@@ -98,7 +98,7 @@ public class RemoteUrl {
 
     //检查链接文章接口
     public static String checkLinkUrl() {
-        return URL_BASE + "/api/sct/v1/article/check";
+        return URL_BASE + "/api/art/v1/article/check";
     }
 
     //加入待读

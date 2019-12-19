@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/ll_input_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center_vertical"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:id="@+id/ll_input_write"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:background="@drawable/bg_write_radius10"
+        android:orientation="vertical"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:paddingBottom="16dp">
+
+        <ImageView
+            android:id="@+id/iv_input_close"
+            android:layout_width="wrap_content"
+            android:layout_height="44dp"
+            android:layout_gravity="right"
+            android:src="@mipmap/dialog_close" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="导入内容"
+            android:textColor="@color/c333333"
+            android:textSize="18sp" />
+
+        <cn.xylink.mting.widget.EditTextWidthClear
+            android:id="@+id/etwc_input"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:background="@drawable/bg_dialog_report_edit"
+            android:gravity="start"
+            android:hint="请输入要导入的文章或播单的链接地址"
+            android:lines="4"
+            android:ellipsize="end"
+            android:textSize="15sp"
+            android:padding="16dp" />
+
+        <LinearLayout
+            android:id="@+id/ll_input_copy"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="检测到剪贴板，是否"
+                android:textColor="@color/c333333"
+                android:textSize="13.5sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="黏贴"
+                android:textColor="@color/c488def"
+                android:textSize="13.5sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="："
+                android:textColor="@color/c333333"
+                android:textSize="13.5sp" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tv_input_url"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/c333333"
+            android:singleLine="true"
+            android:ellipsize="end"
+            android:textSize="13.5sp"/>
+
+        <Button
+            android:id="@+id/btn_input"
+            android:layout_width="200dp"
+            android:layout_height="50dp"
+            android:text="立即识别"
+            android:layout_marginTop="24dp"
+            android:layout_marginBottom="32dp"
+            android:background="@drawable/bg_input_check"
+            android:layout_gravity="center_horizontal"
+            android:textColor="@color/white"
+            android:textSize="18sp"/>
+
+    </LinearLayout>
+
+
+</LinearLayout>
