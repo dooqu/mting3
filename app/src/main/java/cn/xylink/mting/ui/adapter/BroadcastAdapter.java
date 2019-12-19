@@ -97,7 +97,7 @@ public class BroadcastAdapter extends RecyclerView.Adapter<BroadcastAdapter.View
                 holder.mTopLayout.setLayoutParams(lp);
                 holder.mTitleTextView.setText(mDetailInfo.getCreateName());
                 holder.mDesTextView.setText(mDetailInfo.getInfo());
-                ImageUtils.get().load(holder.mImageView, 0, 0, 8, mDetailInfo.getPicture());
+                ImageUtils.get().load(holder.mImageView, R.mipmap.cjbd_img_fm_default, R.mipmap.cjbd_img_fm_default, 8, mDetailInfo.getPicture());
                 ImageUtils.get().load(holder.mTopLayout, mDetailInfo.getPicture());
                 if (ContentManager.getInstance().getVisitor().equals("0")) {
                     holder.mShare2worldTextView.setVisibility(View.VISIBLE);
@@ -108,11 +108,11 @@ public class BroadcastAdapter extends RecyclerView.Adapter<BroadcastAdapter.View
                         } else {
                             holder.mShare2worldTextView.setVisibility(View.GONE);
                             holder.mSubscribedTextView.setVisibility(View.VISIBLE);
-                            holder.mSubscribedTextView.setText("已定阅：" + getSubscribedNum(mDetailInfo.getSubscribeTotal()));
+                            holder.mSubscribedTextView.setText("已订阅：" + getSubscribedNum(mDetailInfo.getSubscribeTotal()));
                         }
                     } else {
                         holder.mSubscribedTextView.setVisibility(View.VISIBLE);
-                        holder.mSubscribedTextView.setText("已定阅：" + getSubscribedNum(mDetailInfo.getSubscribeTotal()));
+                        holder.mSubscribedTextView.setText("已订阅：" + getSubscribedNum(mDetailInfo.getSubscribeTotal()));
                     }
                 }
             }

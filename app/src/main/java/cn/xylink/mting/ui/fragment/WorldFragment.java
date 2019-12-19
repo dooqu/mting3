@@ -16,6 +16,8 @@ import com.scwang.smartrefresh.layout.footer.BallPulseFooter;
 import com.scwang.smartrefresh.layout.footer.ClassicsFooter;
 import com.scwang.smartrefresh.layout.footer.FalsifyFooter;
 
+import org.greenrobot.eventbus.EventBus;
+
 import java.util.List;
 
 import butterknife.BindView;
@@ -25,6 +27,7 @@ import cn.xylink.mting.bean.Article;
 import cn.xylink.mting.bean.WorldInfo;
 import cn.xylink.mting.bean.WorldRequest;
 import cn.xylink.mting.contract.WorldListContact;
+import cn.xylink.mting.event.ArticleDetailScrollEvent;
 import cn.xylink.mting.presenter.WorldListPresenter;
 import cn.xylink.mting.ui.activity.ArticleCreateActivity;
 import cn.xylink.mting.ui.activity.ArticleDetailActivity;
@@ -188,6 +191,16 @@ public class WorldFragment extends BasePresenterFragment implements WorldListCon
         @Override
         public void onLoadMore(int current_page) {
             loadMoreData();
+        }
+
+        @Override
+        public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+            super.onScrolled(recyclerView, dx, dy);
+            if (dy>2){
+                EventBus.getDefault().post(new ArticleDetailScrollEvent("upGlide"));
+            }else if (dy<-2){
+                EventBus.getDefault().post(new ArticleDetailScrollEvent("glide"));
+            }
         }
     };
 
