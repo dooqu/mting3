@@ -56,6 +56,8 @@ public class BindingPhoneQQWxActivity extends BasePresenterActivity implements G
     String phone;
     String source;
     String platform;
+    String nickName;
+    String headImg;
     com.tencent.connect.UserInfo mInfo;
 
     SharedPreHelper sharedPreHelper;
@@ -154,8 +156,15 @@ public class BindingPhoneQQWxActivity extends BasePresenterActivity implements G
         phone = getIntent().getStringExtra(BindingPhoneActivity.EXTRA_PHONE);
         source = getIntent().getStringExtra(BindingPhoneActivity.EXTRA_SOURCE);
         platform = getIntent().getStringExtra(BindingPhoneActivity.EXTRA_PLATFORM);
+        nickName = getIntent().getStringExtra(BindingPhoneActivity.EXTRA_NICKNAME);
+        headImg = getIntent().getStringExtra(BindingPhoneActivity.EXTRA_HEADURL);
         etPhone.setText(phone);
-
+        if (!TextUtils.isEmpty(headImg)&&headImg.equals(null)) {
+            ImageUtils.get().loadCircle(ivXyl, headImg);
+        }
+        if (!TextUtils.isEmpty(nickName)) {
+            tvXylName.setText(nickName);
+        }
         if (platform.equals("qq")) {
             getUserInfo();
         } else {
@@ -175,8 +184,7 @@ public class BindingPhoneQQWxActivity extends BasePresenterActivity implements G
                 break;
             case R.id.btn_binding: {
                 int netWorkStates = NetworkUtil.getNetWorkStates(context);
-                if(netWorkStates == NetworkUtil.TYPE_NONE)
-                {
+                if (netWorkStates == NetworkUtil.TYPE_NONE) {
                     toastShort(HttpConst.NO_NETWORK);
                     return;
                 }
@@ -190,8 +198,7 @@ public class BindingPhoneQQWxActivity extends BasePresenterActivity implements G
             }
             case R.id.tv_change_phone: {
                 int netWorkStates = NetworkUtil.getNetWorkStates(context);
-                if(netWorkStates == NetworkUtil.TYPE_NONE)
-                {
+                if (netWorkStates == NetworkUtil.TYPE_NONE) {
                     toastShort(HttpConst.NO_NETWORK);
                     return;
                 }
@@ -224,6 +231,7 @@ public class BindingPhoneQQWxActivity extends BasePresenterActivity implements G
             startActivity(mIntent);
         }
     }
+
     @Override
     public void onCodeError(int code, String errorMsg) {
         switch (code) {
