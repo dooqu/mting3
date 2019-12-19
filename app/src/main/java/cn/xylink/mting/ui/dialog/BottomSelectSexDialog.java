@@ -33,15 +33,15 @@ public class BottomSelectSexDialog extends BaseDimDialog {
         this.mListener = listener;
     }
 
-    public void setData(String first, String second,int joinLimit, OnBottomSelectDialogListener listener) {
+    public void setData(String first, String second, int joinLimit, OnBottomSelectDialogListener listener) {
         mFirstButton.setText(first);
         mSecondButton.setText(second);
         this.mListener = listener;
-        if (joinLimit==0){
+        if (joinLimit == 0) {
             mSecondButton.setTextColor(0xff666666);
             mFirstButton.setTextColor(0xff007b7d);
             mFirstButton.setTextSize(19);
-        }else {
+        } else {
             mFirstButton.setTextColor(0xff666666);
             mSecondButton.setTextColor(0xff007b7d);
             mSecondButton.setTextSize(19);
@@ -53,13 +53,15 @@ public class BottomSelectSexDialog extends BaseDimDialog {
         return View.inflate(mContext, R.layout.bottom_select_sex_dialog, null);
     }
 
-    @OnClick({R.id.btn_bottom_select_first, R.id.btn_bottom_select_second, R.id.btn_bottom_select_cancel, R.id.iv_sex_man, R.id.iv_sex_woman, R.id.v_top})
+    @OnClick({R.id.rv_bottom_select_first, R.id.btn_bottom_select_first, R.id.rv_bottom_select_second, R.id.btn_bottom_select_second, R.id.btn_bottom_select_cancel, R.id.iv_sex_man, R.id.iv_sex_woman, R.id.v_top})
     void onClick(View v) {
         switch (v.getId()) {
+            case R.id.rv_bottom_select_first:
             case R.id.btn_bottom_select_first:
             case R.id.iv_sex_man:
                 mListener.onFirstClick();
                 break;
+            case R.id.rv_bottom_select_second:
             case R.id.btn_bottom_select_second:
             case R.id.iv_sex_woman:
                 mListener.onSecondClick();
