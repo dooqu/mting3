@@ -214,8 +214,8 @@ public class BroadcastEditActivity extends BasePresenterActivity implements Broa
             case R.id.tv_right:
                 doEditBroadcast();
                 break;
-            case R.id.imv_cover:
-            case R.id.tv_change_cover:
+            case R.id.imv_cover_edit:
+            case R.id.tv_change_cover_edit:
                 takePhoto.onPickFromGallery();
                 break;
             default:
