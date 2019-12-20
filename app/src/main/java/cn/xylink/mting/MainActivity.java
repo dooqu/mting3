@@ -126,13 +126,13 @@ public class MainActivity extends BasePresenterActivity implements ViewPager.OnP
         if (isChecked) {
             switch (buttonView.getId()) {
                 case R.id.rb_tab_ting:
-                    mViewPager.setCurrentItem(0, true);
+                    mViewPager.setCurrentItem(0, false);
                     break;
                 case R.id.rb_tab_world:
-                    mViewPager.setCurrentItem(1, true);
+                    mViewPager.setCurrentItem(1, false);
                     break;
                 case R.id.rb_tab_my:
-                    mViewPager.setCurrentItem(2, true);
+                    mViewPager.setCurrentItem(2, false);
                     break;
                 default:
                     break;

@@ -8,6 +8,7 @@
     <!-- TODO: Update blank fragment layout -->
 
     <cn.xylink.mting.widget.MyScrollView
+        android:id="@+id/msv_my"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 

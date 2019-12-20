@@ -48,6 +48,7 @@ import cn.xylink.mting.contract.ReportContact;
 import cn.xylink.mting.contract.SetTopContact;
 import cn.xylink.mting.contract.Share2WorldContact;
 import cn.xylink.mting.contract.SubscribeContact;
+import cn.xylink.mting.event.ArticleDetailScrollEvent;
 import cn.xylink.mting.event.BroadcastRefreshEvent;
 import cn.xylink.mting.event.StoreRefreshEvent;
 import cn.xylink.mting.event.TingRefreshEvent;
@@ -68,6 +69,7 @@ import cn.xylink.mting.ui.dialog.ReportDialog;
 import cn.xylink.mting.ui.dialog.WarningTipDialog;
 import cn.xylink.mting.utils.ContentManager;
 import cn.xylink.mting.utils.L;
+import cn.xylink.mting.utils.T;
 import cn.xylink.mting.widget.EndlessRecyclerOnScrollListener;
 import cn.xylink.mting.widget.HDividerItemDecoration;
 
@@ -288,6 +290,11 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
         }
     }
 
+    @Override
+    protected boolean enableSpeechService() {
+        return true;
+    }
+
     private int mDY = 0;
     LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
     EndlessRecyclerOnScrollListener endlessScrollListener = new EndlessRecyclerOnScrollListener(linearLayoutManager) {
@@ -300,6 +307,11 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
         @Override
         public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
             super.onScrolled(recyclerView, dx, dy);
+            if (dy>2){
+                EventBus.getDefault().post(new ArticleDetailScrollEvent("upGlide"));
+            }else if (dy<-2){
+                EventBus.getDefault().post(new ArticleDetailScrollEvent("glide"));
+            }
             mDY += dy;
             float pro = mDY / 358f;
             if (pro <= 1) {
@@ -372,7 +384,7 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
     void onClick(View view) {
         switch (view.getId()) {
             case R.id.ll_empty:
-                if (mDetailInfo != null) {
+                if (mDetailInfo != null || getIntent().getStringExtra(EXTRA_BROADCASTID).startsWith("-")) {
                     initList();
                 } else {
                     initDetail();
@@ -509,21 +521,23 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
     @Override
     public void onAddStoreSuccess(BaseResponse response) {
         initList();
+        T.showCustomCenterToast("收藏成功");
     }
 
     @Override
     public void onAddStoreError(int code, String errorMsg) {
-
+        T.showCustomCenterToast("收藏失败");
     }
 
     @Override
     public void onDelStoreSuccess(BaseResponse response) {
         initList();
+        T.showCustomCenterToast("删除成功");
     }
 
     @Override
     public void onDelStoreError(int code, String errorMsg) {
-
+        T.showCustomCenterToast("删除失败");
     }
 
     @Override
@@ -613,22 +627,32 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
             isTopIntent ^= 1;
         }
         EventBus.getDefault().post(new TingRefreshEvent());
+        T.showCustomCenterToast("置顶成功");
     }
 
     @Override
     public void onSetTopError(int code, String errorMsg) {
-
+        T.showCustomCenterToast("置顶失败");
     }
 
     @Override
     public void onSubscribeSuccess(BaseResponse response, String event) {
         mDetailInfo.setSubscribe(mDetailInfo.getSubscribe() ^ 1);
         EventBus.getDefault().post(new TingRefreshEvent());
+        if (SubscribeRequest.EVENT.SUBSCRIBE.name().toLowerCase().equals(event)) {
+            T.showCustomCenterToast("订阅成功");
+        } else {
+            T.showCustomCenterToast("取消订阅成功");
+        }
     }
 
     @Override
     public void onSubscribeError(int code, String errorMsg, String event) {
-
+        if (SubscribeRequest.EVENT.SUBSCRIBE.name().toLowerCase().equals(event)) {
+            T.showCustomCenterToast("订阅失败");
+        } else {
+            T.showCustomCenterToast("取消订阅失败");
+        }
     }
 
     @Override
@@ -648,13 +672,13 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
 
     @Override
     public void onShare2WorldSuccess(BaseResponse response) {
-        Toast.makeText(this, "分享成功！", Toast.LENGTH_SHORT).show();
+        T.showCustomCenterToast("分享成功");
         mAdapter.setShare2World();
     }
 
     @Override
     public void onShare2WorldError(int code, String errorMsg) {
-        Toast.makeText(this, "分享失败！", Toast.LENGTH_SHORT).show();
+        T.showCustomCenterToast("分享失败");
     }
 
     private void showEmptyLayout() {
@@ -675,7 +699,7 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
             mLookStudioTextView.setVisibility(View.GONE);
         } else {
             mEmptyImageView.setImageResource(R.mipmap.bg_empty);
-            mEmptyTextView.setText("null");
+            mEmptyTextView.setText("暂时还没有文章");
             mLookStudioTextView.setVisibility(View.GONE);
         }
 
@@ -715,12 +739,12 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
 
     @Override
     public void onArticleReportSuccess(BaseResponse response) {
-
+        T.showCustomCenterToast("举报成功");
     }
 
     @Override
     public void onArticleReportError(int code, String errorMsg) {
-
+        T.showCustomCenterToast("举报失败");
     }
 
     private void isVisitorlogin() {
