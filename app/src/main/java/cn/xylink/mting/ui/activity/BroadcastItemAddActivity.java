@@ -41,6 +41,7 @@ public class BroadcastItemAddActivity extends BasePresenterActivity implements B
     private List<BroadcastItemAddInfo> mDataBean;
     private String broadcastId;
     private String articleIds;
+    private String broadcastName;
 
     @Override
     protected void preView() {
@@ -99,18 +100,20 @@ public class BroadcastItemAddActivity extends BasePresenterActivity implements B
     @Override
     public void onBroadcastItemAddSuccess(BaseResponse baseResponse) {
         BroadcastItemAddActivity.this.finish();
+        toastCenterShort("已添加到播单" + "\n" + broadcastName);
         L.v(baseResponse);
     }
 
     @Override
     public void onBroadcastItemAddError(int code, String errorMsg) {
-
+        toastCenterShort("播单添加失败");
     }
 
     @Override
     public void onItemClick(int position) {
         if (null != mDataBean && mDataBean.size() > 0) {
             broadcastId = mDataBean.get(position).getBroadcastId();
+            broadcastName = mDataBean.get(position).getName();
             L.v(broadcastId);
             doAddBroadcastItem();
         }
