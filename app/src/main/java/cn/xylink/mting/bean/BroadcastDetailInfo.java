@@ -1,11 +1,13 @@
 package cn.xylink.mting.bean;
 
+import java.io.Serializable;
+
 /**
  * -----------------------------------------------------------------
  * 2019/11/19 17:23 : Create BroadcastDetailInfo.java (JoDragon);
  * -----------------------------------------------------------------
  */
-public class BroadcastDetailInfo {
+public class BroadcastDetailInfo implements Serializable {
 
     /**
      * broadcastId : 2019102115442314581536879

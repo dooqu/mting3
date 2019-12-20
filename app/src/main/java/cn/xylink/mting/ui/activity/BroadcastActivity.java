@@ -520,8 +520,8 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
 
     @Override
     public void onAddStoreSuccess(BaseResponse response) {
-        initList();
         T.showCustomCenterToast("收藏成功");
+        initList();
     }
 
     @Override
@@ -531,13 +531,13 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
 
     @Override
     public void onDelStoreSuccess(BaseResponse response) {
+        T.showCustomCenterToast("取消收藏成功");
         initList();
-        T.showCustomCenterToast("删除成功");
     }
 
     @Override
     public void onDelStoreError(int code, String errorMsg) {
-        T.showCustomCenterToast("删除失败");
+        T.showCustomCenterToast("取消收藏失败");
     }
 
     @Override
@@ -620,19 +620,28 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
 
 
     @Override
-    public void onSetTopSuccess(BaseResponse response) {
+    public void onSetTopSuccess(BaseResponse response,String event) {
         if (mDetailInfo != null) {
             mDetailInfo.setTop(mDetailInfo.getTop() ^ 1);
+            if (mDetailInfo.getTop()==1){
+                T.showCustomCenterToast("置顶成功");
+            }else {
+                T.showCustomCenterToast("取消置顶成功");
+            }
         } else if (Const.SystemBroadcast.SYSTEMBROADCAST_UNREAD.equals(getIntent().getStringExtra(EXTRA_BROADCASTID))) {
             isTopIntent ^= 1;
         }
         EventBus.getDefault().post(new TingRefreshEvent());
-        T.showCustomCenterToast("置顶成功");
+
     }
 
     @Override
-    public void onSetTopError(int code, String errorMsg) {
-        T.showCustomCenterToast("置顶失败");
+    public void onSetTopError(int code, String errorMsg,String event) {
+        if (mDetailInfo.getTop()==1){
+            T.showCustomCenterToast("取消置顶失败");
+        }else {
+            T.showCustomCenterToast("置顶失败");
+        }
     }
 
     @Override

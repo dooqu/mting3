@@ -11,9 +11,9 @@ import cn.xylink.mting.bean.SetTopRequest;
 public interface SetTopContact {
 
     interface ISetTopView extends IBaseView {
-        void onSetTopSuccess(BaseResponse response);
+        void onSetTopSuccess(BaseResponse response,String event);
 
-        void onSetTopError(int code, String errorMsg);
+        void onSetTopError(int code, String errorMsg,String event);
     }
 
     interface Presenter<T> {
