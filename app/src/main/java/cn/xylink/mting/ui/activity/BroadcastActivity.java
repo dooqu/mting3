@@ -107,6 +107,8 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
     TextView mEmptyTextView;
     @BindView(R.id.tv_look_studio)
     TextView mLookStudioTextView;
+    @BindView(R.id.tv_add)
+    TextView mEmptyAddTextView;
     private BroadcastListPresenter mPresenter;
     private BroadcastAdapter mAdapter;
     private BroadcastDetailPresenter mBroadcastDetailPresenter;
@@ -307,9 +309,9 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
         @Override
         public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
             super.onScrolled(recyclerView, dx, dy);
-            if (dy>2){
+            if (dy > 2) {
                 EventBus.getDefault().post(new ArticleDetailScrollEvent("upGlide"));
-            }else if (dy<-2){
+            } else if (dy < -2) {
                 EventBus.getDefault().post(new ArticleDetailScrollEvent("glide"));
             }
             mDY += dy;
@@ -380,9 +382,12 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
 
     private BottomTingDialog mBottomTingDialog;
 
-    @OnClick({R.id.iv_titlebar_share, R.id.iv_titlebar_menu, R.id.iv_titlebar_back, R.id.ll_empty, R.id.tv_look_studio})
+    @OnClick({R.id.iv_titlebar_share, R.id.iv_titlebar_menu, R.id.iv_titlebar_back, R.id.ll_empty, R.id.tv_look_studio,R.id.tv_add})
     void onClick(View view) {
         switch (view.getId()) {
+            case R.id.tv_add:
+
+                break;
             case R.id.ll_empty:
                 if (mDetailInfo != null || getIntent().getStringExtra(EXTRA_BROADCASTID).startsWith("-")) {
                     initList();
@@ -562,6 +567,7 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
                     intent.putExtra(BroadcastEditActivity.BROADCAST_ID, mDetailInfo.getBroadcastId());
                     intent.putExtra(BroadcastEditActivity.BROADCAST_NAME, mDetailInfo.getName());
                     intent.putExtra(BroadcastEditActivity.BROADCAST_INTRO, mDetailInfo.getInfo());
+                    intent.putExtra(BroadcastEditActivity.BROADCAST_PICTURE, mDetailInfo.getPicture());
                     startActivity(intent);
                 }
                 break;
@@ -620,12 +626,12 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
 
 
     @Override
-    public void onSetTopSuccess(BaseResponse response,String event) {
+    public void onSetTopSuccess(BaseResponse response, String event) {
         if (mDetailInfo != null) {
             mDetailInfo.setTop(mDetailInfo.getTop() ^ 1);
-            if (mDetailInfo.getTop()==1){
+            if (mDetailInfo.getTop() == 1) {
                 T.showCustomCenterToast("置顶成功");
-            }else {
+            } else {
                 T.showCustomCenterToast("取消置顶成功");
             }
         } else if (Const.SystemBroadcast.SYSTEMBROADCAST_UNREAD.equals(getIntent().getStringExtra(EXTRA_BROADCASTID))) {
@@ -636,10 +642,10 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
     }
 
     @Override
-    public void onSetTopError(int code, String errorMsg,String event) {
-        if (mDetailInfo.getTop()==1){
+    public void onSetTopError(int code, String errorMsg, String event) {
+        if (mDetailInfo.getTop() == 1) {
             T.showCustomCenterToast("取消置顶失败");
-        }else {
+        } else {
             T.showCustomCenterToast("置顶失败");
         }
     }
@@ -702,14 +708,31 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
                 mEmptyTextView.setText("欢迎来到轩辕听，先去看看如何使用吧！");
             }
             mLookStudioTextView.setVisibility(View.VISIBLE);
+            mEmptyAddTextView.setVisibility(View.GONE);
         } else if (Const.SystemBroadcast.SYSTEMBROADCAST_STORE.equals(id)) {
             mEmptyImageView.setImageResource(R.mipmap.bg_empty_store);
             mEmptyTextView.setText("没有收藏得内容！");
             mLookStudioTextView.setVisibility(View.GONE);
+            mEmptyAddTextView.setVisibility(View.GONE);
+        } else if (Const.SystemBroadcast.SYSTEMBROADCAST_READED.equals(id)) {
+            mEmptyImageView.setImageResource(R.mipmap.bg_empty_store);
+            mEmptyTextView.setText("还没有读过文章！");
+            mLookStudioTextView.setVisibility(View.GONE);
+            mEmptyAddTextView.setVisibility(View.GONE);
+        } else if (Const.SystemBroadcast.SYSTEMBROADCAST_MY_CREATE_ARTICLE.equals(id)) {
+            mEmptyImageView.setImageResource(R.mipmap.bg_empty_store);
+            mEmptyTextView.setText("还没有创建过文章！");
+            mLookStudioTextView.setVisibility(View.GONE);
+            mEmptyAddTextView.setVisibility(View.GONE);
         } else {
             mEmptyImageView.setImageResource(R.mipmap.bg_empty);
             mEmptyTextView.setText("暂时还没有文章");
             mLookStudioTextView.setVisibility(View.GONE);
+            if (mDetailInfo != null && mDetailInfo.getCreateUserId().equals(ContentManager.getInstance().getUserInfo().getUserId())) {
+                mEmptyAddTextView.setVisibility(View.VISIBLE);
+            } else {
+                mEmptyAddTextView.setVisibility(View.GONE);
+            }
         }
 
     }
@@ -719,6 +742,7 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
         mEmptyImageView.setImageResource(R.mipmap.bg_load_fail);
         mEmptyTextView.setText("加载失败");
         mLookStudioTextView.setVisibility(View.GONE);
+        mEmptyAddTextView.setVisibility(View.GONE);
     }
 
     private void showNetworlError() {
@@ -726,6 +750,7 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
         mEmptyImageView.setImageResource(R.mipmap.bg_network_error);
         mEmptyTextView.setText("网络开小差了，等会试试吧");
         mLookStudioTextView.setVisibility(View.GONE);
+        mEmptyAddTextView.setVisibility(View.GONE);
     }
 
     @Subscribe
