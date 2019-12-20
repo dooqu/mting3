@@ -204,7 +204,11 @@ public class PersonalInfoActivity extends BasePresenterActivity implements TakeP
             R.id.iv_arrow_3,
             R.id.tv_nick_name,
             R.id.tv_birthday,
-            R.id.iv_arrow_4
+            R.id.iv_arrow_4,
+            R.id.ll_nick_name,
+            R.id.rv_sex,
+            R.id.rv_birthday,
+            R.id.rv_my_head
     })
     public void onClick(View v) {
         switch (v.getId()) {
@@ -214,12 +218,15 @@ public class PersonalInfoActivity extends BasePresenterActivity implements TakeP
                 break;
             case R.id.iv_arrow_1:
             case R.id.iv_my_head:
+            case R.id.rv_my_head:
                 showPicSelectDialog();
                 break;
             case R.id.iv_arrow_3:
             case R.id.tv_sex:
+            case R.id.rv_sex:
                 showSexSelectDialog();
                 break;
+            case R.id.ll_nick_name:
             case R.id.iv_arrow_2:
             case R.id.tv_nick_name:
                 tvNickName.setVisibility(View.INVISIBLE);
@@ -232,6 +239,7 @@ public class PersonalInfoActivity extends BasePresenterActivity implements TakeP
                 etNickName.requestFocus();
                 showSoftInput(etNickName);
                 break;
+            case R.id.rv_birthday:
             case R.id.tv_birthday:
             case R.id.iv_arrow_4:
                 showDate();
@@ -260,7 +268,7 @@ public class PersonalInfoActivity extends BasePresenterActivity implements TakeP
             @Override
             public void onTimeSelect(Date date, View v) {
                 String time = DateUtils.getDateText(date, DateUtils.YMD_BREAK);
-                if (TextUtils.isEmpty(tvNickName.getText())) {
+                if (TextUtils.isEmpty(tvNickName.getText().toString()) && TextUtils.isEmpty(etNickName.getText().toString())) {
                     toastShort("昵称不能为空");
                     return;
                 }
@@ -289,10 +297,17 @@ public class PersonalInfoActivity extends BasePresenterActivity implements TakeP
         try {
             InputMethodManager imm = (InputMethodManager) getApplicationContext().getSystemService(Context.INPUT_METHOD_SERVICE);
             imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+            etNickName.setVisibility(View.INVISIBLE);
+            tvNickName.setVisibility(View.VISIBLE);
+            tvNickName.setText(etNickName.getText().toString());
+            UpdateUserRequset request = new UpdateUserRequset();
+            request.setNickName(etNickName.getText().toString());
+            updateUser(request);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
+
 
     private void showPicSelectDialog() {
         hideSoftInput(etNickName);
