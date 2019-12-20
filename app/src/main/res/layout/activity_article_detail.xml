@@ -133,7 +133,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_below="@+id/top_title_layout"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                >
 
                 <TextView
                     android:id="@+id/tv_article_title"
@@ -166,6 +167,12 @@
                     android:textSize="18sp" />
 
             </LinearLayout>
+            <WebView
+                android:id="@+id/web_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+android:visibility="gone"
+                />
         </LinearLayout>
 
 
