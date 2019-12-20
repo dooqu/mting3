@@ -67,6 +67,7 @@ import cn.xylink.mting.ui.dialog.BottomTingDialog;
 import cn.xylink.mting.ui.dialog.BottomTingItemModle;
 import cn.xylink.mting.ui.dialog.BroadcastItemMenuDialog;
 import cn.xylink.mting.ui.dialog.ReportDialog;
+import cn.xylink.mting.ui.dialog.SubscribeTipDialog;
 import cn.xylink.mting.ui.dialog.TipDialog;
 import cn.xylink.mting.ui.dialog.WarningTipDialog;
 import cn.xylink.mting.utils.ContentManager;
@@ -236,6 +237,8 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
         }
         List<BroadcastInfo> data = baseResponse.data;
         if (!isLoadMore && data.size() == 0) {
+            mAdapter.clearData();
+            mAdapter.notifyDataSetChanged();
             showEmptyLayout();
         } else {
             mEmptylayout.setVisibility(View.GONE);
@@ -617,7 +620,20 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
                 dialog.show();
                 break;
             case Const.BottomDialogItem.DELETE:
-                delBroadcast();
+                SubscribeTipDialog dialog1 = new SubscribeTipDialog(this);
+                dialog1.setMsg("播单删除确认", "播单删除后，播单内的文章也会被删除。", new SubscribeTipDialog.OnTipListener() {
+                    @Override
+                    public void onLeftClick(Object tag) {
+
+                    }
+
+                    @Override
+                    public void onRightClick(Object tag) {
+                        delBroadcast();
+                    }
+                });
+                dialog1.show();
+
                 break;
             default:
         }
@@ -715,8 +731,15 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
 
     @Override
     public void onBroadcastAllDelSuccess(BaseResponse response, BroadcastInfo info) {
+        T.showCustomCenterToast("删除成功");
         if (info != null) {
             mAdapter.notifyItemRemoe(info.getPositin());
+            if (info.getPositin()==1){
+                EventBus.getDefault().post(new TingRefreshEvent());
+            }
+            if (mAdapter.getItemCount()==1){
+                showEmptyLayout();
+            }
         } else {
             EventBus.getDefault().post(new TingRefreshEvent());
             this.finish();
@@ -725,7 +748,7 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
 
     @Override
     public void onBroadcastAllDelError(int code, String errorMsg) {
-
+        T.showCustomCenterToast("删除失败");
     }
 
     @Override
