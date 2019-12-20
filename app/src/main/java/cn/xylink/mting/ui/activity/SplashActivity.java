@@ -43,7 +43,7 @@ public class SplashActivity extends BasePresenterActivity implements CheckTokenC
 
     private CheckTokenPresenter tokenPresenter;
     private ShareAddPresenter shareAddPresenter;
-    private final int SPLASH_TIME = 3000;
+    private final int SPLASH_TIME = 1000;
     private long startTime;
     private long endTime;
     private String codeId;
