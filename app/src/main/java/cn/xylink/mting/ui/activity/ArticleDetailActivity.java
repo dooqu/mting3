@@ -581,7 +581,7 @@ public class ArticleDetailActivity extends BasePresenterActivity implements Arti
 
     @Override
     public void onArticleReportSuccess(BaseResponse response) {
-
+        toastCenterShort("举报成功");
     }
 
     @Override

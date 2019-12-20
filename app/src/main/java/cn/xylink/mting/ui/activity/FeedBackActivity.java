@@ -162,7 +162,7 @@ public class FeedBackActivity extends BasePresenterActivity implements AddFeedba
 
     @Override
     public void onAddFeedBackSuccess(BaseResponse<String> response) {
-        toastShort("反馈成功");
+        toastCenterShort("反馈成功");
         finish();
     }
 
