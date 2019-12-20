@@ -30,6 +30,7 @@ import butterknife.OnClick;
 import cn.xylink.mting.R;
 import cn.xylink.mting.base.BaseResponse;
 import cn.xylink.mting.bean.BroadcastCreateRequest;
+import cn.xylink.mting.bean.BroadcastDetailInfo;
 import cn.xylink.mting.contract.BroadcastEditContact;
 import cn.xylink.mting.presenter.BroadcastEditPresenter;
 import cn.xylink.mting.utils.ImageUtils;
@@ -58,9 +59,11 @@ public class BroadcastEditActivity extends BasePresenterActivity implements Broa
     private String broadcastId = "";
     private String name = "";
     private String intro = "";
+    private String picture = "";
     public static String BROADCAST_ID = "BROADCAST_ID";
     public static String BROADCAST_NAME = "BROADCAST_NAME";
     public static String BROADCAST_INTRO = "BROADCAST_INTRO";
+    public static String BROADCAST_PICTURE = "BROADCAST_PICTURE";
 
     @Override
     protected void preView() {
@@ -79,6 +82,13 @@ public class BroadcastEditActivity extends BasePresenterActivity implements Broa
         broadcastId = getIntent().getStringExtra(BROADCAST_ID);
         name = getIntent().getStringExtra(BROADCAST_NAME);
         intro = getIntent().getStringExtra(BROADCAST_INTRO);
+        picture = getIntent().getStringExtra(BROADCAST_PICTURE);
+        mTitle.setText(name);
+        mIntro.setText(intro);
+        if (!TextUtils.isEmpty(picture)) {
+            ImageUtils.get().load(imgCover, picture);
+        }
+
     }
 
     @Override
