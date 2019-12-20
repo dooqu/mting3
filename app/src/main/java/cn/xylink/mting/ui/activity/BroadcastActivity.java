@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.View;
 import android.view.animation.AnimationSet;
 import android.view.animation.RotateAnimation;
@@ -66,6 +67,7 @@ import cn.xylink.mting.ui.dialog.BottomTingDialog;
 import cn.xylink.mting.ui.dialog.BottomTingItemModle;
 import cn.xylink.mting.ui.dialog.BroadcastItemMenuDialog;
 import cn.xylink.mting.ui.dialog.ReportDialog;
+import cn.xylink.mting.ui.dialog.TipDialog;
 import cn.xylink.mting.ui.dialog.WarningTipDialog;
 import cn.xylink.mting.utils.ContentManager;
 import cn.xylink.mting.utils.L;
@@ -377,10 +379,42 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
         if (isSubscribe) {
             subscribe(SubscribeRequest.EVENT.SUBSCRIBE.name().toLowerCase());
         } else {
-            BroadcastIdRequest request = new BroadcastIdRequest();
-            request.setBroadcastId(getIntent().getStringExtra(EXTRA_BROADCASTID));
-            request.doSign();
-            mShare2WorldPresenter.share2World(request);
+            if (mAdapter.getItemCount() > 1 && mDetailInfo != null && !TextUtils.isEmpty(mDetailInfo.getInfo())
+                    && !TextUtils.isEmpty(mDetailInfo.getPicture())) {
+                BroadcastIdRequest request = new BroadcastIdRequest();
+                request.setBroadcastId(getIntent().getStringExtra(EXTRA_BROADCASTID));
+                request.doSign();
+                mShare2WorldPresenter.share2World(request);
+            } else {
+                if (mAdapter.getItemCount() > 1) {
+                    TipDialog dialog = new TipDialog(this);
+                    dialog.setMsg("请完善播单信息后，再分享到世界~", "取消", "去完善", new TipDialog.OnTipListener() {
+                        @Override
+                        public void onLeftClick() {
+
+                        }
+
+                        @Override
+                        public void onRightClick() {
+                            go2EditBroadcast();
+                        }
+                    });
+                    dialog.show();
+                } else {
+                    TipDialog dialog = new TipDialog(this);
+                    dialog.setMsg("请完添加文章后，再分享到世界~", "取消", "去添加", new TipDialog.OnTipListener() {
+                        @Override
+                        public void onLeftClick() {
+                        }
+
+                        @Override
+                        public void onRightClick() {
+
+                        }
+                    });
+                    dialog.show();
+                }
+            }
         }
     }
 
@@ -566,14 +600,7 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
                 subscribe(SubscribeRequest.EVENT.CANCEL.name().toLowerCase());
                 break;
             case Const.BottomDialogItem.EDIT_BROADCAST:
-                if (mDetailInfo != null) {
-                    Intent intent = new Intent(this, BroadcastEditActivity.class);
-                    intent.putExtra(BroadcastEditActivity.BROADCAST_ID, mDetailInfo.getBroadcastId());
-                    intent.putExtra(BroadcastEditActivity.BROADCAST_NAME, mDetailInfo.getName());
-                    intent.putExtra(BroadcastEditActivity.BROADCAST_INTRO, mDetailInfo.getInfo());
-                    intent.putExtra(BroadcastEditActivity.BROADCAST_PICTURE, mDetailInfo.getPicture());
-                    startActivity(intent);
-                }
+                go2EditBroadcast();
                 break;
             case Const.BottomDialogItem.BATCH:
                 Intent intent = new Intent(this, ArrangeActivity.class);
@@ -593,6 +620,17 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
                 delBroadcast();
                 break;
             default:
+        }
+    }
+
+    private void go2EditBroadcast() {
+        if (mDetailInfo != null) {
+            Intent intent = new Intent(this, BroadcastEditActivity.class);
+            intent.putExtra(BroadcastEditActivity.BROADCAST_ID, mDetailInfo.getBroadcastId());
+            intent.putExtra(BroadcastEditActivity.BROADCAST_NAME, mDetailInfo.getName());
+            intent.putExtra(BroadcastEditActivity.BROADCAST_INTRO, mDetailInfo.getInfo());
+            intent.putExtra(BroadcastEditActivity.BROADCAST_PICTURE, mDetailInfo.getPicture());
+            startActivity(intent);
         }
     }
 
@@ -698,7 +736,23 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
 
     @Override
     public void onShare2WorldError(int code, String errorMsg) {
-        T.showCustomCenterToast("分享失败");
+        if (code==-962){
+            TipDialog dialog = new TipDialog(this);
+            dialog.setMsg("播单的标题已被使用，请修改", "取消", "去修改", new TipDialog.OnTipListener() {
+                @Override
+                public void onLeftClick() {
+
+                }
+
+                @Override
+                public void onRightClick() {
+                    go2EditBroadcast();
+                }
+            });
+            dialog.show();
+        }else {
+            T.showCustomCenterToast("分享失败");
+        }
     }
 
     private void showEmptyLayout() {
