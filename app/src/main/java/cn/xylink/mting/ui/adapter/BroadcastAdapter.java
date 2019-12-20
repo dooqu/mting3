@@ -1,6 +1,7 @@
 package cn.xylink.mting.ui.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
@@ -20,6 +21,7 @@ import cn.xylink.mting.R;
 import cn.xylink.mting.bean.BroadcastDetailInfo;
 import cn.xylink.mting.bean.BroadcastInfo;
 import cn.xylink.mting.common.Const;
+import cn.xylink.mting.ui.activity.BroadcastDetailActivity;
 import cn.xylink.mting.utils.ContentManager;
 import cn.xylink.mting.utils.DensityUtil;
 import cn.xylink.mting.utils.ImageUtils;
@@ -115,13 +117,20 @@ public class BroadcastAdapter extends RecyclerView.Adapter<BroadcastAdapter.View
                         holder.mSubscribedTextView.setText("已订阅：" + getSubscribedNum(mDetailInfo.getSubscribeTotal()));
                     }
                 }
+                holder.mTitleTextView.setOnClickListener(v->{
+                    go2Detail();
+                });
+               holder.mDesTextView.setOnClickListener(v->{
+                   go2Detail();
+                });
+               holder.mImageView.setOnClickListener(v->{
+                   go2Detail();
+                });
+
             }
-            holder.mShare2worldTextView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (mOnItemClickListener != null) {
-                        mOnItemClickListener.onShare2World();
-                    }
+            holder.mShare2worldTextView.setOnClickListener(v -> {
+                if (mOnItemClickListener != null) {
+                    mOnItemClickListener.onShare2World();
                 }
             });
         } else {
@@ -151,6 +160,12 @@ public class BroadcastAdapter extends RecyclerView.Adapter<BroadcastAdapter.View
                 return true;
             });
         }
+    }
+
+    public void go2Detail(){
+        Intent intent = new Intent(mContext, BroadcastDetailActivity.class);
+        intent.putExtra(BroadcastDetailActivity.EXTARA_DETAIL_INFO,mDetailInfo);
+        mContext.startActivity(intent);
     }
 
     public void setShare2World() {

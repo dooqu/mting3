@@ -30,15 +30,15 @@ public class SetTopPresenter extends BasePresenter<SetTopContact.ISetTopView> im
                         BaseResponse baseResponse = (BaseResponse) data;
                         int code = baseResponse.code;
                         if (code == 200) {
-                            mView.onSetTopSuccess(baseResponse);
+                            mView.onSetTopSuccess(baseResponse, request.getEvent());
                         } else {
-                            mView.onSetTopError(code, baseResponse.message);
+                            mView.onSetTopError(code, baseResponse.message, request.getEvent());
                         }
                     }
 
                     @Override
                     public void onFailure(int code, String errorMsg) {
-                        mView.onSetTopError(code, errorMsg);
+                        mView.onSetTopError(code, errorMsg, request.getEvent());
                     }
 
                     @Override

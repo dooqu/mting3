@@ -219,14 +219,22 @@ public class TingFragment extends BasePresenterFragment implements TingListConta
     }
 
     @Override
-    public void onSetTopSuccess(BaseResponse response) {
+    public void onSetTopSuccess(BaseResponse response,String event) {
+        if (event.equals(SetTopRequest.EVENT.TOP.name().toLowerCase())){
+            T.showCustomCenterToast("置顶成功");
+        }else {
+            T.showCustomCenterToast("取消置顶成功");
+        }
         initData();
-        T.showCustomCenterToast("置顶成功");
     }
 
     @Override
-    public void onSetTopError(int code, String errorMsg) {
-        T.showCustomCenterToast("置顶失败");
+    public void onSetTopError(int code, String errorMsg,String event) {
+        if (event.equals(SetTopRequest.EVENT.TOP.name().toLowerCase())){
+            T.showCustomCenterToast("置顶失败");
+        }else {
+            T.showCustomCenterToast("取消置顶失败");
+        }
     }
 
     @Override
