@@ -372,17 +372,21 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
     }
 
     @Override
-    public void onShare2World() {
+    public void onShare2World(boolean isSubscribe) {
         isVisitorlogin();
-        BroadcastIdRequest request = new BroadcastIdRequest();
-        request.setBroadcastId(getIntent().getStringExtra(EXTRA_BROADCASTID));
-        request.doSign();
-        mShare2WorldPresenter.share2World(request);
+        if (isSubscribe) {
+            subscribe(SubscribeRequest.EVENT.SUBSCRIBE.name().toLowerCase());
+        } else {
+            BroadcastIdRequest request = new BroadcastIdRequest();
+            request.setBroadcastId(getIntent().getStringExtra(EXTRA_BROADCASTID));
+            request.doSign();
+            mShare2WorldPresenter.share2World(request);
+        }
     }
 
     private BottomTingDialog mBottomTingDialog;
 
-    @OnClick({R.id.iv_titlebar_share, R.id.iv_titlebar_menu, R.id.iv_titlebar_back, R.id.ll_empty, R.id.tv_look_studio,R.id.tv_add})
+    @OnClick({R.id.iv_titlebar_share, R.id.iv_titlebar_menu, R.id.iv_titlebar_back, R.id.ll_empty, R.id.tv_look_studio, R.id.tv_add})
     void onClick(View view) {
         switch (view.getId()) {
             case R.id.tv_add:
@@ -653,6 +657,7 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
     @Override
     public void onSubscribeSuccess(BaseResponse response, String event) {
         mDetailInfo.setSubscribe(mDetailInfo.getSubscribe() ^ 1);
+        mAdapter.setSubscribe(mDetailInfo.getSubscribe());
         EventBus.getDefault().post(new TingRefreshEvent());
         if (SubscribeRequest.EVENT.SUBSCRIBE.name().toLowerCase().equals(event)) {
             T.showCustomCenterToast("订阅成功");

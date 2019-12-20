@@ -22,6 +22,7 @@ import cn.xylink.mting.bean.BroadcastDetailInfo;
 import cn.xylink.mting.bean.BroadcastInfo;
 import cn.xylink.mting.common.Const;
 import cn.xylink.mting.ui.activity.BroadcastDetailActivity;
+import cn.xylink.mting.ui.activity.LoginActivity;
 import cn.xylink.mting.utils.ContentManager;
 import cn.xylink.mting.utils.DensityUtil;
 import cn.xylink.mting.utils.ImageUtils;
@@ -103,34 +104,48 @@ public class BroadcastAdapter extends RecyclerView.Adapter<BroadcastAdapter.View
                 ImageUtils.get().load(holder.mTopLayout, mDetailInfo.getPicture());
                 if (ContentManager.getInstance().getVisitor().equals("0")) {
                     holder.mShare2worldTextView.setVisibility(View.VISIBLE);
+                    holder.mShare2worldTextView.setText("订阅");
                 } else {
                     if (mDetailInfo.getCreateUserId().equals(ContentManager.getInstance().getUserInfo().getUserId())) {
                         if (mDetailInfo.getShare() == 0) {
                             holder.mShare2worldTextView.setVisibility(View.VISIBLE);
                         } else {
-                            holder.mShare2worldTextView.setVisibility(View.GONE);
                             holder.mSubscribedTextView.setVisibility(View.VISIBLE);
                             holder.mSubscribedTextView.setText("已订阅：" + getSubscribedNum(mDetailInfo.getSubscribeTotal()));
                         }
                     } else {
-                        holder.mSubscribedTextView.setVisibility(View.VISIBLE);
-                        holder.mSubscribedTextView.setText("已订阅：" + getSubscribedNum(mDetailInfo.getSubscribeTotal()));
+                        if (mDetailInfo.getSubscribe() == 1){
+                            holder.mShare2worldTextView.setVisibility(View.GONE);
+                            holder.mSubscribedTextView.setVisibility(View.VISIBLE);
+                            holder.mSubscribedTextView.setText("已订阅：" + getSubscribedNum(mDetailInfo.getSubscribeTotal()));
+                        }else {
+                            holder.mSubscribedTextView.setVisibility(View.GONE);
+                            holder.mShare2worldTextView.setVisibility(View.VISIBLE);
+                            holder.mShare2worldTextView.setText("订阅");
+                        }
                     }
                 }
-                holder.mTitleTextView.setOnClickListener(v->{
+                holder.mTitleTextView.setOnClickListener(v -> {
                     go2Detail();
                 });
-               holder.mDesTextView.setOnClickListener(v->{
-                   go2Detail();
+                holder.mDesTextView.setOnClickListener(v -> {
+                    go2Detail();
                 });
-               holder.mImageView.setOnClickListener(v->{
-                   go2Detail();
+                holder.mImageView.setOnClickListener(v -> {
+                    go2Detail();
                 });
 
             }
             holder.mShare2worldTextView.setOnClickListener(v -> {
-                if (mOnItemClickListener != null) {
-                    mOnItemClickListener.onShare2World();
+                if (ContentManager.getInstance().getVisitor().equals("0")) {
+                    Intent intent = new Intent(new Intent(mContext, LoginActivity.class));
+                    intent.putExtra(LoginActivity.LOGIN_ACTIVITY, Const.visitor);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    mContext.startActivity(intent);
+                } else {
+                    if (mOnItemClickListener != null) {
+                        mOnItemClickListener.onShare2World("订阅".equals(holder.mShare2worldTextView.getText()));
+                    }
                 }
             });
         } else {
@@ -162,14 +177,19 @@ public class BroadcastAdapter extends RecyclerView.Adapter<BroadcastAdapter.View
         }
     }
 
-    public void go2Detail(){
+    public void go2Detail() {
         Intent intent = new Intent(mContext, BroadcastDetailActivity.class);
-        intent.putExtra(BroadcastDetailActivity.EXTARA_DETAIL_INFO,mDetailInfo);
+        intent.putExtra(BroadcastDetailActivity.EXTARA_DETAIL_INFO, mDetailInfo);
         mContext.startActivity(intent);
     }
 
     public void setShare2World() {
         mDetailInfo.setShare(1);
+        notifyItemChanged(0);
+    }
+
+    public void setSubscribe(int sub){
+        mDetailInfo.setSubscribe(sub);
         notifyItemChanged(0);
     }
 
@@ -308,6 +328,6 @@ public class BroadcastAdapter extends RecyclerView.Adapter<BroadcastAdapter.View
 
         void onItemLongClick(BroadcastInfo article);
 
-        void onShare2World();
+        void onShare2World(boolean isSubscribe);
     }
 }
