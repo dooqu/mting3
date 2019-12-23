@@ -583,7 +583,7 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
     public void onDelStoreSuccess(BaseResponse response) {
         T.showCustomCenterToast("取消收藏成功");
         StoreRefreshEvent event = new StoreRefreshEvent();
-        event.setArticleID(((AddStoreRequest)response.getData()).getArticleId());
+        event.setArticleID(((ArticleIdsRequest)response.getData()).getArticleIds());
         event.setStroe(0);
         EventBus.getDefault().post(event);
         initList();

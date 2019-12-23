@@ -212,7 +212,7 @@ public class PanelViewAdapter {
     public void onArticleFavorited(StoreRefreshEvent event) {
         if(speechServiceWeakReference.get() != null
                 && speechServiceWeakReference.get().getSelected() != null
-                && speechServiceWeakReference.get().getSelected().getArticleId().equals(event.getArticleID())) {
+                && event.getArticleID().contains(speechServiceWeakReference.get().getSelected().getArticleId())) {
             speechServiceWeakReference.get().getSelected().setStore(event.getStroe());
         }
     }
