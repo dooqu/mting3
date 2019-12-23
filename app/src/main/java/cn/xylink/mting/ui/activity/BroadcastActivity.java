@@ -567,6 +567,10 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
     @Override
     public void onAddStoreSuccess(BaseResponse response) {
         T.showCustomCenterToast("收藏成功");
+        StoreRefreshEvent event = new StoreRefreshEvent();
+        event.setArticleID(((AddStoreRequest)response.getData()).getArticleId());
+        event.setStroe(1);
+        EventBus.getDefault().post(event);
         initList();
     }
 
@@ -578,6 +582,10 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
     @Override
     public void onDelStoreSuccess(BaseResponse response) {
         T.showCustomCenterToast("取消收藏成功");
+        StoreRefreshEvent event = new StoreRefreshEvent();
+        event.setArticleID(((AddStoreRequest)response.getData()).getArticleId());
+        event.setStroe(0);
+        EventBus.getDefault().post(event);
         initList();
     }
 

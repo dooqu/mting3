@@ -28,6 +28,7 @@ public class AddStorePresenter extends BasePresenter<AddStoreContact.IAddStoreVi
                     @Override
                     public void onSuccess(Object data) {
                         BaseResponse baseResponse = (BaseResponse) data;
+                        baseResponse.setData(request);
                         int code = baseResponse.code;
                         if (code == 200) {
                             mView.onAddStoreSuccess(baseResponse);
