@@ -75,7 +75,7 @@ public class BroadcastItemMenuDialog extends BaseDimDialog {
     }
 
     public void setAppinfo(){
-        mTitleTextView.setText("分享播单");
+        mTitleTextView.setText("分享「轩辕听」");
         mShareUrl = RemoteUrl.getShareUrl();
         mShareTitle = "轩辕听";
         mShareDes = "帮你读文章的软件，读朋友圈、读新闻的APP";

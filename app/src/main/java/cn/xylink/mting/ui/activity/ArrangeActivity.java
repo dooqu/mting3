@@ -9,6 +9,8 @@ import android.widget.TextView;
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.scwang.smartrefresh.layout.footer.ClassicsFooter;
 
+import org.greenrobot.eventbus.EventBus;
+
 import java.util.List;
 
 import butterknife.BindView;
@@ -24,6 +26,7 @@ import cn.xylink.mting.bean.WorldRequest;
 import cn.xylink.mting.common.Const;
 import cn.xylink.mting.contract.BroadcastAllDelContact;
 import cn.xylink.mting.contract.BroadcastListContact;
+import cn.xylink.mting.event.BroadcastRefreshEvent;
 import cn.xylink.mting.presenter.BroadcastAllDelPresenter;
 import cn.xylink.mting.presenter.BroadcastListPresenter;
 import cn.xylink.mting.ui.adapter.ArrangeAdapter;
@@ -177,6 +180,7 @@ public class ArrangeActivity extends BasePresenterActivity implements BroadcastL
 
     @Override
     public void onBroadcastAllDelSuccess(BaseResponse response, BroadcastInfo info) {
+        EventBus.getDefault().post(new BroadcastRefreshEvent());
         this.finish();
     }
 

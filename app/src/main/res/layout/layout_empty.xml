@@ -33,5 +33,20 @@
         android:visibility="gone"
         android:textColor="@color/c488def"
         android:textSize="18sp" />
+    <TextView
+        android:id="@+id/tv_add"
+        android:layout_width="121dp"
+        android:layout_height="38dp"
+        android:layout_marginTop="23dp"
+        android:drawableRight="@mipmap/icon_empty_add"
+        android:text="添加文章"
+        android:gravity="center"
+        android:visibility="gone"
+        android:drawablePadding="0dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:background="@drawable/bg_btn_line"
+        android:textColor="@color/c488def"
+        android:textSize="18sp" />
 
 </LinearLayout>

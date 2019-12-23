@@ -7,6 +7,10 @@ import android.support.v4.widget.NestedScrollView;
 import android.text.TextUtils;
 import android.util.TypedValue;
 import android.view.View;
+import android.view.animation.AnimationSet;
+import android.view.animation.RotateAnimation;
+import android.view.animation.ScaleAnimation;
+import android.webkit.WebView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -92,6 +96,8 @@ public class ArticleDetailActivity extends BasePresenterActivity implements Arti
     TextView tvBroadcastTitle;
     @BindView(R.id.tv_broadcast_author)
     TextView tvBroadcastAuthor;
+    @BindView(R.id.web_view)
+    WebView mWebView;
 
 
     private ArticleDetailPresenter mArticleDetailPresenter;
@@ -152,22 +158,31 @@ public class ArticleDetailActivity extends BasePresenterActivity implements Arti
         scrollView.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
             @Override
             public void onScrollChange(NestedScrollView nestedScrollView, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
-                if (oldScrollY - scrollY > DensityUtil.dip2sp(ArticleDetailActivity.this,5)) {
+                if (oldScrollY - scrollY > DensityUtil.dip2sp(ArticleDetailActivity.this, 5)) {
                     L.v("手指上滑......");
                     EventBus.getDefault().post(new ArticleDetailScrollEvent("glide"));
                 }
-                if (scrollY - oldScrollY > DensityUtil.dip2sp(ArticleDetailActivity.this,5)) {
+                if (scrollY - oldScrollY > DensityUtil.dip2sp(ArticleDetailActivity.this, 5)) {
                     L.v("手指下滑......");
                     EventBus.getDefault().post(new ArticleDetailScrollEvent("upGlide"));
                 }
             }
         });
         mBottomTingDialog = new BottomTingDialog(this, this);
+        startShareAnim();
     }
 
     @Override
     protected void initData() {
 
+    }
+
+    private void startShareAnim() {
+        ScaleAnimation animation = new ScaleAnimation(1, 1.2f, 1, 1.2f, RotateAnimation.RELATIVE_TO_SELF, 0.5f, RotateAnimation.RELATIVE_TO_SELF, 0.5f);
+        animation.setRepeatMode(AnimationSet.REVERSE);
+        animation.setRepeatCount(AnimationSet.INFINITE);
+        animation.setDuration(1000);
+        findViewById(R.id.btn_share).startAnimation(animation);
     }
 
     private void doGetArticleDetail() {
@@ -277,6 +292,9 @@ public class ArticleDetailActivity extends BasePresenterActivity implements Arti
         userId = info.getUserId();
         articleTitle = info.getTitle();
         articleURL = info.getUrl();
+//        //图片宽度改为100%  高度为自适应
+//        String varjs = "<script type='text/javascript'> \nwindow.onload = function()\n{var $img = document.getElementsByTagName('img');for(var p in  $img){$img[p].style.width = '100%'; $img[p].style.height ='auto'}}</script>";
+//        mWebView.loadData(varjs + articleURL, "text/html", "UTF-8");
         //1手动创建,2录入链接创建,3分享链接创建
         inType = info.getInType();
         //articleId应该跟其他activity接收过来的是一致的，不然就有问题，哈哈~
@@ -399,7 +417,7 @@ public class ArticleDetailActivity extends BasePresenterActivity implements Arti
     @Override
     public void onBottomTingItemClick(BottomTingItemModle modle) {
         switch (modle.getName()) {
-            case Const.BottomDialogItem.BROWER:
+            case Const.BottomDialogItem.BROWER://用浏览器打开
                 if (!TextUtils.isEmpty(articleURL)) {
                     Uri uri = Uri.parse(articleURL);
                     Intent intent = new Intent(Intent.ACTION_VIEW, uri);
@@ -569,7 +587,7 @@ public class ArticleDetailActivity extends BasePresenterActivity implements Arti
 
     @Override
     public void onArticleReportSuccess(BaseResponse response) {
-
+        toastCenterShort("举报成功");
     }
 
     @Override

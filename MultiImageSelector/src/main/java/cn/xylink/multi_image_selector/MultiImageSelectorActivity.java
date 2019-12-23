@@ -285,7 +285,7 @@ public class MultiImageSelectorActivity extends AppCompatActivity
 //                } else {
 //                    setResult(RESULT_CANCELED);
 //                }
-                finish();
+//                finish();
                 break;
         }
     }

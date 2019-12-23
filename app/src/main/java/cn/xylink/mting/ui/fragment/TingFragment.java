@@ -1,6 +1,7 @@
 package cn.xylink.mting.ui.fragment;
 
 import android.content.Intent;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -29,6 +30,7 @@ import cn.xylink.mting.common.Const;
 import cn.xylink.mting.contract.SetTopContact;
 import cn.xylink.mting.contract.SubscribeContact;
 import cn.xylink.mting.contract.TingListContact;
+import cn.xylink.mting.event.ArticleDetailScrollEvent;
 import cn.xylink.mting.event.TingRefreshEvent;
 import cn.xylink.mting.presenter.SetTopPresenter;
 import cn.xylink.mting.presenter.SubscribePresenter;
@@ -40,10 +42,12 @@ import cn.xylink.mting.ui.activity.SearchActivity;
 import cn.xylink.mting.ui.adapter.TingAdapter;
 import cn.xylink.mting.ui.dialog.BottomTingDialog;
 import cn.xylink.mting.ui.dialog.BottomTingItemModle;
+import cn.xylink.mting.ui.dialog.InputDialog;
 import cn.xylink.mting.ui.dialog.MainAddMenuPop;
 import cn.xylink.mting.ui.dialog.SubscribeTipDialog;
 import cn.xylink.mting.utils.ContentManager;
 import cn.xylink.mting.utils.DensityUtil;
+import cn.xylink.mting.utils.T;
 import cn.xylink.mting.widget.TingHeaderView;
 
 /**
@@ -93,6 +97,7 @@ public class TingFragment extends BasePresenterFragment implements TingListConta
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         mRecyclerView.setLayoutManager(linearLayoutManager);
+        mRecyclerView.addOnScrollListener(mOnScrollListener);
         mRecyclerView.setAdapter(mAdapter);
         mRefreshLayout.setOnRefreshListener(refreshlayout -> {
             initData();
@@ -124,7 +129,7 @@ public class TingFragment extends BasePresenterFragment implements TingListConta
 
     @Override
     public void onTingListError(int code, String errorMsg) {
-
+        mRefreshLayout.finishRefresh(true);
     }
 
     @Override
@@ -193,7 +198,8 @@ public class TingFragment extends BasePresenterFragment implements TingListConta
 
     @Override
     public void onPut() {
-
+        InputDialog dialog = new InputDialog(getActivity());
+        dialog.show();
     }
 
     @Override
@@ -213,32 +219,40 @@ public class TingFragment extends BasePresenterFragment implements TingListConta
     }
 
     @Override
-    public void onSetTopSuccess(BaseResponse response) {
+    public void onSetTopSuccess(BaseResponse response,String event) {
+        if (event.equals(SetTopRequest.EVENT.TOP.name().toLowerCase())){
+            T.showCustomCenterToast("置顶成功");
+        }else {
+            T.showCustomCenterToast("取消置顶成功");
+        }
         initData();
-        Toast.makeText(getActivity(), "置顶成功！", Toast.LENGTH_SHORT).show();
     }
 
     @Override
-    public void onSetTopError(int code, String errorMsg) {
-        Toast.makeText(getActivity(), "置顶失败！", Toast.LENGTH_SHORT).show();
+    public void onSetTopError(int code, String errorMsg,String event) {
+        if (event.equals(SetTopRequest.EVENT.TOP.name().toLowerCase())){
+            T.showCustomCenterToast("置顶失败");
+        }else {
+            T.showCustomCenterToast("取消置顶失败");
+        }
     }
 
     @Override
     public void onSubscribeSuccess(BaseResponse response, String event) {
         initData();
         if (event.equals(SubscribeRequest.EVENT.SUBSCRIBE.name().toLowerCase())) {
-            Toast.makeText(getActivity(), "订阅成功！", Toast.LENGTH_SHORT).show();
+            T.showCustomCenterToast("订阅成功");
         } else if (event.equals(SubscribeRequest.EVENT.SUBSCRIBE.name().toLowerCase())) {
-            Toast.makeText(getActivity(), "取消订阅成功！", Toast.LENGTH_SHORT).show();
+            T.showCustomCenterToast("取消订阅成功");
         }
     }
 
     @Override
     public void onSubscribeError(int code, String errorMsg, String event) {
         if (event.equals(SubscribeRequest.EVENT.SUBSCRIBE.name().toLowerCase())) {
-            Toast.makeText(getActivity(), "订阅失败！", Toast.LENGTH_SHORT).show();
+            T.showCustomCenterToast("订阅失败");
         } else if (event.equals(SubscribeRequest.EVENT.SUBSCRIBE.name().toLowerCase())) {
-            Toast.makeText(getActivity(), "取消订阅失败！", Toast.LENGTH_SHORT).show();
+            T.showCustomCenterToast("取消订阅失败");
         }
     }
 
@@ -262,5 +276,18 @@ public class TingFragment extends BasePresenterFragment implements TingListConta
     public void onDestroy() {
         super.onDestroy();
         EventBus.getDefault().unregister(this);
+        mRecyclerView.clearOnScrollListeners();
     }
+
+    private RecyclerView.OnScrollListener mOnScrollListener = new RecyclerView.OnScrollListener() {
+        @Override
+        public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+            super.onScrolled(recyclerView, dx, dy);
+            if (dy>2){
+                EventBus.getDefault().post(new ArticleDetailScrollEvent("upGlide"));
+            }else if (dy<-2){
+                EventBus.getDefault().post(new ArticleDetailScrollEvent("glide"));
+            }
+        }
+    };
 }

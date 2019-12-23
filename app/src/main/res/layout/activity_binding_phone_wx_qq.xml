@@ -3,6 +3,7 @@
     android:id="@+id/root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
     android:orientation="vertical">
 
     <include layout="@layout/title_include" />
@@ -50,16 +51,16 @@
                 android:layout_width="50dp"
                 android:layout_height="50dp"
                 android:scaleType="centerCrop"
-                android:src="@mipmap/personal_head"  />
+                android:src="@mipmap/personal_head" />
 
             <TextView
                 android:id="@+id/tv_bind_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="center"
                 android:layout_marginTop="15dp"
+                android:gravity="center"
                 android:textColor="@color/font_gray3"
-                android:textSize="20sp" />
+                android:textSize="15sp" />
         </LinearLayout>
 
         <ImageView
@@ -86,11 +87,11 @@
                 android:id="@+id/tv_xyl_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="轩辕听"
-                android:gravity="center"
                 android:layout_marginTop="15dp"
+                android:gravity="center"
+                android:text="轩辕听"
                 android:textColor="@color/font_gray3"
-                android:textSize="20sp" />
+                android:textSize="15sp" />
         </LinearLayout>
     </LinearLayout>
 

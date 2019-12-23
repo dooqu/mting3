@@ -4,21 +4,22 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import cn.xylink.mting.base.BaseResponse;
-import cn.xylink.mting.bean.SetTopRequest;
-import cn.xylink.mting.contract.SetTopContact;
+import cn.xylink.mting.bean.LinkArticle;
+import cn.xylink.mting.bean.LinkCheckRequest;
+import cn.xylink.mting.contract.LinkCheckContact;
 import cn.xylink.mting.model.data.OkGoUtils;
 import cn.xylink.mting.model.data.RemoteUrl;
 
 /**
  * -----------------------------------------------------------------
- * 2019/11/15 17:18 : Create SetTopPresenter.java (JoDragon);
+ * 2019/12/19 14:47 : Create LinkCheckPresenter.java (JoDragon);
  * -----------------------------------------------------------------
  */
-public class SetTopPresenter extends BasePresenter<SetTopContact.ISetTopView> implements SetTopContact.Presenter {
+public class LinkCheckPresenter extends BasePresenter<LinkCheckContact.ILinkCheckView> implements LinkCheckContact.Presenter {
     @Override
-    public void setTop(SetTopRequest request) {
-        OkGoUtils.getInstance().postData(mView, RemoteUrl.getSetTopUrl(), new Gson().toJson(request),
-                new TypeToken<BaseResponse>() {
+    public void checkLink(LinkCheckRequest request) {
+        OkGoUtils.getInstance().postData(mView, RemoteUrl.checkLinkUrl(), new Gson().toJson(request),
+                new TypeToken<BaseResponse<LinkArticle>>() {
 
                 }.getType(), new OkGoUtils.ICallback() {
                     @Override
@@ -27,18 +28,18 @@ public class SetTopPresenter extends BasePresenter<SetTopContact.ISetTopView> im
 
                     @Override
                     public void onSuccess(Object data) {
-                        BaseResponse baseResponse = (BaseResponse) data;
+                        BaseResponse<LinkArticle> baseResponse = (BaseResponse<LinkArticle>) data;
                         int code = baseResponse.code;
                         if (code == 200) {
-                            mView.onSetTopSuccess(baseResponse, request.getEvent());
+                            mView.onLinkCheckSuccess(baseResponse.data);
                         } else {
-                            mView.onSetTopError(code, baseResponse.message, request.getEvent());
+                            mView.onLinkCheckError(code, baseResponse.message);
                         }
                     }
 
                     @Override
                     public void onFailure(int code, String errorMsg) {
-                        mView.onSetTopError(code, errorMsg, request.getEvent());
+                        mView.onLinkCheckError(code, errorMsg);
                     }
 
                     @Override

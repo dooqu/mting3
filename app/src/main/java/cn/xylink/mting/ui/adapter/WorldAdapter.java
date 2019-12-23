@@ -69,7 +69,11 @@ public class WorldAdapter extends RecyclerView.Adapter<WorldAdapter.ViewHolder> 
     public void onBindViewHolder(@NonNull WorldAdapter.ViewHolder holder, int position) {
         WorldInfo data = mData.get(position);
         holder.tvTitle.setText(data.getTitle());
-        holder.tvContact.setText(data.getDescribe());
+        if(TextUtils.isEmpty(data.getName())){
+            holder.tvContact.setText("");
+        }else {
+            holder.tvContact.setText("来自："+data.getName());
+        }
         if (!TextUtils.isEmpty(data.getPicture())) {
             holder.ivImg.setVisibility(View.VISIBLE);
             ImageUtils.get().load(holder.ivImg, data.getPicture());

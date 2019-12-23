@@ -35,7 +35,7 @@ public class MyScrollView extends ScrollView {
         Log.d("scrollview", "onscrollChaned:" + manualScrollCurrent + ":" + t);
         super.onScrollChanged(l, t, oldl, oldt);
         if (onScrollListener != null && manualScrollCurrent == false) {
-            onScrollListener.onScroll(t);
+            onScrollListener.onScroll(l,t,oldl,oldt);
         }
     }
 
@@ -59,7 +59,7 @@ public class MyScrollView extends ScrollView {
          *
          * @param scrollY 、
          */
-        void onScroll(int scrollY);
+        void onScroll(int scrollX, int scrollY, int oldScrollX, int oldScrollY);
     }
 
     @Override

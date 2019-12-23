@@ -14,6 +14,7 @@ import butterknife.OnClick;
 import cn.xylink.mting.MTing;
 import cn.xylink.mting.R;
 import cn.xylink.mting.base.BaseResponse;
+import cn.xylink.mting.bean.BindCheckInfo;
 import cn.xylink.mting.bean.CodeInfo;
 import cn.xylink.mting.contract.BindCheckContact;
 import cn.xylink.mting.contract.GetCodeContact;
@@ -33,6 +34,8 @@ public class BindingPhoneActivity extends BasePresenterActivity implements BindC
     public static final String EXTRA_SOURCE = "extra_source";
     public static final String EXTRA_CODE = "extra_code";
     public static final String EXTRA_PLATFORM = "extra_platform";
+    public static final String EXTRA_NICKNAME = "EXTRA_NICKNAME";
+    public static final String EXTRA_HEADURL = "EXTRA_HEADURL";
     @BindView(R.id.et_phone)
     ZpPhoneEditText etPhone;
     @BindView(R.id.tv_include_title)
@@ -152,8 +155,7 @@ public class BindingPhoneActivity extends BasePresenterActivity implements BindC
                 break;
             case R.id.btn_next:
                 int netWorkStates = NetworkUtil.getNetWorkStates(context);
-                if(netWorkStates == NetworkUtil.TYPE_NONE)
-                {
+                if (netWorkStates == NetworkUtil.TYPE_NONE) {
                     toastShort(HttpConst.NO_NETWORK);
                     return;
                 }
@@ -162,13 +164,10 @@ public class BindingPhoneActivity extends BasePresenterActivity implements BindC
                 if (phone.length() == 0) {
                     toastShort("手机号不能为空");
                     return;
-                }
-                else if (phone.length() < 11 ){
+                } else if (phone.length() < 11) {
                     toastShort("手机号码应该是11位数字");
                     return;
-                }
-                else if(!PhoneNumberUtils.isMobileNO(phone))
-                {
+                } else if (!PhoneNumberUtils.isMobileNO(phone)) {
                     toastShort("手机号码输入有误，请重新输入");
                     return;
                 }
@@ -194,7 +193,7 @@ public class BindingPhoneActivity extends BasePresenterActivity implements BindC
     }
 
     @Override
-    public void onBindCheckSuccess(BaseResponse<String> response) {
+    public void onBindCheckSuccess(BaseResponse<BindCheckInfo> response) {
         final int code = response.code;
 
         switch (code) {
@@ -204,10 +203,18 @@ public class BindingPhoneActivity extends BasePresenterActivity implements BindC
                 break;
             }
             case 201: {
+                String nickName = "";
+                String headImg = "";
+                if (null != response.getData()) {
+                    nickName = response.getData().getNickName();
+                    headImg = String.valueOf(response.getData().getHeadImg());
+                }
                 Intent mIntent = new Intent(this, BindingPhoneQQWxActivity.class);
                 mIntent.putExtra(EXTRA_PHONE, phone);
                 mIntent.putExtra(EXTRA_SOURCE, source);
                 mIntent.putExtra(EXTRA_PLATFORM, platform);
+                mIntent.putExtra(EXTRA_NICKNAME, nickName);
+                mIntent.putExtra(EXTRA_HEADURL, headImg);
                 startActivity(mIntent);
 
                 break;
@@ -242,6 +249,7 @@ public class BindingPhoneActivity extends BasePresenterActivity implements BindC
             startActivity(mIntent);
         }
     }
+
     @Override
     public void onCodeError(int code, String errorMsg) {
         switch (code) {
