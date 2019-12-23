@@ -40,7 +40,7 @@ public class BroadcastDetailActivity extends BasePresenterActivity{
         BroadcastDetailInfo broadcastDetailInfo = (BroadcastDetailInfo) getIntent().getSerializableExtra(EXTARA_DETAIL_INFO);
         ImageUtils.get().load(mImageView,R.mipmap.cjbd_img_fm_default,R.mipmap.cjbd_img_fm_default,10,broadcastDetailInfo.getPicture());
         ImageUtils.get().load(mBGImageView,R.mipmap.cjbd_img_fm_default,R.mipmap.cjbd_img_fm_default,10,broadcastDetailInfo.getPicture());
-//        ImageUtils.get().load(mCreateImageView,R.mipmap.cjbd_img_fm_default,R.mipmap.cjbd_img_fm_default,10,broadcastDetailInfo.getPicture());
+        ImageUtils.get().load(mCreateImageView,R.mipmap.cjbd_img_fm_default,R.mipmap.cjbd_img_fm_default,10,broadcastDetailInfo.getCreateHeadImg());
         mDesTextView.setText(broadcastDetailInfo.getInfo());
         mNameTextView.setText(broadcastDetailInfo.getName());
         mCreateNameTextView.setText(broadcastDetailInfo.getCreateName());

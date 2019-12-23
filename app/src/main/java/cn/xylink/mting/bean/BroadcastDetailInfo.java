@@ -39,6 +39,15 @@ public class BroadcastDetailInfo implements Serializable {
     private int top;
     private int subscribe;
     private String shareUrl;
+    private String createHeadImg;
+
+    public String getCreateHeadImg() {
+        return createHeadImg;
+    }
+
+    public void setCreateHeadImg(String createHeadImg) {
+        this.createHeadImg = createHeadImg;
+    }
 
     public String getShareUrl() {
         return shareUrl;
