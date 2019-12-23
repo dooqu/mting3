@@ -292,6 +292,7 @@ public class SpeechService extends Service {
         //EventBus.getDefault().post(new SpeechArticleStatusSavedOnServerEvent(errorCode, "", articleResult));
         //}));
         if (progress == 1 && getSpeechList() instanceof UnreadSpeechList) {
+            EventBus.getDefault().post(new SpeechArticleReadedEvent(article));
             EventBus.getDefault().post(new SpeechEndEvent(article, progress));
         }
 
