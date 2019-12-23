@@ -29,6 +29,7 @@ public class DelStorePreesenter extends BasePresenter<DelStoreContact.IDelStoreV
                     public void onSuccess(Object data) {
                         BaseResponse baseResponse = (BaseResponse) data;
                         int code = baseResponse.code;
+                        baseResponse.setData(request);
                         if (code == 200) {
                             mView.onDelStoreSuccess(baseResponse);
                         } else {
