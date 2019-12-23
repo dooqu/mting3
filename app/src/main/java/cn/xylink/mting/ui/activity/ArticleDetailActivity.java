@@ -2,7 +2,10 @@ package cn.xylink.mting.ui.activity;
 
 import android.content.Intent;
 import android.net.Uri;
+import android.net.http.SslError;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.widget.NestedScrollView;
 import android.text.TextUtils;
 import android.util.TypedValue;
@@ -10,7 +13,12 @@ import android.view.View;
 import android.view.animation.AnimationSet;
 import android.view.animation.RotateAnimation;
 import android.view.animation.ScaleAnimation;
+import android.webkit.SslErrorHandler;
+import android.webkit.WebChromeClient;
+import android.webkit.WebResourceRequest;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -64,6 +72,7 @@ import cn.xylink.mting.utils.ContentManager;
 import cn.xylink.mting.utils.DensityUtil;
 import cn.xylink.mting.utils.ImageUtils;
 import cn.xylink.mting.utils.L;
+import cn.xylink.mting.widget.ObservableWebView;
 
 /**
  * @author wjn
@@ -84,8 +93,8 @@ public class ArticleDetailActivity extends BasePresenterActivity implements Arti
     ImageView icoPlay;
     @BindView(R.id.ico_detail_addto)
     ImageView icoAddTo;
-    @BindView(R.id.scrollView_detail)
-    NestedScrollView scrollView;
+    //    @BindView(R.id.scrollView_detail)
+//    NestedScrollView scrollView;
     @BindView(R.id.rv_play)
     RelativeLayout rvPlay;
     @BindView(R.id.rv_broadcast_detail)
@@ -97,7 +106,7 @@ public class ArticleDetailActivity extends BasePresenterActivity implements Arti
     @BindView(R.id.tv_broadcast_author)
     TextView tvBroadcastAuthor;
     @BindView(R.id.web_view)
-    WebView mWebView;
+    ObservableWebView mWebView;
 
 
     private ArticleDetailPresenter mArticleDetailPresenter;
@@ -124,7 +133,7 @@ public class ArticleDetailActivity extends BasePresenterActivity implements Arti
 
     @Override
     protected void preView() {
-        setContentView(R.layout.activity_article_detail);
+        setContentView(R.layout.activity_article_detail2);
     }
 
     @Override
@@ -155,9 +164,9 @@ public class ArticleDetailActivity extends BasePresenterActivity implements Arti
         } else rvBroadcastDetail.setVisibility(View.GONE);
 
         doGetArticleDetail();
-        scrollView.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
+        mWebView.setOnScrollChangedCallback(new ObservableWebView.OnScrollChangedCallback() {
             @Override
-            public void onScrollChange(NestedScrollView nestedScrollView, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
+            public void onScroll(int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
                 if (oldScrollY - scrollY > DensityUtil.dip2sp(ArticleDetailActivity.this, 5)) {
                     L.v("手指上滑......");
                     EventBus.getDefault().post(new ArticleDetailScrollEvent("glide"));
@@ -168,6 +177,19 @@ public class ArticleDetailActivity extends BasePresenterActivity implements Arti
                 }
             }
         });
+//        scrollView.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
+//            @Override
+//            public void onScrollChange(NestedScrollView nestedScrollView, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
+//                if (oldScrollY - scrollY > DensityUtil.dip2sp(ArticleDetailActivity.this, 5)) {
+//                    L.v("手指上滑......");
+//                    EventBus.getDefault().post(new ArticleDetailScrollEvent("glide"));
+//                }
+//                if (scrollY - oldScrollY > DensityUtil.dip2sp(ArticleDetailActivity.this, 5)) {
+//                    L.v("手指下滑......");
+//                    EventBus.getDefault().post(new ArticleDetailScrollEvent("upGlide"));
+//                }
+//            }
+//        });
         mBottomTingDialog = new BottomTingDialog(this, this);
         startShareAnim();
     }
@@ -291,11 +313,36 @@ public class ArticleDetailActivity extends BasePresenterActivity implements Arti
         tvArticleContent.setText(info.getContent());
         userId = info.getUserId();
         articleTitle = info.getTitle();
-        articleURL = info.getUrl();
-//        //图片宽度改为100%  高度为自适应
-//        String varjs = "<script type='text/javascript'> \nwindow.onload = function()\n{var $img = document.getElementsByTagName('img');for(var p in  $img){$img[p].style.width = '100%'; $img[p].style.height ='auto'}}</script>";
-//        mWebView.loadData(varjs + articleURL, "text/html", "UTF-8");
-        //1手动创建,2录入链接创建,3分享链接创建
+        articleURL = info.getShareUrl();
+        WebSettings webSettings = mWebView.getSettings();
+        webSettings.setJavaScriptCanOpenWindowsAutomatically(true);
+        webSettings.setJavaScriptEnabled(true);
+        webSettings.setSupportZoom(true);
+        webSettings.setBuiltInZoomControls(true);
+        webSettings.setUseWideViewPort(true);
+        webSettings.setCacheMode(WebSettings.LOAD_DEFAULT);
+        webSettings.setLayoutAlgorithm(WebSettings.LayoutAlgorithm.SINGLE_COLUMN);
+        webSettings.setLoadWithOverviewMode(true);
+        webSettings.setAppCacheEnabled(true);
+        webSettings.setDomStorageEnabled(true);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            webSettings.setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
+        }
+        mWebView.setWebViewClient(new WebViewClient() {
+            @Override
+            public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
+                handler.proceed();
+                super.onReceivedSslError(view, handler, error);
+            }
+        });
+//        new Handler().postDelayed(new Runnable() {
+//            @Override
+//            public void run() {
+//
+//            }
+//        },3000);
+        mWebView.loadUrl(articleURL);
+
         inType = info.getInType();
         //articleId应该跟其他activity接收过来的是一致的，不然就有问题，哈哈~
         this.articleId = info.getArticleId();
@@ -333,15 +380,18 @@ public class ArticleDetailActivity extends BasePresenterActivity implements Arti
 
     @Override
     public void onAddStoreSuccess(BaseResponse response) {
-
-    }
-
-    @Override
-    public void onAddStoreError(int code, String errorMsg) {
         StoreRefreshEvent event = new StoreRefreshEvent();
         event.setArticleID(articleId);
         event.setStroe(1);
         EventBus.getDefault().post(event);
+    }
+
+    @Override
+    public void onAddStoreError(int code, String errorMsg) {
+//        StoreRefreshEvent event = new StoreRefreshEvent();
+//        event.setArticleID(articleId);
+//        event.setStroe(1);
+//        EventBus.getDefault().post(event);
 
     }
 
