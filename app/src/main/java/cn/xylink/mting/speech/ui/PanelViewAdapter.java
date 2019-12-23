@@ -14,7 +14,6 @@ import org.greenrobot.eventbus.ThreadMode;
 
 import java.lang.ref.WeakReference;
 import java.util.Timer;
-import java.util.TimerTask;
 
 import cn.xylink.mting.MainActivity;
 import cn.xylink.mting.R;
@@ -145,7 +144,9 @@ public class PanelViewAdapter {
             return;
         }
         isUserClosed = false;
-        speechPanelView.setVisibility(View.VISIBLE);
+        if(isScrollHidden == false || event instanceof SpeechStartEvent) {
+            speechPanelView.setVisibility(View.VISIBLE);
+        }
 
         Article article = speechService.getSelected();
         SpeechService.SpeechServiceState currentState = speechService.getState();
@@ -248,6 +249,7 @@ public class PanelViewAdapter {
 
     DetailContextState detailContextState = DetailContextState.Static;
     Timer scrollTimer = new Timer();
+    boolean isScrollHidden = false;
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onArticleTextScrollEvent(ArticleDetailScrollEvent event) {
@@ -262,61 +264,15 @@ public class PanelViewAdapter {
         switch (event.getMotion()) {
             case "glide":
                 //downscroll内容向下滚动，显示panel
-                /*
-                if (detailContextState != DetailContextState.DownScrolling) {
-                    Log.d(TAG, "内容向下滚动，向标题滚，显示panel");
-                    detailContextState = DetailContextState.DownScrolling;
-
-                }
-
-                 */
                 speechPanelView.setVisibility(View.VISIBLE);
+                isScrollHidden = false;
                 break;
 
             case "upGlide":
-                /*
-                if (detailContextState != DetailContextState.UpScrolling) {
-                    Log.d(TAG, "内容向上滚动， 向页尾滚，隐藏panel");
-                    detailContextState = DetailContextState.UpScrolling;
-
-                }
-
-                 */
+                //内容向上滚动
                 speechPanelView.setVisibility(View.INVISIBLE);
+                isScrollHidden = true;
                 break;
         }
-
-        /*
-        scrollTimer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                switch (detailContextState) {
-                    case UpScrolling:
-                        Log.d(TAG, "内容上滚");
-                        if (speechPanelView.getAlpha() > 0f) {
-                            speechPanelView.setAlpha(speechPanelView.getAlpha() - 0.05f);
-                        }
-                        else {
-                            detailContextState = DetailContextState.Static;
-                            scrollTimer.cancel();
-                            speechPanelView.setAlpha(1.0f);
-                            speechPanelView.setVisibility(View.INVISIBLE);
-                        }
-                        break;
-                    case DownScrolling:
-                        Log.d(TAG, "内容下滚");
-                        if (speechPanelView.getAlpha() < 1.0) {
-                            speechPanelView.setAlpha(speechPanelView.getAlpha() + 0.05f);
-                        }
-                        else {
-                            scrollTimer.cancel();
-                            detailContextState = DetailContextState.Static;
-                        }
-                        break;
-                }
-            }
-        }, 300, 50);
-
-         */
     }
 }

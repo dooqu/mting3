@@ -72,33 +72,16 @@ public abstract class BaseActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         context = this;
-
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-//            Window window = this.getWindow();
-//            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-//            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-//            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
-//            window.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
-//            window.setStatusBarColor(Color.TRANSPARENT);
-
-
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             Window window = this.getWindow();
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
             window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
             window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
-//            window.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
+//          window.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
             window.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
             window.setStatusBarColor(Color.TRANSPARENT);
         }
-
         preView();
-
-//        ViewGroup contentFrameLayout = findViewById(Window.ID_ANDROID_CONTENT);
-//        View parentView = contentFrameLayout.getChildAt(0);
-//        if(parentView != null && Build.VERSION.SDK_INT >= 14){
-//            parentView.setFitsSystemWindows(true);
-//        }
         ButterKnife.bind(this);
         initData();
         initView();
@@ -107,6 +90,35 @@ public abstract class BaseActivity extends AppCompatActivity {
         downloadReceiver = new UpgradeManager.DownloadReceiver();
         downloadReceiver.regist(this);
         panelViewAdapter = new PanelViewAdapter();
+        proxy = new SpeechServiceProxy(this) {
+            @Override
+            protected void onConnected(boolean connected, SpeechService service) {
+                if (connected) {
+                    speechServiceConnected = connected;
+                    speechServiceWeakReference = new WeakReference<>(service);
+                    //绑定activity和service，创建ui组件
+                    panelViewAdapter.attach(BaseActivity.this, service);
+                    //如果当前正在播放某个文章，那么立即更新，不要等SpeechEvent
+                    if (service.getSelected() != null && !(service.getState() == SpeechService.SpeechServiceState.Paused && PanelViewAdapter.isUserClosed == true)) {
+                        panelViewAdapter.validatePanelView();
+                    }
+                    if (articleShouldPlayWhenServiceAvailable != null) {
+                        try {
+                            service.loadAndPlay(articleShouldPlayWhenServiceAvailable);
+                        }
+                        catch (Exception ex) {
+                            Toast.makeText(BaseActivity.this, ex.getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                    //相关资源就绪，ui就绪后，通知子类，可以开始使用SpeechService的相关调用
+                    onSpeechServiceAvailable();
+                }
+                else {
+                    speechServiceWeakReference = null;
+                    speechServiceConnected = false;
+                }
+            }
+        };
         if (enableSpeechService() == true) {
             connectSpeechService();
         }
@@ -121,7 +133,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     }
 
     protected SpeechSettingService getSpeechService() {
-        if(isSpeechServiceAvailable()) {
+        if (isSpeechServiceAvailable()) {
             return SpeechSettingService.create(speechServiceWeakReference.get());
         }
         return null;
@@ -140,38 +152,11 @@ public abstract class BaseActivity extends AppCompatActivity {
     }
 
     protected void connectSpeechService() {
-        proxy = new SpeechServiceProxy(this) {
-            @Override
-            protected void onConnected(boolean connected, SpeechService service) {
-                if (connected) {
-                    speechServiceConnected = connected;
-                    speechServiceWeakReference = new WeakReference<>(service);
-                    //绑定activity和service，创建ui组件
-                    panelViewAdapter.attach(BaseActivity.this, service);
-                    //如果当前正在播放某个文章，那么立即更新，不要等SpeechEvent
-                    if (service.getSelected() != null && !(service.getState() == SpeechService.SpeechServiceState.Paused && PanelViewAdapter.isUserClosed == true)) {
-                        panelViewAdapter.validatePanelView();
-                    }
-                    if (articleShouldPlayWhenServiceAvailable != null) {
-                        try {
-                            service.loadAndPlay(articleShouldPlayWhenServiceAvailable);
-                        } catch (Exception ex) {
-                            Toast.makeText(BaseActivity.this, ex.getMessage(), Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                    //相关资源就绪，ui就绪后，通知子类，可以开始使用SpeechService的相关调用
-                    onSpeechServiceAvailable();
-                } else {
-                    speechServiceWeakReference = null;
-                    speechServiceConnected = false;
-                }
-            }
-        };
         proxy.bind();
     }
 
     protected boolean isSpeechServiceAvailable() {
-        return speechServiceConnected && speechServiceWeakReference != null && speechServiceWeakReference.get() != null;
+        return proxy.isConnected() && speechServiceWeakReference.get() != null;
     }
 
 
@@ -186,22 +171,22 @@ public abstract class BaseActivity extends AppCompatActivity {
         }
         //如果服务没有连接上， 可能在连接中，可能失败了
         if (isSpeechServiceAvailable() == false) {
-            if (proxy.isBinding() == true) {
-                articleShouldPlayWhenServiceAvailable = article;
-                return true;
+            articleShouldPlayWhenServiceAvailable = article;
+            if(proxy.isBinding() == false) {
+                connectSpeechService();
             }
+            return true;
         }
-        if (speechServiceWeakReference.get() != null) {
+        else {
             articleShouldPlayWhenServiceAvailable = null;
             try {
                 speechServiceWeakReference.get().loadAndPlay(article);
-            } catch (Exception ex) {
+            }
+            catch (Exception ex) {
                 Toast.makeText(BaseActivity.this, ex.getMessage(), Toast.LENGTH_SHORT).show();
             }
             return true;
         }
-        articleShouldPlayWhenServiceAvailable = null;
-        return false;
     }
 
     public Article getPlayingArticle() {
@@ -232,7 +217,8 @@ public abstract class BaseActivity extends AppCompatActivity {
                     && event.getRawY() > top && event.getRawY() < bottom) {
                 // 点击的是输入框区域，保留点击EditText的事件
                 return false;
-            } else {
+            }
+            else {
                 return true;
             }
         }
@@ -397,7 +383,8 @@ public abstract class BaseActivity extends AppCompatActivity {
         }
         if (code > 0) {
             startActivityForResult(intent, code);
-        } else {
+        }
+        else {
             startActivity(intent);
         }
     }
@@ -407,7 +394,8 @@ public abstract class BaseActivity extends AppCompatActivity {
         try {
             InputMethodManager imm = (InputMethodManager) getApplicationContext().getSystemService(Context.INPUT_METHOD_SERVICE);
             imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -416,7 +404,8 @@ public abstract class BaseActivity extends AppCompatActivity {
         try {
             InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
             imm.showSoftInput(view, InputMethodManager.SHOW_FORCED);
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
 
         }
     }
@@ -427,10 +416,12 @@ public abstract class BaseActivity extends AppCompatActivity {
             boolean b = getPackageManager().canRequestPackageInstalls();
             if (b) {
                 installAPK();
-            } else {                //请求安装未知应用来源的权限
+            }
+            else {                //请求安装未知应用来源的权限
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.REQUEST_INSTALL_PACKAGES}, INSTALL_PACKAGES_REQUESTCODE);
             }
-        } else {
+        }
+        else {
             installAPK();
         }
     }
@@ -449,7 +440,8 @@ public abstract class BaseActivity extends AppCompatActivity {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             imageUri = FileProvider.getUriForFile(context,
                     "cn.xylink.mting.fileprovider", file);//通过FileProvider创建一个content类型的Uri
-        } else {
+        }
+        else {
             imageUri = Uri.fromFile(file);
         }
         return imageUri;
@@ -466,10 +458,12 @@ public abstract class BaseActivity extends AppCompatActivity {
                     Toast.makeText(this, "当前升级为重要更新，请开启应用重新授权", Toast.LENGTH_SHORT).show();
                     System.exit(0);
                     return;
-                } else {
+                }
+                else {
                     Toast.makeText(this, "授权被取消，升级安装中断", Toast.LENGTH_SHORT).show();
                 }
-            } else if (resultCode == Activity.RESULT_OK) {
+            }
+            else if (resultCode == Activity.RESULT_OK) {
                 Log.d("SPEECH_", "授权成功");
                 if (UpgradeManager.DownloadTaskFilePath != null) {
                     downloadReceiver.installApk(UpgradeManager.DownloadTaskFilePath);
@@ -485,7 +479,8 @@ public abstract class BaseActivity extends AppCompatActivity {
             case INSTALL_PACKAGES_REQUESTCODE:
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     installApk();
-                } else {
+                }
+                else {
                     Intent intent = new Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES);
                     startActivityForResult(intent, GET_UNKNOWN_APP_SOURCES);
                 }
@@ -512,10 +507,12 @@ public abstract class BaseActivity extends AppCompatActivity {
         try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 startForegroundService(intent);// 启动服务
-            } else {
+            }
+            else {
                 startService(intent);
             }
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
 
         }
     }

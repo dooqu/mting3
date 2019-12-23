@@ -67,7 +67,7 @@ public class SpeechForegroundServiceAdapter {
             return;
         }
         else if (speechServiceWeakReference.get().getSelected() == null) {
-            dismissNotif();
+            //dismissNotif();
         }
 
         SpeechService service = speechServiceWeakReference.get();
@@ -83,9 +83,9 @@ public class SpeechForegroundServiceAdapter {
                 //.setDeleteIntent(pendingIntentCancel)
                 .setSmallIcon(R.mipmap.icon_notif)
                 .setLargeIcon(BitmapFactory.decodeResource(service.getResources(), R.mipmap.icon_notify_logo))
-                .setTicker(currentArticle.getTitle())
+                .setTicker(currentArticle != null? currentArticle.getTitle() : "轩辕听")
                 .setContentTitle("轩辕听")
-                .setContentText(currentArticle.getTitle())
+                .setContentText(currentArticle != null? currentArticle.getTitle() : "轩辕听")
                 .setOngoing(true)
                 .setAutoCancel(false)
                 .setShowWhen(false);
@@ -118,7 +118,7 @@ public class SpeechForegroundServiceAdapter {
 
         Notification.Action actionPlay = null, actionNext = null, actionFav = null, actionExit = null;
 
-        boolean favorited = currentArticle.getStore() == 1;
+        boolean favorited = currentArticle != null && currentArticle.getStore() == 1;
 
         switch (service.getState()) {
             case Loadding:
@@ -289,6 +289,7 @@ public class SpeechForegroundServiceAdapter {
                     case "SPEECH_ACTION_EXIT":
                         speechService.pause();
                         stopForeground(true);
+                        context.stopService(new Intent(context, SpeechService.class));
                         break;
                 } // end switch
             } // end sychornized

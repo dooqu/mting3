@@ -40,6 +40,7 @@ import cn.xylink.mting.speech.event.SpeechStartEvent;
 import cn.xylink.mting.speech.event.SpeechStopEvent;
 import cn.xylink.mting.ui.activity.ArticleDetailActivity;
 import cn.xylink.mting.ui.activity.BaseActivity;
+import cn.xylink.mting.ui.activity.BroadcastActivity;
 import cn.xylink.mting.ui.activity.BroadcastItemAddActivity;
 import cn.xylink.mting.ui.adapter.ControlPanelAdapter;
 
@@ -184,6 +185,22 @@ public class SpeechPanelDialog extends Dialog implements SeekBar.OnSeekBarChange
                 Intent intent = new Intent(contextWeakReference.get(), ArticleDetailActivity.class);
                 intent.putExtra(ArticleDetailActivity.BROADCAST_ID_DETAIL, speechServiceWeakReference.get().getSelected().getBroadcastId());
                 intent.putExtra(ArticleDetailActivity.ARTICLE_ID_DETAIL, speechServiceWeakReference.get().getSelected().getArticleId());
+                contextWeakReference.get().startActivity(intent);
+            }
+        });
+
+        controlView.findViewById(R.id.button_panel_go_broadcast).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(contextWeakReference.get() == null
+                        || speechServiceWeakReference.get() == null
+                        || speechServiceWeakReference.get().getSelected() == null) {
+                    return;
+                }
+                dismiss();
+                Intent intent = new Intent(contextWeakReference.get(), BroadcastActivity.class);
+                intent.putExtra(BroadcastActivity.EXTRA_BROADCASTID, speechServiceWeakReference.get().getSelected().getBroadcastId());
+                intent.putExtra(BroadcastActivity.EXTRA_TITLE, speechServiceWeakReference.get().getSelected().getBroadcastTitle());
                 contextWeakReference.get().startActivity(intent);
             }
         });
