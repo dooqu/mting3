@@ -26,6 +26,7 @@ import cn.xylink.mting.bean.WorldRequest;
 import cn.xylink.mting.common.Const;
 import cn.xylink.mting.contract.BroadcastAllDelContact;
 import cn.xylink.mting.contract.BroadcastListContact;
+import cn.xylink.mting.event.ArrangeDelNotifEvent;
 import cn.xylink.mting.event.BroadcastRefreshEvent;
 import cn.xylink.mting.presenter.BroadcastAllDelPresenter;
 import cn.xylink.mting.presenter.BroadcastListPresenter;
@@ -153,19 +154,21 @@ public class ArrangeActivity extends BasePresenterActivity implements BroadcastL
         ArticleIdsRequest request = new ArticleIdsRequest();
         request.setArticleIds(mAdapter.getSelectArticleIDs());
         request.doSign();
+        BroadcastInfo info = new BroadcastInfo();
+        info.setArticleId(mAdapter.getSelectArticleIDs());
         if (getIntent().getStringExtra(EXTRA_BROADCASTID).startsWith("-")) {
             switch (getIntent().getStringExtra(EXTRA_BROADCASTID)) {
                 case Const.SystemBroadcast.SYSTEMBROADCAST_UNREAD:
-                    mBroadcastAllDelPresenter.delUnread(request, null);
+                    mBroadcastAllDelPresenter.delUnread(request, info);
                     break;
                 case Const.SystemBroadcast.SYSTEMBROADCAST_READED:
-                    mBroadcastAllDelPresenter.delReaded(request, null);
+                    mBroadcastAllDelPresenter.delReaded(request, info);
                     break;
                 case Const.SystemBroadcast.SYSTEMBROADCAST_STORE:
-                    mBroadcastAllDelPresenter.delStore(request, null);
+                    mBroadcastAllDelPresenter.delStore(request, info);
                     break;
                 case Const.SystemBroadcast.SYSTEMBROADCAST_MY_CREATE_ARTICLE:
-                    mBroadcastAllDelPresenter.delMyCreateArticle(request, null);
+                    mBroadcastAllDelPresenter.delMyCreateArticle(request, info);
                     break;
                 default:
             }
@@ -174,13 +177,14 @@ public class ArrangeActivity extends BasePresenterActivity implements BroadcastL
             articleRequest.setBroadcastId(getIntent().getStringExtra(EXTRA_BROADCASTID));
             articleRequest.setArticleIds(mAdapter.getSelectArticleIDs());
             articleRequest.doSign();
-            mBroadcastAllDelPresenter.delMyCreateBroadcastArticle(articleRequest, null);
+            mBroadcastAllDelPresenter.delMyCreateBroadcastArticle(articleRequest, info);
         }
     }
 
     @Override
     public void onBroadcastAllDelSuccess(BaseResponse response, BroadcastInfo info) {
         EventBus.getDefault().post(new BroadcastRefreshEvent());
+        EventBus.getDefault().post(new ArrangeDelNotifEvent(getIntent().getStringExtra(EXTRA_BROADCASTID),info.getArticleId()));
         this.finish();
     }
 
