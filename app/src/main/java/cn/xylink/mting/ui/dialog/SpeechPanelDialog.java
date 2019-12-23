@@ -29,6 +29,7 @@ import java.util.List;
 import cn.xylink.mting.R;
 import cn.xylink.mting.bean.Article;
 import cn.xylink.mting.bean.BroadcastDetailInfo;
+import cn.xylink.mting.event.StoreRefreshEvent;
 import cn.xylink.mting.speech.SpeechService;
 import cn.xylink.mting.speech.Speechor;
 import cn.xylink.mting.speech.data.ArticleDataProvider;
@@ -127,7 +128,10 @@ public class SpeechPanelDialog extends Dialog implements SeekBar.OnSeekBarChange
         @Override
         public void invoke(int errorCode, Article data) {
             if(errorCode == 0) {
-                SpeechFavorArticleEvent event = new SpeechFavorArticleEvent(data);
+                //SpeechFavorArticleEvent event = new SpeechFavorArticleEvent(data);
+                StoreRefreshEvent event = new StoreRefreshEvent();
+                event.setArticleID(data.getArticleId());
+                event.setStroe(data.getStore());
                 EventBus.getDefault().post(event);
             }
         }
@@ -639,6 +643,20 @@ public class SpeechPanelDialog extends Dialog implements SeekBar.OnSeekBarChange
         seekBar.setEnabled(isEnabled);
         if (isEnabled == false) {
             seekBar.setProgress(0);
+        }
+    }
+
+    @Subscribe(threadMode =  ThreadMode.MAIN)
+    public void onArticleFavoriteChanged(StoreRefreshEvent event) {
+        if(contextWeakReference.get() == null
+                || speechServiceWeakReference.get() == null
+                || speechServiceWeakReference.get().getSelected() == null) {
+            return;
+        }
+
+        if(speechServiceWeakReference.get().getSelected().getArticleId().equals(event.getArticleID())) {
+            speechServiceWeakReference.get().getSelected().setStore(event.getStroe());
+            validatePanelView(null);
         }
     }
 

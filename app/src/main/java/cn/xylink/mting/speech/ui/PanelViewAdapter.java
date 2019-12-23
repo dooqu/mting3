@@ -19,6 +19,7 @@ import cn.xylink.mting.MainActivity;
 import cn.xylink.mting.R;
 import cn.xylink.mting.bean.Article;
 import cn.xylink.mting.event.ArticleDetailScrollEvent;
+import cn.xylink.mting.event.StoreRefreshEvent;
 import cn.xylink.mting.speech.SpeechError;
 import cn.xylink.mting.speech.SpeechService;
 import cn.xylink.mting.speech.event.SpeechBufferingEvent;
@@ -144,7 +145,7 @@ public class PanelViewAdapter {
             return;
         }
         isUserClosed = false;
-        if(isScrollHidden == false || event instanceof SpeechStartEvent) {
+        if (isScrollHidden == false || event instanceof SpeechStartEvent) {
             speechPanelView.setVisibility(View.VISIBLE);
         }
 
@@ -204,6 +205,15 @@ public class PanelViewAdapter {
         }
         else {
             progressBar.setVisibility(View.INVISIBLE);
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onArticleFavorited(StoreRefreshEvent event) {
+        if(speechServiceWeakReference.get() != null
+                && speechServiceWeakReference.get().getSelected() != null
+                && speechServiceWeakReference.get().getSelected().getArticleId().equals(event.getArticleID())) {
+            speechServiceWeakReference.get().getSelected().setStore(event.getStroe());
         }
     }
 

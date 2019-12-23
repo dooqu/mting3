@@ -20,6 +20,7 @@ import java.lang.ref.WeakReference;
 import cn.xylink.mting.MainActivity;
 import cn.xylink.mting.R;
 import cn.xylink.mting.bean.Article;
+import cn.xylink.mting.event.StoreRefreshEvent;
 import cn.xylink.mting.speech.data.ArticleDataProvider;
 import cn.xylink.mting.speech.event.SpeechEvent;
 import cn.xylink.mting.speech.event.SpeechFavorArticleEvent;
@@ -205,22 +206,25 @@ public class SpeechForegroundServiceAdapter {
         @Override
         public void invoke(int errorCode, Article data) {
             if (errorCode == 0) {
-                SpeechFavorArticleEvent event = new SpeechFavorArticleEvent(data);
+                //SpeechFavorArticleEvent event = new SpeechFavorArticleEvent(data);
+                StoreRefreshEvent event = new StoreRefreshEvent();
+                event.setStroe(data.getStore());
+                event.setArticleID(data.getArticleId());
                 EventBus.getDefault().post(event);
                 retainForeground();
             }
         }
     };
 
+
+
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onSpeechEvent(SpeechEvent event) {
-        if (event instanceof SpeechFavorArticleEvent
-                && speechServiceWeakReference.get() != null
+    public void onArticleFavoriteChanged(StoreRefreshEvent event) {
+        if (speechServiceWeakReference.get() != null
                 && speechServiceWeakReference.get().getSelected() != null
-                && speechServiceWeakReference.get().getState() == SpeechService.SpeechServiceState.Playing
-                && event.getArticle() != null) {
-            if (speechServiceWeakReference.get().getSelected().getArticleId().equals(event.getArticle().getArticleId())) {
-                speechServiceWeakReference.get().getSelected().setStore(event.getArticle().getStore());
+                && speechServiceWeakReference.get().getState() == SpeechService.SpeechServiceState.Playing) {
+            if (speechServiceWeakReference.get().getSelected().getArticleId().equals(event.getArticleID())) {
+                speechServiceWeakReference.get().getSelected().setStore(event.getStroe());
                 retainForeground();
             }
         }
