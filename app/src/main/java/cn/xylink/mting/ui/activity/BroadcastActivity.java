@@ -13,7 +13,6 @@ import android.view.animation.ScaleAnimation;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.scwang.smartrefresh.layout.footer.ClassicsFooter;
@@ -263,10 +262,13 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
 
     @Override
     public void onBroadcastListError(int code, String errorMsg, boolean isLoadMore) {
-        if (code == 9999) {
-            showNetworlError();
-        } else {
-            showLoadFail();
+        mRefreshLayout.finishLoadMore(false);
+        if (!isLoadMore) {
+            if (code == 9999) {
+                showNetworlError();
+            } else {
+                showLoadFail();
+            }
         }
     }
 
