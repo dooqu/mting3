@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
     tools:context=".ui.fragment.MyFragment">
 
     <!-- TODO: Update blank fragment layout -->
@@ -364,6 +365,7 @@
                     android:layout_marginLeft="@dimen/my_dimen_12"
                     android:layout_marginRight="@dimen/my_dimen_12"
                     android:background="@color/cutting_line" />
+
                 <TextView
                     android:id="@+id/tv_out"
                     android:layout_width="match_parent"
