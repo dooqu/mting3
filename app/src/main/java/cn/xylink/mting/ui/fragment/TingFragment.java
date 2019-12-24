@@ -31,6 +31,7 @@ import cn.xylink.mting.contract.SetTopContact;
 import cn.xylink.mting.contract.SubscribeContact;
 import cn.xylink.mting.contract.TingListContact;
 import cn.xylink.mting.event.ArticleDetailScrollEvent;
+import cn.xylink.mting.event.TingChangeMessageEvent;
 import cn.xylink.mting.event.TingRefreshEvent;
 import cn.xylink.mting.presenter.SetTopPresenter;
 import cn.xylink.mting.presenter.SubscribePresenter;
@@ -270,6 +271,11 @@ public class TingFragment extends BasePresenterFragment implements TingListConta
     @Subscribe
     public void eventRefresh(TingRefreshEvent event) {
         initData();
+    }
+
+    @Subscribe
+    public void eventChangeMessage(TingChangeMessageEvent event) {
+        mAdapter.changeMessage(event.getBroadcastId(),event.getMessage());
     }
 
     @Override
