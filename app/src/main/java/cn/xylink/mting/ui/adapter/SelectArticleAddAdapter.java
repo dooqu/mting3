@@ -69,13 +69,15 @@ public class SelectArticleAddAdapter extends RecyclerView.Adapter<SelectArticleA
             holder.ivImg.setVisibility(View.GONE);
         }
 
-        if (data.isChecked()){
+        if (data.isChecked()) {
             holder.ivAdd.setVisibility(View.GONE);
             holder.tvAdded.setVisibility(View.VISIBLE);
+            holder.tvTitle.setTextColor(mContext.getResources().getColor(R.color.c999999));
+            holder.tvSource.setTextColor(mContext.getResources().getColor(R.color.cccccc));
         }
 
         holder.itemView.setOnClickListener(v -> {
-            if (mOnItemClickListener != null) {
+            if (mOnItemClickListener != null && !data.isChecked()) {
                 mOnItemClickListener.onItemClick(data);
             }
         });
@@ -114,9 +116,9 @@ public class SelectArticleAddAdapter extends RecyclerView.Adapter<SelectArticleA
         void onItemClick(BroadcastInfo article);
     }
 
-    public void changeItemChecked(String id){
-        for (int i = 0;i<mData.size();i++){
-            if (id.equals(mData.get(i).getArticleId())){
+    public void changeItemChecked(String id) {
+        for (int i = 0; i < mData.size(); i++) {
+            if (id.equals(mData.get(i).getArticleId())) {
                 mData.get(i).setChecked(true);
                 notifyItemChanged(i);
             }
