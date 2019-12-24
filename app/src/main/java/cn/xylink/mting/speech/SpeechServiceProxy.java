@@ -5,55 +5,82 @@ import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.os.Build;
 import android.os.IBinder;
+
+import java.lang.ref.WeakReference;
 
 public abstract class SpeechServiceProxy {
     ServiceConnection connection;
     boolean connected;
-    ContextWrapper context;
-    boolean isBinding;
+    boolean binding;
+    boolean started;
+    WeakReference<Context> contextWeakReference;
 
-    public SpeechServiceProxy(ContextWrapper context) {
-        this.context = context;
+    public SpeechServiceProxy(Context context) {
+        this.contextWeakReference = new WeakReference<>(context);
         this.connection = new ServiceConnection() {
             @Override
             public void onServiceConnected(ComponentName name, IBinder service) {
-                isBinding = false;
-                SpeechServiceProxy.this.connected = true;
-                onConnected(true, ((SpeechService.SpeechBinder) service).getService());
+                binding = false;
+                connected = true;
+                if(contextWeakReference.get() != null) {
+                    onConnected(true, ((SpeechService.SpeechBinder) service).getService());
+                }
+                //occupyServiceHandle();
             }
 
             @Override
             public void onServiceDisconnected(ComponentName name) {
-                isBinding = false;
-                SpeechServiceProxy.this.connected = false;
-                onConnected(false, null);
+                binding = false;
+                connected = false;
+                if(contextWeakReference.get() != null) {
+                    onConnected(false, null);
+                }
             }
         };
     }
 
 
-    public boolean bind() {
-        if(isBinding == true) {
+    public synchronized boolean bind() {
+        if(binding == true || connected == true || contextWeakReference.get() == null) {
             return false;
         }
-        isBinding = true;
-        return this.context.bindService(new Intent(context, SpeechService.class), this.connection, context.BIND_AUTO_CREATE);
+        binding = true;
+        Context context = contextWeakReference.get();
+        return context.bindService(new Intent(context, SpeechService.class), this.connection, context.BIND_AUTO_CREATE);
     }
 
-    public void unbind() {
-        if (connected) {
-            this.context.unbindService(this.connection);
+    public synchronized void unbind() {
+        if (connected && contextWeakReference.get() != null) {
+            contextWeakReference.get().unbindService(connection);
         }
-        this.context = null;
+        contextWeakReference.clear();;
         this.connection = null;
         this.connected = false;
-        this.isBinding = false;
+        this.binding = false;
     }
 
     protected abstract void onConnected(boolean connected, SpeechService service);
 
+    public boolean isConnected() {
+        return connected;
+    }
+
     public boolean isBinding() {
-        return this.isBinding;
+        return this.binding;
+    }
+
+    protected void occupyServiceHandle() {
+        if(started ) {
+            return;
+        }
+        Intent serviceIntent = new Intent(contextWeakReference.get(), SpeechService.class);
+        if(Build.VERSION.SDK_INT > Build.VERSION_CODES.O) {
+            contextWeakReference.get().startForegroundService(serviceIntent);
+        }
+        else {
+            contextWeakReference.get().startService(serviceIntent);
+        }
     }
 }

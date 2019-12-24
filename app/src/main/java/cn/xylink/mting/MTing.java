@@ -4,6 +4,7 @@ import android.app.Application;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Environment;
 import android.util.Log;
 
@@ -83,6 +84,17 @@ public class MTing extends Application {
 
         clearAudioCache();
         Intent serviceIntent = new Intent(this, SpeechService.class);
+        startService(serviceIntent);
+        /*
+        Intent serviceIntent = new Intent(this, SpeechService.class);
+        if(Build.VERSION.SDK_INT > Build.VERSION_CODES.O) {
+            startForegroundService(serviceIntent);
+        }
+        else {
+            startService(serviceIntent);
+        }
+
+         */
         /*
         String defaultRole = String.valueOf(SharedPreHelper.getInstance(this).getSharedPreference("SPEECH_ROLE", "XiaoIce"));
         String defaultSpeed = String.valueOf(SharedPreHelper.getInstance(this).getSharedPreference("SPEECH_SPEED", "SPEECH_SPEED_NORMAL"));
@@ -90,7 +102,6 @@ public class MTing extends Application {
         serviceIntent.putExtra("speed", defaultSpeed);
 
          */
-        startService(serviceIntent);
 
         try {
             checkOnlineUpgrade();

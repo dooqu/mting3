@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
+
 import android.app.Service;
 import android.bluetooth.BluetoothA2dp;
 import android.content.BroadcastReceiver;
@@ -11,9 +12,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Binder;
+import android.os.Build;
 import android.os.IBinder;
 import android.util.Log;
+
 import org.greenrobot.eventbus.EventBus;
+
 import cn.xylink.mting.bean.Article;
 import cn.xylink.mting.speech.data.ArticleDataProvider;
 import cn.xylink.mting.speech.list.DynamicSpeechList;
@@ -128,6 +132,7 @@ public class SpeechService extends Service {
 
     @Override
     public void onCreate() {
+        Log.d("SpeechService", "onCreate");
         super.onCreate();
         initService();
         initReceiver();
@@ -139,7 +144,6 @@ public class SpeechService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.d("SpeechService", "onStartCommand");
-
         if (intent != null) {
             String roleValue = intent.getStringExtra("role");
             String speedValue = intent.getStringExtra("speed");
@@ -155,7 +159,6 @@ public class SpeechService extends Service {
     public void onDestroy() {
         Log.d(TAG, "SpeechService.onDestroy");
         super.onDestroy();
-
         unregisterReceiver(a2dpReceiver);
         isReleased = true;
         speechor.reset();
@@ -288,7 +291,8 @@ public class SpeechService extends Service {
         //articleDataProvider.readArticle(article, progress, deleteFromList, ((errorCode, articleResult) -> {
         //EventBus.getDefault().post(new SpeechArticleStatusSavedOnServerEvent(errorCode, "", articleResult));
         //}));
-        if (progress == 1) {
+        if (progress == 1 && getSpeechList() instanceof UnreadSpeechList) {
+            EventBus.getDefault().post(new SpeechArticleReadedEvent(article));
             EventBus.getDefault().post(new SpeechEndEvent(article, progress));
         }
 
@@ -614,9 +618,9 @@ public class SpeechService extends Service {
             @Override
             public void invoke(int errorCode, ArticleDataProvider.ArticleListArgument responseResult) {
                 synchronized (SpeechService.this) {
-                    if(isReleased
-                        || this != articleInfoCallback
-                        || getState() != SpeechServiceState.Loadding) {
+                    if (isReleased
+                            || this != articleInfoCallback
+                            || getState() != SpeechServiceState.Loadding) {
                         return;
                     }
                     if (errorCode != 0) {
@@ -771,7 +775,7 @@ public class SpeechService extends Service {
         return this.speechList != null ? this.speechList.getCurrent() : null;
     }
 
-    public synchronized  boolean isBuffering() {
+    public synchronized boolean isBuffering() {
         return getState() == SpeechServiceState.Playing && isBuffering;
     }
 

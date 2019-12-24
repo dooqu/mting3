@@ -20,6 +20,7 @@ import java.lang.ref.WeakReference;
 import cn.xylink.mting.MainActivity;
 import cn.xylink.mting.R;
 import cn.xylink.mting.bean.Article;
+import cn.xylink.mting.event.StoreRefreshEvent;
 import cn.xylink.mting.speech.data.ArticleDataProvider;
 import cn.xylink.mting.speech.event.SpeechEvent;
 import cn.xylink.mting.speech.event.SpeechFavorArticleEvent;
@@ -67,7 +68,7 @@ public class SpeechForegroundServiceAdapter {
             return;
         }
         else if (speechServiceWeakReference.get().getSelected() == null) {
-            dismissNotif();
+            //dismissNotif();
         }
 
         SpeechService service = speechServiceWeakReference.get();
@@ -83,9 +84,9 @@ public class SpeechForegroundServiceAdapter {
                 //.setDeleteIntent(pendingIntentCancel)
                 .setSmallIcon(R.mipmap.icon_notif)
                 .setLargeIcon(BitmapFactory.decodeResource(service.getResources(), R.mipmap.icon_notify_logo))
-                .setTicker(currentArticle.getTitle())
+                .setTicker(currentArticle != null? currentArticle.getTitle() : "轩辕听")
                 .setContentTitle("轩辕听")
-                .setContentText(currentArticle.getTitle())
+                .setContentText(currentArticle != null? currentArticle.getTitle() : "轩辕听")
                 .setOngoing(true)
                 .setAutoCancel(false)
                 .setShowWhen(false);
@@ -118,7 +119,7 @@ public class SpeechForegroundServiceAdapter {
 
         Notification.Action actionPlay = null, actionNext = null, actionFav = null, actionExit = null;
 
-        boolean favorited = currentArticle.getStore() == 1;
+        boolean favorited = currentArticle != null && currentArticle.getStore() == 1;
 
         switch (service.getState()) {
             case Loadding:
@@ -205,22 +206,25 @@ public class SpeechForegroundServiceAdapter {
         @Override
         public void invoke(int errorCode, Article data) {
             if (errorCode == 0) {
-                SpeechFavorArticleEvent event = new SpeechFavorArticleEvent(data);
+                //SpeechFavorArticleEvent event = new SpeechFavorArticleEvent(data);
+                StoreRefreshEvent event = new StoreRefreshEvent();
+                event.setStroe(data.getStore());
+                event.setArticleID(data.getArticleId());
                 EventBus.getDefault().post(event);
                 retainForeground();
             }
         }
     };
 
+
+
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onSpeechEvent(SpeechEvent event) {
-        if (event instanceof SpeechFavorArticleEvent
-                && speechServiceWeakReference.get() != null
+    public void onArticleFavoriteChanged(StoreRefreshEvent event) {
+        if (speechServiceWeakReference.get() != null
                 && speechServiceWeakReference.get().getSelected() != null
-                && speechServiceWeakReference.get().getState() == SpeechService.SpeechServiceState.Playing
-                && event.getArticle() != null) {
-            if (speechServiceWeakReference.get().getSelected().getArticleId().equals(event.getArticle().getArticleId())) {
-                speechServiceWeakReference.get().getSelected().setStore(event.getArticle().getStore());
+                && speechServiceWeakReference.get().getState() == SpeechService.SpeechServiceState.Playing) {
+            if (speechServiceWeakReference.get().getSelected().getArticleId().equals(event.getArticleID())) {
+                speechServiceWeakReference.get().getSelected().setStore(event.getStroe());
                 retainForeground();
             }
         }
@@ -289,6 +293,7 @@ public class SpeechForegroundServiceAdapter {
                     case "SPEECH_ACTION_EXIT":
                         speechService.pause();
                         stopForeground(true);
+                        context.stopService(new Intent(context, SpeechService.class));
                         break;
                 } // end switch
             } // end sychornized
