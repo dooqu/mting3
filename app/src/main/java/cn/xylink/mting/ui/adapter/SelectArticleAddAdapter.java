@@ -29,7 +29,6 @@ public class SelectArticleAddAdapter extends RecyclerView.Adapter<SelectArticleA
 
     public SelectArticleAddAdapter(Context context) {
         this.mContext = context;
-        mData.add(new BroadcastInfo());
     }
 
     public void setData(List<BroadcastInfo> list) {
@@ -45,7 +44,6 @@ public class SelectArticleAddAdapter extends RecyclerView.Adapter<SelectArticleA
         if (mData != null) {
             mData.clear();
         }
-        mData.add(new BroadcastInfo());
     }
 
     public void setOnItemClickListener(SelectArticleAddAdapter.OnItemClickListener onItemClickListener) {
@@ -69,6 +67,11 @@ public class SelectArticleAddAdapter extends RecyclerView.Adapter<SelectArticleA
             ImageUtils.get().load(holder.ivImg, data.getPicture());
         } else {
             holder.ivImg.setVisibility(View.GONE);
+        }
+
+        if (data.isChecked()){
+            holder.ivAdd.setVisibility(View.GONE);
+            holder.tvAdded.setVisibility(View.VISIBLE);
         }
 
         holder.itemView.setOnClickListener(v -> {
@@ -109,5 +112,14 @@ public class SelectArticleAddAdapter extends RecyclerView.Adapter<SelectArticleA
 
     public interface OnItemClickListener {
         void onItemClick(BroadcastInfo article);
+    }
+
+    public void changeItemChecked(String id){
+        for (int i = 0;i<mData.size();i++){
+            if (id.equals(mData.get(i).getArticleId())){
+                mData.get(i).setChecked(true);
+                notifyItemChanged(i);
+            }
+        }
     }
 }

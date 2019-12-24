@@ -17,11 +17,12 @@ import cn.xylink.mting.R;
 import cn.xylink.mting.base.BaseResponse;
 import cn.xylink.mting.base.BaseResponseArray;
 import cn.xylink.mting.bean.BroadcastInfo;
-import cn.xylink.mting.bean.BroadcastItemAddInfo;
+import cn.xylink.mting.bean.BroadcastItemAddRequest;
 import cn.xylink.mting.bean.BroadcastListRequest;
 import cn.xylink.mting.bean.WorldRequest;
-import cn.xylink.mting.contract.BroadcastItemAddContact;
+import cn.xylink.mting.contract.BroadcastAddArticleContact;
 import cn.xylink.mting.contract.BroadcastListContact;
+import cn.xylink.mting.presenter.BroadcastAddArticlePresenter;
 import cn.xylink.mting.presenter.BroadcastItemAddPresenter;
 import cn.xylink.mting.presenter.BroadcastListPresenter;
 import cn.xylink.mting.ui.adapter.SelectArticleAddAdapter;
@@ -32,9 +33,10 @@ import cn.xylink.mting.widget.HDividerItemDecoration;
  * @author JoDragon
  */
 public class SelectArticleAddActivity extends BasePresenterActivity implements BroadcastListContact.IBroadcastListView
-        , SelectArticleAddAdapter.OnItemClickListener, BroadcastItemAddContact.IBroadcastItemAddView {
+        , SelectArticleAddAdapter.OnItemClickListener, BroadcastAddArticleContact.IBroadcastAddArticleView {
 
     public static final String EXTRA_BROADCASTID = "extra_broadcast_id";
+    public static final String EXTRA_BROADCASTID_TO = "extra_broadcast_id_to";
     public static final String EXTRA_TITLE = "extra_title";
     @BindView(R.id.srl_refreshLayout)
     SmartRefreshLayout mRefreshLayout;
@@ -44,7 +46,7 @@ public class SelectArticleAddActivity extends BasePresenterActivity implements B
     RecyclerView mRecyclerView;
     private BroadcastListPresenter mPresenter;
     private SelectArticleAddAdapter mAdapter;
-    private BroadcastItemAddPresenter mBroadcastItemAddPresenter;
+    private BroadcastAddArticlePresenter mBroadcastAddArticlePresenter;
 
     @Override
     protected void preView() {
@@ -55,8 +57,8 @@ public class SelectArticleAddActivity extends BasePresenterActivity implements B
     protected void initView() {
         mPresenter = (BroadcastListPresenter) createPresenter(BroadcastListPresenter.class);
         mPresenter.attachView(this);
-        mBroadcastItemAddPresenter = (BroadcastItemAddPresenter) createPresenter(BroadcastItemAddPresenter.class);
-        mBroadcastItemAddPresenter.attachView(this);
+        mBroadcastAddArticlePresenter = (BroadcastAddArticlePresenter) createPresenter(BroadcastAddArticlePresenter.class);
+        mBroadcastAddArticlePresenter.attachView(this);
         mAdapter = new SelectArticleAddAdapter(this);
         mAdapter.setOnItemClickListener(this);
         mRecyclerView.setLayoutManager(linearLayoutManager);
@@ -160,26 +162,21 @@ public class SelectArticleAddActivity extends BasePresenterActivity implements B
 
     @Override
     public void onItemClick(BroadcastInfo article) {
-
+        BroadcastItemAddRequest request =new BroadcastItemAddRequest();
+        request.setArticleIds(article.getArticleId());
+        request.setBroadcastId(getIntent().getStringExtra(EXTRA_BROADCASTID_TO));
+        request.doSign();
+        mBroadcastAddArticlePresenter.broadcastAddArticle(request);
     }
 
     @Override
-    public void onBroadcastItemAddListSuccess(List<BroadcastItemAddInfo> data) {
-        //unused
+    public void onBroadcastAddArticleSuccess(BaseResponse baseResponse) {
+        BroadcastItemAddRequest request = (BroadcastItemAddRequest) baseResponse.getData();
+        mAdapter.changeItemChecked(request.getArticleIds());
     }
 
     @Override
-    public void onBroadcastItemAddListError(int code, String errorMsg) {
-        //unused
-    }
-
-    @Override
-    public void onBroadcastItemAddSuccess(BaseResponse<String> baseResponse) {
-
-    }
-
-    @Override
-    public void onBroadcastItemAddError(int code, String errorMsg) {
+    public void onBroadcastAddArticleError(int code, String errorMsg) {
 
     }
 }
