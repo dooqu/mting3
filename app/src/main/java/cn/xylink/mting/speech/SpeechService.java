@@ -12,12 +12,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Binder;
-import android.os.Build;
 import android.os.IBinder;
 import android.util.Log;
 
 import org.greenrobot.eventbus.EventBus;
-
 import cn.xylink.mting.bean.Article;
 import cn.xylink.mting.speech.data.ArticleDataProvider;
 import cn.xylink.mting.speech.list.DynamicSpeechList;
@@ -287,15 +285,12 @@ public class SpeechService extends Service {
 
     private void onSpeechEnd(Article article, float progress, boolean deleteFromList) {
         isBuffering = false;
-        //与云端同步数据状态
-        //articleDataProvider.readArticle(article, progress, deleteFromList, ((errorCode, articleResult) -> {
-        //EventBus.getDefault().post(new SpeechArticleStatusSavedOnServerEvent(errorCode, "", articleResult));
-        //}));
+        article.setProgress(progress);
+        articleDataProvider.readArticle(article, (int errorCode, Article ar)->{});
+        EventBus.getDefault().post(new SpeechEndEvent(article, progress));
         if (progress == 1 && getSpeechList() instanceof UnreadSpeechList) {
             EventBus.getDefault().post(new SpeechArticleReadedEvent(article));
-            EventBus.getDefault().post(new SpeechEndEvent(article, progress));
         }
-
         long duration = new java.util.Date().getTime() - speechStartTimeOfArticle;
         speechDurationOfArticle += (duration > 0) ? duration : 0;
         //articleDataProvider.appendArticleRecord(speechArticleIdOfArticle, speechDurationOfArticle / 1000);

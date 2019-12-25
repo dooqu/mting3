@@ -7,13 +7,10 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
-
 import java.lang.ref.WeakReference;
-import java.util.Timer;
 
 import cn.xylink.mting.MainActivity;
 import cn.xylink.mting.R;
@@ -151,7 +148,7 @@ public class PanelViewAdapter {
 
         Article article = speechService.getSelected();
         SpeechService.SpeechServiceState currentState = speechService.getState();
-        Log.d(TAG, "setVisile,currentState=" + currentState);
+        Log.d(TAG, "setVisile, currentState=" + currentState);
         if (article != null) {
             articleTitle.setText(article.getTitle());
             broadcastTitle.setText("-1".equals(article.getBroadcastId()) ? "待读播单" : (article.getBroadcastTitle() != null ? article.getBroadcastTitle() : article.getBroadcastId()));
@@ -250,15 +247,6 @@ public class PanelViewAdapter {
     }
 
 
-    enum DetailContextState {
-        UpScrolling,
-        DownScrolling,
-        Static
-    }
-
-
-    DetailContextState detailContextState = DetailContextState.Static;
-    Timer scrollTimer = new Timer();
     boolean isScrollHidden = false;
 
     @Subscribe(threadMode = ThreadMode.MAIN)

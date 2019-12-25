@@ -16,10 +16,12 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 
 import cn.xylink.mting.MainActivity;
 import cn.xylink.mting.R;
 import cn.xylink.mting.bean.Article;
+import cn.xylink.mting.event.ArrangeDelNotifEvent;
 import cn.xylink.mting.event.StoreRefreshEvent;
 import cn.xylink.mting.speech.data.ArticleDataProvider;
 import cn.xylink.mting.speech.event.SpeechEvent;
@@ -215,6 +217,21 @@ public class SpeechForegroundServiceAdapter {
             }
         }
     };
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onSpeechListUpdate(ArrangeDelNotifEvent event) {
+        if(speechServiceWeakReference.get() == null
+                || speechServiceWeakReference.get().getState() == SpeechService.SpeechServiceState.Stoped
+                || speechServiceWeakReference.get().getSpeechList().size() <= 0) {
+            return;
+        }
+        String[] artArray = event.getArticleIds().split(",");
+        ArrayList<String> articleIds = new ArrayList<>();
+        for(String ar : artArray) {
+            articleIds.add(ar);
+        }
+        speechServiceWeakReference.get().removeFromSpeechList(articleIds);
+    }
 
 
 
