@@ -431,7 +431,9 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
     void onClick(View view) {
         switch (view.getId()) {
             case R.id.tv_add:
-
+                Intent inte=new Intent(this,SelectBroadcastActivity.class);
+                inte.putExtra(SelectArticleAddActivity.EXTRA_BROADCASTID_TO,getIntent().getStringExtra(EXTRA_BROADCASTID));
+                startActivity(inte);
                 break;
             case R.id.ll_empty:
                 if (mDetailInfo != null || getIntent().getStringExtra(EXTRA_BROADCASTID).startsWith("-")) {
@@ -749,7 +751,7 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
             if (info.getPositin() == 1) {
 //                EventBus.getDefault().post(new TingRefreshEvent());
                 EventBus.getDefault().post(new TingChangeMessageEvent(getIntent().getStringExtra(EXTRA_BROADCASTID),
-                        mAdapter.getArticleList().get(1) != null ? mAdapter.getArticleList().get(1).getTitle() : ""));
+                        mAdapter.getArticleList().size()>1 ? mAdapter.getArticleList().get(1).getTitle() : ""));
             }
             if (mAdapter.getItemCount() == 1) {
                 showEmptyLayout();
@@ -859,7 +861,7 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
         if (Const.SystemBroadcast.SYSTEMBROADCAST_UNREAD.equals(getIntent().getStringExtra(EXTRA_BROADCASTID))) {
             if (event.getArticle().getArticleId().equals(mAdapter.getArticleList().get(1).getArticleId())) {
                 EventBus.getDefault().post(new TingChangeMessageEvent(getIntent().getStringExtra(EXTRA_BROADCASTID),
-                        mAdapter.getArticleList().get(2) != null ? mAdapter.getArticleList().get(2).getTitle() : ""));
+                        mAdapter.getArticleList().size()>2 ? mAdapter.getArticleList().get(2).getTitle() : ""));
             }
             mAdapter.notifyItemRemoe(event.getArticle().getArticleId());
         }

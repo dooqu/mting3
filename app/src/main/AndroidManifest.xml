@@ -32,7 +32,9 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:replace="android:appComponentFactory">
-        <activity android:name=".ui.activity.SelectArticleAddActivity"></activity>
+        <activity android:name=".ui.activity.SelectBroadcastActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"></activity>
+        <activity android:name=".ui.activity.SelectArticleAddActivity" />
         <activity android:name=".ui.activity.SearchActivity" />
         <activity android:name=".ui.activity.ArrangeActivity" />
 
