@@ -114,7 +114,7 @@ public class ArticleDetail2Info {
     private int store;
     private long createAt;
     private long updateAt;
-    private int progress;
+    private float progress;
     private String shareUrl;
     private int inType;
     private int checked;
@@ -207,11 +207,11 @@ public class ArticleDetail2Info {
         this.updateAt = updateAt;
     }
 
-    public int getProgress() {
+    public float getProgress() {
         return progress;
     }
 
-    public void setProgress(int progress) {
+    public void setProgress(float progress) {
         this.progress = progress;
     }
 
