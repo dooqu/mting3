@@ -5,10 +5,8 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 
-import java.util.FormatFlagsConversionMismatchException;
 import java.util.List;
 
-import cn.xylink.mting.base.BaseRequest;
 import cn.xylink.mting.base.BaseResponse;
 import cn.xylink.mting.bean.Article;
 import cn.xylink.mting.contract.IBaseView;
@@ -24,7 +22,6 @@ import cn.xylink.mting.utils.OkGoUtils;
 import cn.xylink.mting.model.data.RemoteUrl;
 import cn.xylink.mting.speech.SoundEffector;
 import cn.xylink.mting.utils.GsonUtil;
-import cn.xylink.mting.utils.T;
 
 
 /*
