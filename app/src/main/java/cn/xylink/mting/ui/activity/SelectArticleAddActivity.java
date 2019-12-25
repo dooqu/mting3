@@ -9,6 +9,8 @@ import android.widget.TextView;
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.scwang.smartrefresh.layout.footer.ClassicsFooter;
 
+import org.greenrobot.eventbus.EventBus;
+
 import java.util.List;
 
 import butterknife.BindView;
@@ -22,6 +24,8 @@ import cn.xylink.mting.bean.BroadcastListRequest;
 import cn.xylink.mting.bean.WorldRequest;
 import cn.xylink.mting.contract.BroadcastAddArticleContact;
 import cn.xylink.mting.contract.BroadcastListContact;
+import cn.xylink.mting.event.BroadcastRefreshEvent;
+import cn.xylink.mting.event.TingRefreshEvent;
 import cn.xylink.mting.presenter.BroadcastAddArticlePresenter;
 import cn.xylink.mting.presenter.BroadcastItemAddPresenter;
 import cn.xylink.mting.presenter.BroadcastListPresenter;
@@ -115,6 +119,7 @@ public class SelectArticleAddActivity extends BasePresenterActivity implements B
         }
     }
 
+    private boolean isAdded= false;
     @Override
     public void onBroadcastListSuccess(BaseResponseArray<BroadcastInfo> baseResponse, boolean isLoadMore) {
         List<BroadcastInfo> data = baseResponse.data;
@@ -171,6 +176,7 @@ public class SelectArticleAddActivity extends BasePresenterActivity implements B
 
     @Override
     public void onBroadcastAddArticleSuccess(BaseResponse baseResponse) {
+        isAdded = true;
         BroadcastItemAddRequest request = (BroadcastItemAddRequest) baseResponse.getData();
         mAdapter.changeItemChecked(request.getArticleIds());
     }
@@ -178,5 +184,14 @@ public class SelectArticleAddActivity extends BasePresenterActivity implements B
     @Override
     public void onBroadcastAddArticleError(int code, String errorMsg) {
 
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (isAdded){
+            EventBus.getDefault().post(new BroadcastRefreshEvent());
+            EventBus.getDefault().post(new TingRefreshEvent());
+        }
+        super.onDestroy();
     }
 }

@@ -324,5 +324,9 @@ public class RemoteUrl {
     public static String getReportSaveUrl() {
         return URL_BASE + "/api/art/v1/report/save";
     }
+    //播单列表
+    public static String getBroadcastListWithNumUrl() {
+        return URL_BASE + "/api/art/v1/broadcast/all_list";
+    }
 
 }
