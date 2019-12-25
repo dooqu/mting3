@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/cef473f"
+    android:backgroundTint="#FFFFFF"
+    android:orientation="vertical"
+    android:fitsSystemWindows="true"
+    tools:context=".ui.activity.SelectBroadcastActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:background="@color/cef473f"
+        android:backgroundTint="#FFFFFF"
+        android:elevation="1dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="50dp"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="添加文章"
+            android:textColor="@color/c333333"
+            android:textSize="24sp" />
+
+        <TextView
+            android:id="@+id/tv_select_broadcast"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:paddingRight="16dp"
+            android:text="完成"
+            android:textColor="@color/c333333"
+            android:textSize="18sp" />
+
+    </LinearLayout>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rv_select_broadcast"
+        android:layout_width="match_parent"
+        android:background="@color/bg_default"
+        android:paddingBottom="16dp"
+        android:layout_height="match_parent" />
+
+</LinearLayout>
