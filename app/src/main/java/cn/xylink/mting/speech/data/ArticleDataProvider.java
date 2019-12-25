@@ -14,6 +14,7 @@ import cn.xylink.mting.bean.Article;
 import cn.xylink.mting.contract.IBaseView;
 import cn.xylink.mting.model.ArticleInfoRequest;
 import cn.xylink.mting.model.ArticleInfoResponse;
+import cn.xylink.mting.model.ArticleReadRequest;
 import cn.xylink.mting.model.FavoriteArticleRequest;
 import cn.xylink.mting.model.SpeechListRequest;
 import cn.xylink.mting.model.SpeechListResponse;
@@ -277,6 +278,57 @@ public class ArticleDataProvider {
 
     public void unfavorArticle(Article article, ArticleLoader<Article> callback) {
         FavoriteArticleRequest.UnfavorRequest request = new FavoriteArticleRequest.UnfavorRequest(article.getArticleId());
+        request.setToken(ContentManager.getInstance().getLoginToken());
+        request.doSign();
+
+        OkGoUtils.getInstance().postData(
+                new IBaseView() {
+                    @Override
+                    public void showLoading() {
+                    }
+
+                    @Override
+                    public void hideLoading() {
+                    }
+                },
+                RemoteUrl.getDelStoreUrl(),
+                GsonUtil.GsonString(request), BaseResponse.class,
+                new OkGoUtils.ICallback<BaseResponse>() {
+                    @Override
+                    public void onStart() {
+                    }
+
+                    @Override
+                    public void onFailure(int code, String errorMsg) {
+                        if (callback != null) {
+                            callback.invoke(code, null);
+                        }
+                    }
+
+                    @Override
+                    public void onSuccess(BaseResponse response) {
+                        if (response.getCode() == 200) {
+                            article.setStore(0);
+                            callback.invoke(0, article);
+                        }
+                        else {
+                            onFailure(response.getCode(), response.getMessage());
+                        }
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        Log.d("xylink", "onComplete");
+                    }
+                });
+    }
+
+    public void readArticle(Article article, ArticleLoader<Article> callback) {
+        ArticleReadRequest request = new ArticleReadRequest();
+        request.setArticleId(article.getArticleId());
+        request.setBroadcastId(article.getBroadcastId());
+        request.setProgress(article.getProgress());
+        request.setRead(article.getProgress() == 1? 1 : 0);
         request.setToken(ContentManager.getInstance().getLoginToken());
         request.doSign();
 

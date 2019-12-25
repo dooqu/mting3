@@ -5,6 +5,7 @@ import android.content.Context;
 import android.media.AudioManager;
 import android.util.Log;
 
+import java.lang.ref.WeakReference;
 import java.util.List;
 
 import static android.content.Context.AUDIO_SERVICE;
@@ -16,7 +17,6 @@ Speechor 装饰器
 public abstract class SpeechEngineWrapper implements Speechor {
     static String TAG = SpeechEngineWrapper.class.getSimpleName();
 
-    Context context;
     Speechor speechor;
     Speechor baiduSpeechor;
     Speechor xiaoiceSpeechor;
@@ -25,7 +25,6 @@ public abstract class SpeechEngineWrapper implements Speechor {
 
 
     public SpeechEngineWrapper(Context context) {
-        this.context = context;
         initEngine(context);
     }
 
@@ -233,7 +232,7 @@ public abstract class SpeechEngineWrapper implements Speechor {
                     //如果原来在播放状态，继续播放
                     speechor.setFragmentIndex(preIndex);
 
-                    if(preState == SpeechorState.SpeechorStatePlaying) {
+                    if (preState == SpeechorState.SpeechorStatePlaying) {
                         speechor.seek(preIndex);
                     }
                 }
