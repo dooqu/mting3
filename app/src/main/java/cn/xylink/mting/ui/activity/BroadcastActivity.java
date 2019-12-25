@@ -13,7 +13,6 @@ import android.view.animation.ScaleAnimation;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.scwang.smartrefresh.layout.footer.ClassicsFooter;
@@ -52,6 +51,7 @@ import cn.xylink.mting.contract.SubscribeContact;
 import cn.xylink.mting.event.ArticleDetailScrollEvent;
 import cn.xylink.mting.event.BroadcastRefreshEvent;
 import cn.xylink.mting.event.StoreRefreshEvent;
+import cn.xylink.mting.event.TingChangeMessageEvent;
 import cn.xylink.mting.event.TingRefreshEvent;
 import cn.xylink.mting.presenter.AddStorePresenter;
 import cn.xylink.mting.presenter.BroadcastAllDelPresenter;
@@ -62,6 +62,7 @@ import cn.xylink.mting.presenter.ReportPresenter;
 import cn.xylink.mting.presenter.SetTopPresenter;
 import cn.xylink.mting.presenter.Share2WorldPresenter;
 import cn.xylink.mting.presenter.SubscribePresenter;
+import cn.xylink.mting.speech.event.SpeechArticleReadedEvent;
 import cn.xylink.mting.ui.adapter.BroadcastAdapter;
 import cn.xylink.mting.ui.dialog.BottomTingDialog;
 import cn.xylink.mting.ui.dialog.BottomTingItemModle;
@@ -261,10 +262,13 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
 
     @Override
     public void onBroadcastListError(int code, String errorMsg, boolean isLoadMore) {
-        if (code == 9999) {
-            showNetworlError();
-        } else {
-            showLoadFail();
+        mRefreshLayout.finishLoadMore(false);
+        if (!isLoadMore) {
+            if (code == 9999) {
+                showNetworlError();
+            } else {
+                showLoadFail();
+            }
         }
     }
 
@@ -568,7 +572,7 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
     public void onAddStoreSuccess(BaseResponse response) {
         T.showCustomCenterToast("收藏成功");
         StoreRefreshEvent event = new StoreRefreshEvent();
-        event.setArticleID(((AddStoreRequest)response.getData()).getArticleId());
+        event.setArticleID(((AddStoreRequest) response.getData()).getArticleId());
         event.setStroe(1);
         EventBus.getDefault().post(event);
         initList();
@@ -583,7 +587,7 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
     public void onDelStoreSuccess(BaseResponse response) {
         T.showCustomCenterToast("取消收藏成功");
         StoreRefreshEvent event = new StoreRefreshEvent();
-        event.setArticleID(((ArticleIdsRequest)response.getData()).getArticleIds());
+        event.setArticleID(((ArticleIdsRequest) response.getData()).getArticleIds());
         event.setStroe(0);
         EventBus.getDefault().post(event);
         initList();
@@ -742,10 +746,12 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
         T.showCustomCenterToast("删除成功");
         if (info != null) {
             mAdapter.notifyItemRemoe(info.getPositin());
-            if (info.getPositin()==1){
-                EventBus.getDefault().post(new TingRefreshEvent());
+            if (info.getPositin() == 1) {
+//                EventBus.getDefault().post(new TingRefreshEvent());
+                EventBus.getDefault().post(new TingChangeMessageEvent(getIntent().getStringExtra(EXTRA_BROADCASTID),
+                        mAdapter.getArticleList().get(1) != null ? mAdapter.getArticleList().get(1).getTitle() : ""));
             }
-            if (mAdapter.getItemCount()==1){
+            if (mAdapter.getItemCount() == 1) {
                 showEmptyLayout();
             }
         } else {
@@ -767,7 +773,7 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
 
     @Override
     public void onShare2WorldError(int code, String errorMsg) {
-        if (code==-962){
+        if (code == -962) {
             TipDialog dialog = new TipDialog(this);
             dialog.setMsg("播单的标题已被使用，请修改", "取消", "去修改", new TipDialog.OnTipListener() {
                 @Override
@@ -781,7 +787,7 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
                 }
             });
             dialog.show();
-        }else {
+        } else {
             T.showCustomCenterToast("分享失败");
         }
     }
@@ -846,6 +852,17 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
     @Subscribe
     public void eventRefresh(BroadcastRefreshEvent event) {
         initList();
+    }
+
+    @Subscribe
+    public void eventReaded(SpeechArticleReadedEvent event) {
+        if (Const.SystemBroadcast.SYSTEMBROADCAST_UNREAD.equals(getIntent().getStringExtra(EXTRA_BROADCASTID))) {
+            if (event.getArticle().getArticleId().equals(mAdapter.getArticleList().get(1).getArticleId())) {
+                EventBus.getDefault().post(new TingChangeMessageEvent(getIntent().getStringExtra(EXTRA_BROADCASTID),
+                        mAdapter.getArticleList().get(2) != null ? mAdapter.getArticleList().get(2).getTitle() : ""));
+            }
+            mAdapter.notifyItemRemoe(event.getArticle().getArticleId());
+        }
     }
 
     @Subscribe

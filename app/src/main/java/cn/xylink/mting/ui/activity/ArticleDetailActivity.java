@@ -93,8 +93,8 @@ public class ArticleDetailActivity extends BasePresenterActivity implements Arti
     ImageView icoPlay;
     @BindView(R.id.ico_detail_addto)
     ImageView icoAddTo;
-    //    @BindView(R.id.scrollView_detail)
-//    NestedScrollView scrollView;
+    @BindView(R.id.scrollView_detail)
+    NestedScrollView scrollView;
     @BindView(R.id.rv_play)
     RelativeLayout rvPlay;
     @BindView(R.id.rv_broadcast_detail)
@@ -133,7 +133,7 @@ public class ArticleDetailActivity extends BasePresenterActivity implements Arti
 
     @Override
     protected void preView() {
-        setContentView(R.layout.activity_article_detail2);
+        setContentView(R.layout.activity_article_detail3);
     }
 
     @Override
@@ -161,7 +161,9 @@ public class ArticleDetailActivity extends BasePresenterActivity implements Arti
                 rvBroadcastDetail.setVisibility(View.VISIBLE);
                 doGetBroadcastDetail(broadcastId);
             }
-        } else rvBroadcastDetail.setVisibility(View.GONE);
+        } else {
+            rvBroadcastDetail.setVisibility(View.GONE);
+        }
 
         doGetArticleDetail();
         mWebView.setOnScrollChangedCallback(new ObservableWebView.OnScrollChangedCallback() {
@@ -177,19 +179,19 @@ public class ArticleDetailActivity extends BasePresenterActivity implements Arti
                 }
             }
         });
-//        scrollView.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
-//            @Override
-//            public void onScrollChange(NestedScrollView nestedScrollView, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
-//                if (oldScrollY - scrollY > DensityUtil.dip2sp(ArticleDetailActivity.this, 5)) {
-//                    L.v("手指上滑......");
-//                    EventBus.getDefault().post(new ArticleDetailScrollEvent("glide"));
-//                }
-//                if (scrollY - oldScrollY > DensityUtil.dip2sp(ArticleDetailActivity.this, 5)) {
-//                    L.v("手指下滑......");
-//                    EventBus.getDefault().post(new ArticleDetailScrollEvent("upGlide"));
-//                }
-//            }
-//        });
+        scrollView.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
+            @Override
+            public void onScrollChange(NestedScrollView nestedScrollView, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
+                if (oldScrollY - scrollY > DensityUtil.dip2sp(ArticleDetailActivity.this, 5)) {
+                    L.v("手指上滑......");
+                    EventBus.getDefault().post(new ArticleDetailScrollEvent("glide"));
+                }
+                if (scrollY - oldScrollY > DensityUtil.dip2sp(ArticleDetailActivity.this, 5)) {
+                    L.v("手指下滑......");
+                    EventBus.getDefault().post(new ArticleDetailScrollEvent("upGlide"));
+                }
+            }
+        });
         mBottomTingDialog = new BottomTingDialog(this, this);
         startShareAnim();
     }
@@ -313,37 +315,43 @@ public class ArticleDetailActivity extends BasePresenterActivity implements Arti
         tvArticleContent.setText(info.getContent());
         userId = info.getUserId();
         articleTitle = info.getTitle();
-        articleURL = info.getShareUrl();
-        WebSettings webSettings = mWebView.getSettings();
-        webSettings.setJavaScriptCanOpenWindowsAutomatically(true);
-        webSettings.setJavaScriptEnabled(true);
-        webSettings.setSupportZoom(true);
-        webSettings.setBuiltInZoomControls(true);
-        webSettings.setUseWideViewPort(true);
-        webSettings.setCacheMode(WebSettings.LOAD_DEFAULT);
-        webSettings.setLayoutAlgorithm(WebSettings.LayoutAlgorithm.SINGLE_COLUMN);
-        webSettings.setLoadWithOverviewMode(true);
-        webSettings.setAppCacheEnabled(true);
-        webSettings.setDomStorageEnabled(true);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            webSettings.setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
-        }
-        mWebView.setWebViewClient(new WebViewClient() {
-            @Override
-            public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
-                handler.proceed();
-                super.onReceivedSslError(view, handler, error);
+        articleURL = info.getUrl();
+        inType = info.getInType();
+        if (inType != 1 ) { //inType==1表示手动创建
+            scrollView.setVisibility(View.GONE);
+            mWebView.setVisibility(View.VISIBLE);
+            WebSettings webSettings = mWebView.getSettings();
+            webSettings.setJavaScriptCanOpenWindowsAutomatically(true);
+            webSettings.setJavaScriptEnabled(true);
+            webSettings.setSupportZoom(true);
+            webSettings.setBuiltInZoomControls(true);
+            webSettings.setUseWideViewPort(true);
+            webSettings.setCacheMode(WebSettings.LOAD_DEFAULT);
+            webSettings.setLayoutAlgorithm(WebSettings.LayoutAlgorithm.SINGLE_COLUMN);
+            webSettings.setLoadWithOverviewMode(true);
+            webSettings.setAppCacheEnabled(true);
+            webSettings.setDomStorageEnabled(true);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                webSettings.setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
             }
-        });
+            mWebView.setWebViewClient(new WebViewClient() {
+                @Override
+                public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
+                    handler.proceed();
+                    super.onReceivedSslError(view, handler, error);
+                }
+            });
 //        new Handler().postDelayed(new Runnable() {
 //            @Override
 //            public void run() {
 //
 //            }
 //        },3000);
-        mWebView.loadUrl(articleURL);
-
-        inType = info.getInType();
+            mWebView.loadUrl(articleURL);
+        } else {
+            mWebView.setVisibility(View.GONE);
+            scrollView.setVisibility(View.VISIBLE);
+        }
         //articleId应该跟其他activity接收过来的是一致的，不然就有问题，哈哈~
         this.articleId = info.getArticleId();
         //由此判断该文章是否是用户自己创建的,如果获取的文章的用户id跟userInfo中的一致，则表明该文章是自己创建的
@@ -595,6 +603,7 @@ public class ArticleDetailActivity extends BasePresenterActivity implements Arti
     @Override
     public void onBroadcastDetailError(int code, String errorMsg) {
         //如果获取播单详情失败 就不显示播单这块儿的布局
+//        scrollView.setVisibility(View.GONE);
         rvBroadcastDetail.setVisibility(View.GONE);
 
     }

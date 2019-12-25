@@ -117,4 +117,15 @@ public class TingAdapter extends RecyclerView.Adapter<TingAdapter.ViewHolder> {
 
         void onItemLongClick(TingInfo article);
     }
+
+    public void changeMessage(String id, String msg){
+        if (mData!=null&&mData.size()>0){
+            for (int i=0;i<mData.size();i++){
+                if (id.equals(mData.get(i).getBroadcastId())){
+                    mData.get(i).setMessage(msg);
+                    notifyItemChanged(i);
+                }
+            }
+        }
+    }
 }
