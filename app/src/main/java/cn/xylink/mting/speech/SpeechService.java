@@ -483,10 +483,11 @@ public class SpeechService extends Service {
         if (getState() == SpeechServiceState.Paused || getState() == SpeechServiceState.Error) {
             //处理特殊情况，例如在loadding过程中（加载列表、加载正文）被用户pause掉
             //或者干脆加载正文失败，那么getContent == null
-            if (this.isSimulatePaused == true || getSelected().getContent() == null) {
+            if (isSimulatePaused == true || getSelected().getContent() == null) {
+                isSimulatePaused = false;
                 //如果getContent != null，说明正文被加载了，没必要再次调用，直接seek:0
                 if (getSelected().getContent() != null) {
-                    result = seek(0) > 0;
+                    result = seek(getSelected().getProgress() == 1? 0.0f : getSelected().getProgress()) > 0;
                     if (result) {
                         onSpeechResume(speechList.getCurrent());
                         return result;
