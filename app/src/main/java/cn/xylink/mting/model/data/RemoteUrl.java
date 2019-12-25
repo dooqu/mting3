@@ -56,6 +56,11 @@ public class RemoteUrl {
         return URL_BASE + "/api/art/v1/article/existread/delete";
     }
 
+
+    public static String getArticleReadedUrl() {
+        return URL_BASE + "/api/art/v1/article/read";
+    }
+
     //删除收藏
     public static String getDelStoreUrl() {
         return URL_BASE + "/api/art/v1/article/store/delete";

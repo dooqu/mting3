@@ -339,7 +339,7 @@ public class ArticleDataProvider {
                     public void hideLoading() {
                     }
                 },
-                RemoteUrl.getDelStoreUrl(),
+                RemoteUrl.getArticleReadedUrl(),
                 GsonUtil.GsonString(request), BaseResponse.class,
                 new OkGoUtils.ICallback<BaseResponse>() {
                     @Override
@@ -356,7 +356,6 @@ public class ArticleDataProvider {
                     @Override
                     public void onSuccess(BaseResponse response) {
                         if (response.getCode() == 200) {
-                            article.setStore(0);
                             callback.invoke(0, article);
                         }
                         else {
@@ -423,6 +422,7 @@ public class ArticleDataProvider {
                             article.setRead(responseArt.getRead());
                             article.setShareUrl(responseArt.getShareUrl());
                             article.setStore(responseArt.getStore());
+                            article.setProgress(responseArt.getProgress());
 
                             ArticleListArgument argumentInner = articleListArgument;
 

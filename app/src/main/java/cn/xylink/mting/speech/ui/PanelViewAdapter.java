@@ -1,7 +1,10 @@
 package cn.xylink.mting.speech.ui;
 
+import android.graphics.drawable.Animatable;
+import android.graphics.drawable.Drawable;
 import android.util.Log;
 import android.view.View;
+import android.view.animation.Animation;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
@@ -47,6 +50,8 @@ public class PanelViewAdapter {
     ProgressBar progressBar;
     ImageView closeIcon;
     Article currentArticle;
+    Drawable drawablePlay;
+    Drawable drawablePause;
 
     public static boolean isUserClosed;
 
@@ -75,6 +80,9 @@ public class PanelViewAdapter {
     }
 
     protected void onCreatePanelView() {
+        drawablePause = contextRef.get().getDrawable(R.drawable.nsvg_play);
+        drawablePlay = contextRef.get().getDrawable(R.drawable.nsvg_pause);
+
         speechPanelView = View.inflate(contextRef.get(), R.layout.view_control_panel, null);
         RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
         if (!(contextRef.get() instanceof MainActivity)) {
@@ -192,13 +200,24 @@ public class PanelViewAdapter {
     }
 
     private void setPlayingState(boolean isPlaying) {
+        setPlayingState(isPlaying, false);
+    }
+
+    private void setPlayingState(boolean isPlaying, boolean isInit) {
         this.isPlaying = isPlaying;
-        statusIcon.setImageResource(isPlaying ? R.mipmap.panel_pause : R.mipmap.panel_play);
+        Drawable destDrawable = isPlaying ? drawablePause : drawablePlay;
+        boolean needChange = statusIcon.getDrawable() != destDrawable;
+        if(needChange == true) {
+            statusIcon.setImageDrawable(isPlaying ? drawablePause : drawablePlay);
+            if(isInit == false) {
+                ((Animatable)statusIcon.getDrawable()).start();
+            }
+        }
     }
 
     private void displayLoaddingAnim(boolean display) {
         if (display) {
-            progressBar.setVisibility(View.VISIBLE);
+            progressBar.setVisibility(View.INVISIBLE);
         }
         else {
             progressBar.setVisibility(View.INVISIBLE);

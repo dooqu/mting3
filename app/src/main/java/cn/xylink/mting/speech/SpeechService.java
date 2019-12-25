@@ -11,6 +11,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.os.Binder;
 import android.os.IBinder;
 import android.util.Log;
@@ -134,7 +135,19 @@ public class SpeechService extends Service {
         super.onCreate();
         initService();
         initReceiver();
-        setRole(Speechor.SpeechorRole.XiaoYao);
+
+        SharedPreferences sp = getSharedPreferences("speech_config", Context.MODE_PRIVATE);
+        Speechor.SpeechorRole defaultRole = Speechor.SpeechorRole.valueOf(sp.getString("role", "XiaoIce"));
+        Speechor.SpeechorSpeed defaultSpeed = Speechor.SpeechorSpeed.valueOf(sp.getString("speed", "SPEECH_SPEED_MULTIPLE_1_POINT_5"));
+        setRole(defaultRole);
+        setSpeed(defaultSpeed);
+
+        try {
+            resumeLastState();
+        }
+        catch (Exception ex) {
+            Log.d(TAG, ex.getMessage());
+        }
         foregroundServiceAdapter = new SpeechForegroundServiceAdapter(this);
     }
 
@@ -147,8 +160,6 @@ public class SpeechService extends Service {
             String speedValue = intent.getStringExtra("speed");
             Speechor.SpeechorRole currRole = roleValue != null && roleValue.trim() != "" ? Speechor.SpeechorRole.valueOf(roleValue) : Speechor.SpeechorRole.XiaoIce;
             Speechor.SpeechorSpeed currSpeed = speedValue != null && speedValue.trim() != "" ? Speechor.SpeechorSpeed.valueOf(speedValue) : Speechor.SpeechorSpeed.SPEECH_SPEED_NORMAL;
-            this.setRole(currRole);
-            this.setSpeed(currSpeed);
         }
         return START_STICKY;
     }
@@ -240,6 +251,37 @@ public class SpeechService extends Service {
         registerReceiver(a2dpReceiver, a2dpIntent);
     }
 
+    private void updatePlayState(String serieId, String articleId, float progress) {
+        SharedPreferences sp = getSharedPreferences("speech_config", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sp.edit();
+        if(serieId == null || articleId == null) {
+            editor.remove("serie_id");
+            editor.remove("article_id");
+            editor.remove("progress");
+        }
+        else {
+            editor.putString("serie_id", serieId);
+            editor.putString("article_id", articleId);
+            editor.putFloat("progress", progress);
+        }
+        editor.apply();
+    }
+
+
+    private Article getLastPlayState() {
+        SharedPreferences sp = getSharedPreferences("speech_config", Context.MODE_PRIVATE);
+        if(sp.getString("serie_id", null) != null && sp.getString("article_id", null) != null) {
+            Article article = new Article();
+            article.setBroadcastId(sp.getString("serie_id", null));
+            article.setArticleId(sp.getString("article_id", null));
+            article.setProgress(sp.getFloat("progress", 0));
+
+            return article;
+        }
+        return null;
+    }
+
+
 
     private void onSpeechSerieLoadding(Article article) {
         isBuffering = false;
@@ -267,6 +309,7 @@ public class SpeechService extends Service {
         isBuffering = false;
         article.setProgress((float) fragmentIndex / (float) fragments.size());
         foregroundServiceAdapter.retainForeground();
+        updatePlayState(article.getBroadcastId(), article.getArticleId(), article.getProgress());
         EventBus.getDefault().post(new SpeechProgressEvent(fragmentIndex, fragments, article));
     }
 
@@ -293,6 +336,7 @@ public class SpeechService extends Service {
         }
         long duration = new java.util.Date().getTime() - speechStartTimeOfArticle;
         speechDurationOfArticle += (duration > 0) ? duration : 0;
+        updatePlayState(null, null, 0);
         //articleDataProvider.appendArticleRecord(speechArticleIdOfArticle, speechDurationOfArticle / 1000);
     }
 
@@ -313,8 +357,9 @@ public class SpeechService extends Service {
 
     private void onSpeechStoped(SpeechStopEvent.StopReason reason) {
         isBuffering = false;
-        EventBus.getDefault().post(new SpeechStopEvent(reason));
+        updatePlayState(null, null, 0);
         foregroundServiceAdapter.stopForeground(true);
+        EventBus.getDefault().post(new SpeechStopEvent(reason));
     }
 
     public synchronized SpeechServiceState getState() {
@@ -503,6 +548,10 @@ public class SpeechService extends Service {
 
     public synchronized void setSpeed(Speechor.SpeechorSpeed speed) {
         this.speechor.setSpeed(speed);
+        SharedPreferences sp = getSharedPreferences("speech_config", Context.MODE_PRIVATE);
+        SharedPreferences.Editor configEditor = sp.edit();
+        configEditor.putString("speed", getSpeed().toString());
+        configEditor.apply();
     }
 
     public synchronized Speechor.SpeechorSpeed getSpeed() {
@@ -516,7 +565,16 @@ public class SpeechService extends Service {
 
     ArticleDataProvider.ArticleLoader<List<Article>> dataProviderCallback = null;
 
-    public synchronized void loadAndPlay(Article article) throws Exception {
+    public synchronized boolean resumeLastState() throws Exception{
+        Article lastArticle = getLastPlayState();
+        if(lastArticle != null) {
+            loadSeriesAndArticle(lastArticle, true);
+            return true;
+        }
+        return false;
+    }
+
+    private synchronized void loadSeriesAndArticle(Article article, boolean prepareOnly) throws Exception {
         if (article.getArticleId() == null || article.getBroadcastId() == null) {
             throw new Exception("The fields articleId or broadcastId can not be nullable.");
         }
@@ -552,6 +610,9 @@ public class SpeechService extends Service {
                             //有可能这里被pause掉了
                             if (getState() == SpeechServiceState.Loadding) {
                                 playSelected();
+                                if(prepareOnly) {
+                                    pause();
+                                }
                             }
                         }
                     }
@@ -571,7 +632,14 @@ public class SpeechService extends Service {
         }
         else {
             play(article.getArticleId());
+            if(prepareOnly) {
+                pause();
+            }
         }
+    }
+
+    public synchronized void loadAndPlay(Article article) throws Exception {
+        loadSeriesAndArticle(article, false);
     }
 
 
@@ -690,6 +758,10 @@ public class SpeechService extends Service {
 
     public synchronized void setRole(Speechor.SpeechorRole role) {
         speechor.setRole(role);
+        SharedPreferences sp = getSharedPreferences("speech_config", Context.MODE_PRIVATE);
+        SharedPreferences.Editor configEditor = sp.edit();
+        configEditor.putString("role", getRole().toString());
+        configEditor.apply();
     }
 
 

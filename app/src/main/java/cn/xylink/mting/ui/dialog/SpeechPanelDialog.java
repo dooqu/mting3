@@ -6,8 +6,10 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -17,6 +19,8 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.SeekBar;
 import android.widget.TextView;
+
+import com.tencent.wxop.stat.event.EventType;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -44,6 +48,7 @@ import cn.xylink.mting.ui.activity.BaseActivity;
 import cn.xylink.mting.ui.activity.BroadcastActivity;
 import cn.xylink.mting.ui.activity.BroadcastItemAddActivity;
 import cn.xylink.mting.ui.adapter.ControlPanelAdapter;
+import cn.xylink.mting.utils.DensityUtil;
 
 import static cn.xylink.mting.speech.Speechor.SpeechorRole.XiaoIce;
 import static cn.xylink.mting.speech.Speechor.SpeechorRole.XiaoYao;
@@ -51,6 +56,7 @@ import static cn.xylink.mting.speech.Speechor.SpeechorRole.XiaoYu;
 import static cn.xylink.mting.speech.Speechor.SpeechorRole.YaYa;
 
 public class SpeechPanelDialog extends Dialog implements SeekBar.OnSeekBarChangeListener, ViewPager.OnPageChangeListener {
+    static String TAG = SpeechPanelDialog.class.getSimpleName();
     WeakReference<BaseActivity> contextWeakReference;
     WeakReference<SpeechService> speechServiceWeakReference;
 
@@ -127,7 +133,7 @@ public class SpeechPanelDialog extends Dialog implements SeekBar.OnSeekBarChange
     private ArticleDataProvider.ArticleLoader<Article> favorCallback = new ArticleDataProvider.ArticleLoader<Article>() {
         @Override
         public void invoke(int errorCode, Article data) {
-            if(errorCode == 0) {
+            if (errorCode == 0) {
                 //SpeechFavorArticleEvent event = new SpeechFavorArticleEvent(data);
                 StoreRefreshEvent event = new StoreRefreshEvent();
                 event.setArticleID(data.getArticleId());
@@ -137,7 +143,49 @@ public class SpeechPanelDialog extends Dialog implements SeekBar.OnSeekBarChange
         }
     };
 
+
+
     private void onInitControlView(View controlView) {
+        /*
+        controlView.setOnTouchListener(new View.OnTouchListener() {
+            float downPosX;
+            float downPosY;
+            float upPosX;
+            float upPosY;
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        Log.d(TAG, "up slip start");
+                        downPosX = event.getX();
+                        downPosY = event.getY();
+                        return true;
+                    case MotionEvent.ACTION_MOVE:
+                        return true;
+                    case MotionEvent.ACTION_UP:
+
+                        upPosX = event.getX();
+                        upPosY = event.getY();
+
+                        float lineDistance = (float)Math.sqrt(Math.pow(downPosY - upPosY, 2) + Math.pow(downPosX - upPosX, 2));
+                        float slipSlope = Math.abs(( downPosY - upPosY ) / (downPosX - upPosX));
+                        Log.d(TAG, "up slip end:line" + lineDistance + ", slipSlop:" + slipSlope);
+                        if(downPosY - upPosY > 0 && lineDistance > DensityUtil.dip2px(contextWeakReference.get(), 80)) {
+                            if(slipSlope > 1) {
+                                Log.d(TAG, "discrepency the up slip, the slope is:" + slipSlope);
+                                if(speechServiceWeakReference.get().hasNext()) {
+                                    speechServiceWeakReference.get().playNext();
+                                }
+                                return true;
+                            }
+                        }
+                        return false;
+                }
+                return false;
+            }
+        });
+
+         */
         Article articlePlaying = speechServiceWeakReference.get().getSelected();
         SpeechService.SpeechServiceState currentState = speechServiceWeakReference.get().getState();
         boolean seekBarEnabled = currentState != SpeechService.SpeechServiceState.Loadding && currentState != SpeechService.SpeechServiceState.Stoped && articlePlaying != null;
@@ -180,7 +228,7 @@ public class SpeechPanelDialog extends Dialog implements SeekBar.OnSeekBarChange
         controlView.findViewById(R.id.button_panel_go_detail).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(contextWeakReference.get() == null
+                if (contextWeakReference.get() == null
                         || speechServiceWeakReference.get() == null
                         || speechServiceWeakReference.get().getSelected() == null) {
                     return;
@@ -196,7 +244,7 @@ public class SpeechPanelDialog extends Dialog implements SeekBar.OnSeekBarChange
         controlView.findViewById(R.id.button_panel_go_broadcast).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(contextWeakReference.get() == null
+                if (contextWeakReference.get() == null
                         || speechServiceWeakReference.get() == null
                         || speechServiceWeakReference.get().getSelected() == null) {
                     return;
@@ -214,7 +262,7 @@ public class SpeechPanelDialog extends Dialog implements SeekBar.OnSeekBarChange
         favorButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(contextWeakReference.get() == null
+                if (contextWeakReference.get() == null
                         || speechServiceWeakReference.get() == null
                         || speechServiceWeakReference.get().getSelected() == null
                         || speechServiceWeakReference.get().getState() == SpeechService.SpeechServiceState.Loadding) {
@@ -223,7 +271,7 @@ public class SpeechPanelDialog extends Dialog implements SeekBar.OnSeekBarChange
                 Article article = speechServiceWeakReference.get().getSelected();
                 ArticleDataProvider provider = new ArticleDataProvider(contextWeakReference.get());
 
-                if(article.getStore() == 0) {
+                if (article.getStore() == 0) {
                     icoFavor.setImageResource(R.mipmap.ico_dialog_favor);
                     provider.favorArticle(article, favorCallback);
                 }
@@ -236,7 +284,7 @@ public class SpeechPanelDialog extends Dialog implements SeekBar.OnSeekBarChange
         controlView.findViewById(R.id.view_dialog_panel_add_to).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(contextWeakReference.get() == null
+                if (contextWeakReference.get() == null
                         || speechServiceWeakReference.get() == null
                         || speechServiceWeakReference.get().getSelected() == null) {
                     return;
@@ -250,7 +298,7 @@ public class SpeechPanelDialog extends Dialog implements SeekBar.OnSeekBarChange
         controlView.findViewById(R.id.dialog_panel_share).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(contextWeakReference.get() == null
+                if (contextWeakReference.get() == null
                         || speechServiceWeakReference.get() == null
                         || speechServiceWeakReference.get().getSelected() == null) {
                     return;
@@ -374,7 +422,7 @@ public class SpeechPanelDialog extends Dialog implements SeekBar.OnSeekBarChange
 
     private void onInitTimeSettingView(View timeSettingView) {
         SpeechService speechService = speechServiceWeakReference.get();
-        if(speechService == null) {
+        if (speechService == null) {
             return;
         }
         countDowns = new RadioButton[5];
@@ -391,11 +439,11 @@ public class SpeechPanelDialog extends Dialog implements SeekBar.OnSeekBarChange
         });
 
         //set countdown options's onchecked event.
-        ((RadioGroup)timeSettingView.findViewById(R.id.rg_time_setting_options)).setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+        ((RadioGroup) timeSettingView.findViewById(R.id.rg_time_setting_options)).setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 SpeechService speechService = speechServiceWeakReference.get();
-                if(speechService == null) {
+                if (speechService == null) {
                     return;
                 }
                 switch (checkedId) {
@@ -531,7 +579,7 @@ public class SpeechPanelDialog extends Dialog implements SeekBar.OnSeekBarChange
 
     protected void renderCountDownOptionsFromService() {
         SpeechService speechService = speechServiceWeakReference.get();
-        if(speechService == null) {
+        if (speechService == null) {
             return;
         }
         switch (speechService.getCountDownMode()) {
@@ -596,7 +644,7 @@ public class SpeechPanelDialog extends Dialog implements SeekBar.OnSeekBarChange
         Article article = speechService.getSelected();
         if (article != null) {
             tvTitle.setText(article.getTitle());
-            if(speechService.getState() != SpeechService.SpeechServiceState.Loadding) {
+            if (speechService.getState() != SpeechService.SpeechServiceState.Loadding) {
                 icoFavor.setImageResource(article.getStore() == 1 ? R.mipmap.ico_dialog_favor : R.mipmap.ico_dialog_unfavor);
             }
         }
@@ -646,15 +694,15 @@ public class SpeechPanelDialog extends Dialog implements SeekBar.OnSeekBarChange
         }
     }
 
-    @Subscribe(threadMode =  ThreadMode.MAIN)
+    @Subscribe(threadMode = ThreadMode.MAIN)
     public void onArticleFavoriteChanged(StoreRefreshEvent event) {
-        if(contextWeakReference.get() == null
+        if (contextWeakReference.get() == null
                 || speechServiceWeakReference.get() == null
                 || speechServiceWeakReference.get().getSelected() == null) {
             return;
         }
 
-        if(speechServiceWeakReference.get().getSelected().getArticleId().equals(event.getArticleID())) {
+        if (speechServiceWeakReference.get().getSelected().getArticleId().equals(event.getArticleID())) {
             speechServiceWeakReference.get().getSelected().setStore(event.getStroe());
             validatePanelView(null);
         }
@@ -682,7 +730,7 @@ public class SpeechPanelDialog extends Dialog implements SeekBar.OnSeekBarChange
                 seekBar.setProgress(0);
                 seekBar.setEnabled(false);
             }
-            else if(((SpeechStopEvent) event).getStopReason() == SpeechStopEvent.StopReason.CountDownToZero) {
+            else if (((SpeechStopEvent) event).getStopReason() == SpeechStopEvent.StopReason.CountDownToZero) {
                 renderCountDownOptionsFromService();
             }
             this.dismiss();
