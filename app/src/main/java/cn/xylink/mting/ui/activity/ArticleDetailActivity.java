@@ -23,6 +23,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.tendcloud.tenddata.TCAgent;
 
@@ -61,9 +62,22 @@ import cn.xylink.mting.presenter.ReportPresenter;
 import cn.xylink.mting.presenter.BroadcastDetailPresenter;
 import cn.xylink.mting.presenter.BroadcastItemAddPresenter;
 import cn.xylink.mting.presenter.DelStorePreesenter;
+import cn.xylink.mting.speech.SpeechError;
+import cn.xylink.mting.speech.SpeechService;
 import cn.xylink.mting.speech.SpeechServiceProxy;
 import cn.xylink.mting.speech.SpeechSettingService;
 import cn.xylink.mting.speech.Speechor;
+import cn.xylink.mting.speech.event.SpeechBufferingEvent;
+import cn.xylink.mting.speech.event.SpeechEndEvent;
+import cn.xylink.mting.speech.event.SpeechErrorEvent;
+import cn.xylink.mting.speech.event.SpeechEvent;
+import cn.xylink.mting.speech.event.SpeechPanelClosedEvent;
+import cn.xylink.mting.speech.event.SpeechPauseEvent;
+import cn.xylink.mting.speech.event.SpeechProgressEvent;
+import cn.xylink.mting.speech.event.SpeechResumeEvent;
+import cn.xylink.mting.speech.event.SpeechSerieLoaddingEvent;
+import cn.xylink.mting.speech.event.SpeechStartEvent;
+import cn.xylink.mting.speech.event.SpeechStopEvent;
 import cn.xylink.mting.ui.dialog.ArticleDetailShareDialog;
 import cn.xylink.mting.ui.dialog.BottomArticleReportDialog;
 import cn.xylink.mting.ui.dialog.BottomTingDialog;
@@ -241,6 +255,23 @@ public class ArticleDetailActivity extends BasePresenterActivity implements Arti
 
     }
 
+    @Override
+    protected void onSpeechServiceAvailable() {
+        super.onSpeechServiceAvailable();
+        if(articleId != null && getPlayingArticle() != null && articleId.equals(getPlayingArticle().getArticleId())) {
+            switch (getSpeechService().getState()) {
+                case Loadding:
+                case Playing:
+                    icoPlay.setImageResource(R.mipmap.ico_dialog_pause);
+                    break;
+
+                case Paused:
+                case Error:
+                    icoPlay.setImageResource(R.mipmap.ico_dialog_play);
+                    break;
+            }
+        }
+    }
 
     @OnClick({R.id.btn_left, R.id.btn_share, R.id.btn_more, R.id.btn_edit, R.id.view_detail_panel_favor, R.id.view_detail_panel_play, R.id.view_detail_panel_add_to, R.id.btn_broadcast_enter})
     public void onclick(View view) {
@@ -291,12 +322,30 @@ public class ArticleDetailActivity extends BasePresenterActivity implements Arti
             case R.id.view_detail_panel_play:
                 //播放器播放， 如果有broadcastId,就跟之前一样，没有，就添加待读，然后broadcastid=-1传进去
                 if (null != broadcastId) {
-                    Article article = new Article();
-                    article.setBroadcastId(broadcastId);
-                    article.setArticleId(articleId);
-                    article.setBroadcastTitle(broadcastTitle);
-                    article.setTitle(articleTitle);
-                    postToSpeechService(article);
+                    Article playingArticle = getPlayingArticle();
+                    boolean isDetailBelongToCurrentPlaying = playingArticle != null && playingArticle.getArticleId() != null &&playingArticle.getArticleId().equals(articleId);
+                    //如果当前的播放的 != 详情页显示的
+                    if(isDetailBelongToCurrentPlaying == false) {
+                        Article article = new Article();
+                        article.setBroadcastId(broadcastId);
+                        article.setArticleId(articleId);
+                        article.setBroadcastTitle(broadcastTitle);
+                        article.setTitle(articleTitle);
+                        postToSpeechService(article);
+                    }
+                    else {
+                        switch (getSpeechService().getState()) {
+                            case Playing:
+                            case Loadding:
+                                speechServiceWeakReference.get().pause();
+                                break;
+                            case Paused:
+                            case Error:
+                                speechServiceWeakReference.get().resume();
+                                break;
+                        }
+                    }
+
                 } else {
                     doAdd2Unread();
                 }
@@ -317,6 +366,41 @@ public class ArticleDetailActivity extends BasePresenterActivity implements Arti
                 break;
             default:
                 break;
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onSpeechEvent(SpeechEvent event) {
+        if (getPlayingArticle() == null || getPlayingArticle().getArticleId().equals(articleId) == false) {
+            return;
+        }
+        if (event instanceof SpeechStartEvent) {
+            icoPlay.setImageResource(R.mipmap.ico_dialog_pause);
+        }
+        else if (event instanceof SpeechProgressEvent) {
+            icoPlay.setImageResource(R.mipmap.ico_dialog_pause);
+        }
+        else if(event instanceof SpeechEndEvent) {
+            icoPlay.setImageResource(R.mipmap.ico_dialog_play);
+        }
+        else if (event instanceof SpeechBufferingEvent) {
+            //如果是SpeechStartEvent 或者 BufferEvent，就显示loadding
+            icoPlay.setImageResource(R.mipmap.ico_dialog_pause);
+        }
+        else if (event instanceof SpeechSerieLoaddingEvent) {
+            icoPlay.setImageResource(R.mipmap.ico_dialog_pause);
+        }
+        else if (event instanceof SpeechStopEvent) {
+            icoPlay.setImageResource(R.mipmap.ico_dialog_play);
+        }
+        else if(event instanceof SpeechPauseEvent) {
+            icoPlay.setImageResource(R.mipmap.ico_dialog_play);
+        }
+        else if(event instanceof SpeechResumeEvent) {
+            icoPlay.setImageResource(R.mipmap.ico_dialog_pause);
+        }
+        else if (event instanceof SpeechErrorEvent) {
+            icoPlay.setImageResource(R.mipmap.ico_dialog_play);
         }
     }
 

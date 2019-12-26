@@ -17,6 +17,7 @@ import android.os.IBinder;
 import android.util.Log;
 
 import org.greenrobot.eventbus.EventBus;
+
 import cn.xylink.mting.bean.Article;
 import cn.xylink.mting.speech.data.ArticleDataProvider;
 import cn.xylink.mting.speech.list.DynamicSpeechList;
@@ -254,7 +255,7 @@ public class SpeechService extends Service {
     private void updatePlayState(String serieId, String articleId, float progress) {
         SharedPreferences sp = getSharedPreferences("speech_config", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sp.edit();
-        if(serieId == null || articleId == null) {
+        if (serieId == null || articleId == null) {
             editor.remove("serie_id");
             editor.remove("article_id");
             editor.remove("progress");
@@ -270,17 +271,15 @@ public class SpeechService extends Service {
 
     private Article getLastPlayState() {
         SharedPreferences sp = getSharedPreferences("speech_config", Context.MODE_PRIVATE);
-        if(sp.getString("serie_id", null) != null && sp.getString("article_id", null) != null) {
+        if (sp.getString("serie_id", null) != null && sp.getString("article_id", null) != null) {
             Article article = new Article();
             article.setBroadcastId(sp.getString("serie_id", null));
             article.setArticleId(sp.getString("article_id", null));
             article.setProgress(sp.getFloat("progress", 0));
-
             return article;
         }
         return null;
     }
-
 
 
     private void onSpeechSerieLoadding(Article article) {
@@ -329,7 +328,8 @@ public class SpeechService extends Service {
     private void onSpeechEnd(Article article, float progress, boolean deleteFromList) {
         isBuffering = false;
         article.setProgress(progress);
-        articleDataProvider.readArticle(article, (int errorCode, Article ar)->{});
+        articleDataProvider.readArticle(article, (int errorCode, Article ar) -> {
+        });
         EventBus.getDefault().post(new SpeechEndEvent(article, progress));
         if (progress == 1 && getSpeechList() instanceof UnreadSpeechList) {
             EventBus.getDefault().post(new SpeechArticleReadedEvent(article));
@@ -487,7 +487,7 @@ public class SpeechService extends Service {
                 isSimulatePaused = false;
                 //如果getContent != null，说明正文被加载了，没必要再次调用，直接seek:0
                 if (getSelected().getContent() != null) {
-                    result = seek(getSelected().getProgress() == 1? 0.0f : getSelected().getProgress()) > 0;
+                    result = seek(getSelected().getProgress() == 1 ? 0.0f : getSelected().getProgress()) > 0;
                     if (result) {
                         onSpeechResume(speechList.getCurrent());
                         return result;
@@ -566,13 +566,12 @@ public class SpeechService extends Service {
 
     ArticleDataProvider.ArticleLoader<List<Article>> dataProviderCallback = null;
 
-    public synchronized boolean resumeLastState() throws Exception{
+    public synchronized Article resumeLastState() throws Exception {
         Article lastArticle = getLastPlayState();
-        if(lastArticle != null) {
+        if (lastArticle != null) {
             loadSeriesAndArticle(lastArticle, true);
-            return true;
         }
-        return false;
+        return lastArticle;
     }
 
     private synchronized void loadSeriesAndArticle(Article article, boolean prepareOnly) throws Exception {
@@ -611,7 +610,7 @@ public class SpeechService extends Service {
                             //有可能这里被pause掉了
                             if (getState() == SpeechServiceState.Loadding) {
                                 playSelected();
-                                if(prepareOnly) {
+                                if (prepareOnly) {
                                     pause();
                                 }
                             }
@@ -633,7 +632,7 @@ public class SpeechService extends Service {
         }
         else {
             play(article.getArticleId());
-            if(prepareOnly) {
+            if (prepareOnly) {
                 pause();
             }
         }
