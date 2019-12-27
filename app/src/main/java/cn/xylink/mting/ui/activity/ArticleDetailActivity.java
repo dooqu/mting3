@@ -446,7 +446,7 @@ public class ArticleDetailActivity extends BasePresenterActivity implements Arti
         //articleId应该跟其他activity接收过来的是一致的，不然就有问题，哈哈~
         this.articleId = info.getArticleId();
         //由此判断该文章是否是用户自己创建的,如果获取的文章的用户id跟userInfo中的一致，则表明该文章是自己创建的
-        if (null != ContentManager.getInstance().getUserInfo().getUserId()) {
+        if (null != ContentManager.getInstance().getUserInfo()) {
             if (ContentManager.getInstance().getUserInfo().getUserId().equals(userId) && inType == 1) {
                 btnEdit.setVisibility(View.VISIBLE);
             } else {
