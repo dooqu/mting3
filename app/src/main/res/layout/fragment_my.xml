@@ -33,7 +33,7 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:paddingLeft="@dimen/my_dimen_16"
-                    android:paddingTop="@dimen/my_dimen_32"
+                    android:paddingTop="@dimen/my_dimen_56"
                     android:paddingRight="@dimen/my_dimen_16"
                     android:paddingBottom="@dimen/my_dimen_32">
 
