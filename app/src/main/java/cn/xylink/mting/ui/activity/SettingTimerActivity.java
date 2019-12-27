@@ -50,7 +50,7 @@ public class SettingTimerActivity extends BasePresenterActivity {
             Intent intent = new Intent(new Intent(SettingTimerActivity.this, LoginActivity.class));
             intent.putExtra(LoginActivity.LOGIN_ACTIVITY, Const.visitor);
             startActivity(intent);
-            finish();
+//            finish();
         }
         proxy = new SpeechServiceProxy(this) {
             @Override
