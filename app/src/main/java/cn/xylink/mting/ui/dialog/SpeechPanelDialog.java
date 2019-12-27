@@ -127,9 +127,6 @@ public class SpeechPanelDialog extends Dialog implements SeekBar.OnSeekBarChange
 
         validatePanelView(null);
 
-        if (EventBus.getDefault().isRegistered(this) == false) {
-            EventBus.getDefault().register(this);
-        }
     }
 
     private ArticleDataProvider.ArticleLoader<Article> favorCallback = new ArticleDataProvider.ArticleLoader<Article>() {
@@ -276,30 +273,6 @@ public class SpeechPanelDialog extends Dialog implements SeekBar.OnSeekBarChange
                 shareDialog.show();
             }
         });
-
-        SharedPreferences sp = contextWeakReference.get().getSharedPreferences("speech_config", Context.MODE_PRIVATE);
-
-        if(sp.getBoolean("first_dialog", true) == true) {
-            SharedPreferences.Editor editor = sp.edit();
-            editor.putBoolean("first_dialog", false);
-            editor.apply();
-            ImageView hand_slip_image = controlView.findViewById(R.id.im_hand_slip_anim);
-            hand_slip_image.setVisibility(View.VISIBLE);
-            hand_slip_image.setImageResource(R.drawable.hand_slip_anim);
-            AnimationDrawable hand_slip_anim = (AnimationDrawable) hand_slip_image.getDrawable();
-
-            TextView hand_slip_text = controlView.findViewById(R.id.slip_text);
-            hand_slip_text.setVisibility(View.VISIBLE);
-            hand_slip_text.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    hand_slip_anim.stop();
-                    hand_slip_image.setVisibility(View.INVISIBLE);
-                    v.setVisibility(View.INVISIBLE);
-                }
-            });
-            hand_slip_anim.start();
-        }
     }
 
 
@@ -730,5 +703,41 @@ public class SpeechPanelDialog extends Dialog implements SeekBar.OnSeekBarChange
             EventBus.getDefault().unregister(this);
         }
         super.dismiss();
+    }
+
+    @Override
+    public void show() {
+        super.show();
+        if (EventBus.getDefault().isRegistered(this) == false) {
+            EventBus.getDefault().register(this);
+        }
+        validatePanelView(null);
+
+        ImageView hand_slip_image = controlView.findViewById(R.id.im_hand_slip_anim);
+        TextView hand_slip_text = controlView.findViewById(R.id.slip_text);
+        SharedPreferences sp = contextWeakReference.get().getSharedPreferences("speech_config", Context.MODE_PRIVATE);
+        if(sp.getBoolean("already_dialog1", false) == false) {
+            SharedPreferences.Editor editor = sp.edit();
+            editor.putBoolean("already_dialog1", true);
+            editor.apply();
+
+            hand_slip_image.setVisibility(View.VISIBLE);
+            hand_slip_image.setImageResource(R.drawable.hand_slip_anim);
+            AnimationDrawable hand_slip_anim = (AnimationDrawable) hand_slip_image.getDrawable();
+            hand_slip_text.setVisibility(View.VISIBLE);
+            hand_slip_text.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    hand_slip_anim.stop();
+                    hand_slip_image.setVisibility(View.INVISIBLE);
+                    v.setVisibility(View.INVISIBLE);
+                }
+            });
+            hand_slip_anim.start();
+        }
+        else {
+            hand_slip_image.setVisibility(View.INVISIBLE);
+            hand_slip_text.setVisibility(View.INVISIBLE);
+        }
     }
 }
