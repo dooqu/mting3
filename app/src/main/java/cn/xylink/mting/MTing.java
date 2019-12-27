@@ -15,17 +15,17 @@ import com.tendcloud.tenddata.TCAgent;
 
 
 import java.io.File;
-import java.util.Base64;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
-
+import org.apaches.commons.codec.binary.Base64;
 
 import cn.xylink.mting.common.Const;
 import cn.xylink.mting.contract.IBaseView;
 import cn.xylink.mting.model.UpgradeRequest;
 import cn.xylink.mting.model.UpgradeResponse;
+import cn.xylink.mting.model.data.RemoteUrl;
 import cn.xylink.mting.openapi.QQApi;
 import cn.xylink.mting.openapi.WXapi;
 import cn.xylink.mting.utils.*;
@@ -45,13 +45,10 @@ public class MTing extends Application {
 
     private static MTing instance;
     private int mActivityCount = 0;
-
     public static ActivityManager activityManager = null;
-
     public static ActivityManager getActivityManager() {
         return activityManager;
     }
-
     public String AudioCachePath;
 
 
@@ -92,7 +89,6 @@ public class MTing extends Application {
         else {
             startService(serviceIntent);
         }
-
          */
         /*
         String defaultRole = String.valueOf(SharedPreHelper.getInstance(this).getSharedPreference("SPEECH_ROLE", "XiaoIce"));
@@ -148,12 +144,11 @@ public class MTing extends Application {
 
     private void checkOnlineUpgrade() throws Exception {
 
-        /*
         UpgradeRequest request = new UpgradeRequest();
         request.setAppPackage(PackageUtils.getAppPackage(this));
         request.setAppVersion(PackageUtils.getAppVersionName(this));
         request.setVersionId(PackageUtils.getAppVersionCode(this));
-        request.setChannel(new Base64().encodeToString(EncryptionUtil.encrypt("mting", EncryptionUtil.getPublicKey(Const.publicKey))));
+        request.setChannel(new  Base64().encodeToString(EncryptionUtil.encrypt("mting", EncryptionUtil.getPublicKey(Const.publicKey))));
         request.setDeviceId(PackageUtils.getWifiMac(this));
         request.doSign();
 
@@ -194,7 +189,7 @@ public class MTing extends Application {
                         Log.d("xylink", "onComplete");
                     }
                 });
-         */
+
     }
 
 

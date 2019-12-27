@@ -252,17 +252,20 @@ public class SpeechService extends Service {
         registerReceiver(a2dpReceiver, a2dpIntent);
     }
 
-    private void updatePlayState(String serieId, String articleId, float progress) {
+    private void updatePlayState(String serieId, String articleId, String seriesTitle, float progress) {
         SharedPreferences sp = getSharedPreferences("speech_config", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sp.edit();
         if (serieId == null || articleId == null) {
             editor.remove("serie_id");
             editor.remove("article_id");
+            editor.remove("article_title");
+            editor.remove("series_title");
             editor.remove("progress");
         }
         else {
             editor.putString("serie_id", serieId);
             editor.putString("article_id", articleId);
+            editor.putString("series_title", seriesTitle);
             editor.putFloat("progress", progress);
         }
         editor.apply();
@@ -276,6 +279,7 @@ public class SpeechService extends Service {
             article.setBroadcastId(sp.getString("serie_id", null));
             article.setArticleId(sp.getString("article_id", null));
             article.setProgress(sp.getFloat("progress", 0));
+            article.setBroadcastTitle(sp.getString("series_title", null));
             return article;
         }
         return null;
@@ -308,7 +312,7 @@ public class SpeechService extends Service {
         isBuffering = false;
         article.setProgress((float) fragmentIndex / (float) fragments.size());
         foregroundServiceAdapter.retainForeground();
-        updatePlayState(article.getBroadcastId(), article.getArticleId(), article.getProgress());
+        updatePlayState(article.getBroadcastId(), article.getArticleId(), article.getBroadcastTitle(),  article.getProgress());
         EventBus.getDefault().post(new SpeechProgressEvent(fragmentIndex, fragments, article));
     }
 
@@ -336,7 +340,7 @@ public class SpeechService extends Service {
         }
         long duration = new java.util.Date().getTime() - speechStartTimeOfArticle;
         speechDurationOfArticle += (duration > 0) ? duration : 0;
-        updatePlayState(null, null, 0);
+        updatePlayState(null, null,  null, 0);
         //articleDataProvider.appendArticleRecord(speechArticleIdOfArticle, speechDurationOfArticle / 1000);
     }
 
@@ -357,7 +361,7 @@ public class SpeechService extends Service {
 
     private void onSpeechStoped(SpeechStopEvent.StopReason reason) {
         isBuffering = false;
-        updatePlayState(null, null, 0);
+        updatePlayState(null, null, null,0);
         foregroundServiceAdapter.stopForeground(true);
         EventBus.getDefault().post(new SpeechStopEvent(reason));
     }

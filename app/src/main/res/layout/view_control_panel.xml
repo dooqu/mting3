@@ -71,10 +71,10 @@
             android:layout_height="match_parent">
             <ImageView
                 android:id="@+id/ico_panel_status"
-                android:layout_width="28dp"
-                android:layout_height="28dp"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
                 android:scaleType="fitCenter"
-                android:src="@mipmap/panel_pause"
+                android:src="@drawable/nsvg_pause"
                 android:layout_gravity="center">
             </ImageView>
             <ImageView
