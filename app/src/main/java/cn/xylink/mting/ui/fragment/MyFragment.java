@@ -106,7 +106,7 @@ public class MyFragment extends BaseFragment {
                     Intent intent = new Intent(new Intent(getActivity(), LoginActivity.class));
                     intent.putExtra(LoginActivity.LOGIN_ACTIVITY, "MyFragment");
                     startActivity(intent);
-                    getActivity().finish();
+//                    getActivity().finish();
                 } else {
                     startActivity(new Intent(getActivity(), PersonalInfoActivity.class));
                 }

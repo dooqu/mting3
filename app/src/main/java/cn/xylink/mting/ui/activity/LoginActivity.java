@@ -2,6 +2,7 @@ package cn.xylink.mting.ui.activity;
 
 import android.content.Intent;
 import android.view.View;
+import android.widget.LinearLayout;
 
 import com.tencent.tauth.IUiListener;
 import com.tencent.tauth.Tencent;
@@ -17,6 +18,7 @@ import org.json.JSONObject;
 
 import java.util.UUID;
 
+import butterknife.BindView;
 import butterknife.OnClick;
 import cn.xylink.mting.MTing;
 import cn.xylink.mting.MainActivity;
@@ -45,6 +47,10 @@ import cn.xylink.mting.utils.SharedPreHelper;
  * @date 2019/10/21
  */
 public class LoginActivity extends BasePresenterActivity implements ThirdLoginContact.IThirdLoginView, VisitorRegisterContact.IVisitorRegisterView {
+    @BindView(R.id.lv_top_view)
+    LinearLayout llVisitor;
+    @BindView(R.id.ll_close)
+    LinearLayout llClose;
     public static String LOGIN_ACTIVITY = "loginActivity";
     private Tencent mTencent;
 
@@ -81,8 +87,15 @@ public class LoginActivity extends BasePresenterActivity implements ThirdLoginCo
         String flag = intent.getStringExtra(LOGIN_ACTIVITY);
         if (flag.equals(Const.visitor)) {
             toastCenterShort("请先登录");
+            llVisitor.setVisibility(View.GONE);
+            llClose.setVisibility(View.VISIBLE);
+        } else if (flag.equals("MyFragment")) {
+            llVisitor.setVisibility(View.GONE);
+            llClose.setVisibility(View.VISIBLE);
         } else {
             L.v(flag);
+            llVisitor.setVisibility(View.VISIBLE);
+            llClose.setVisibility(View.GONE);
         }
     }
 
@@ -110,7 +123,7 @@ public class LoginActivity extends BasePresenterActivity implements ThirdLoginCo
         EventBus.getDefault().unregister(this);
     }
 
-    @OnClick({R.id.imv_login_weChat, R.id.imv_login_qq, R.id.tv_phone, R.id.tv_user_protocol, R.id.lv_top_view})
+    @OnClick({R.id.imv_login_weChat, R.id.imv_login_qq, R.id.tv_phone, R.id.tv_user_protocol, R.id.lv_top_view, R.id.ll_close})
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.tv_user_protocol: {
@@ -166,6 +179,9 @@ public class LoginActivity extends BasePresenterActivity implements ThirdLoginCo
                 break;
             case R.id.lv_top_view:
                 requestVisitorRegister();
+                break;
+            case R.id.ll_close:
+                finish();
                 break;
         }
 

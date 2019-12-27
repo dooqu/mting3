@@ -5,12 +5,28 @@
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
     android:orientation="vertical">
+    <LinearLayout
+        android:id="@+id/ll_close"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="16dp"
+        android:orientation="vertical"
+        android:layout_gravity="right"
+        >
+        <ImageView
+            android:id="@+id/iv_input_close"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:src="@mipmap/dialog_close"
+            />
+    </LinearLayout>
+
+
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0px"
         android:layout_weight="1.0"
-
         android:gravity="center|center_horizontal">
 
         <ImageView
@@ -20,7 +36,6 @@
             android:layout_marginTop="30dp"
             android:adjustViewBounds="true"
             android:scaleType="fitXY"
-
             android:src="@mipmap/logo" />
     </LinearLayout>
 
