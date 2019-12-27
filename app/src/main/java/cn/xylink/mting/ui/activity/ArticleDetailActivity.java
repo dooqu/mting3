@@ -489,6 +489,7 @@ public class ArticleDetailActivity extends BasePresenterActivity implements Arti
         event.setArticleID(articleId);
         event.setStroe(1);
         EventBus.getDefault().post(event);
+        toastCenterShort("收藏成功");
     }
 
     @Override
@@ -506,6 +507,8 @@ public class ArticleDetailActivity extends BasePresenterActivity implements Arti
         event.setArticleID(articleId);
         event.setStroe(0);
         EventBus.getDefault().post(event);
+        toastCenterShort("取消收藏成功");
+
     }
 
     @Override
