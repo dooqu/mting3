@@ -43,7 +43,6 @@
         android:layout_height="104dp"
         android:layout_gravity="center_vertical"
         android:layout_marginLeft="16dp"
-        android:scaleType="fitXY"
         tools:src="@mipmap/icon_favorited" />
 
     <FrameLayout
