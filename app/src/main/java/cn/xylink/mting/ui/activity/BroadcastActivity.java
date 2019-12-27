@@ -417,7 +417,9 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
 
                         @Override
                         public void onRightClick() {
-
+                            Intent inte=new Intent(BroadcastActivity.this,SelectBroadcastActivity.class);
+                            inte.putExtra(SelectArticleAddActivity.EXTRA_BROADCASTID_TO,getIntent().getStringExtra(EXTRA_BROADCASTID));
+                            startActivity(inte);
                         }
                     });
                     dialog.show();
