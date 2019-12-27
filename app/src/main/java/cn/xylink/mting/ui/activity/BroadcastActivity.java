@@ -49,6 +49,7 @@ import cn.xylink.mting.contract.SetTopContact;
 import cn.xylink.mting.contract.Share2WorldContact;
 import cn.xylink.mting.contract.SubscribeContact;
 import cn.xylink.mting.event.ArticleDetailScrollEvent;
+import cn.xylink.mting.event.BroadcastDetailRefreshEvent;
 import cn.xylink.mting.event.BroadcastRefreshEvent;
 import cn.xylink.mting.event.StoreRefreshEvent;
 import cn.xylink.mting.event.TingChangeMessageEvent;
@@ -416,7 +417,9 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
 
                         @Override
                         public void onRightClick() {
-
+                            Intent inte=new Intent(BroadcastActivity.this,SelectBroadcastActivity.class);
+                            inte.putExtra(SelectArticleAddActivity.EXTRA_BROADCASTID_TO,getIntent().getStringExtra(EXTRA_BROADCASTID));
+                            startActivity(inte);
                         }
                     });
                     dialog.show();
@@ -854,6 +857,10 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
     @Subscribe
     public void eventRefresh(BroadcastRefreshEvent event) {
         initList();
+    }
+    @Subscribe
+    public void eventDetailRefresh(BroadcastDetailRefreshEvent event) {
+        initDetail();
     }
 
     @Subscribe

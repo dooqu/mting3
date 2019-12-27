@@ -21,6 +21,8 @@ import com.jph.takephoto.permission.PermissionManager;
 import com.jph.takephoto.permission.TakePhotoInvocationHandler;
 import com.yalantis.ucrop.UCrop;
 
+import org.greenrobot.eventbus.EventBus;
+
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
@@ -32,6 +34,7 @@ import cn.xylink.mting.base.BaseResponse;
 import cn.xylink.mting.bean.BroadcastCreateRequest;
 import cn.xylink.mting.bean.BroadcastDetailInfo;
 import cn.xylink.mting.contract.BroadcastEditContact;
+import cn.xylink.mting.event.BroadcastDetailRefreshEvent;
 import cn.xylink.mting.presenter.BroadcastEditPresenter;
 import cn.xylink.mting.utils.ImageUtils;
 import cn.xylink.mting.utils.L;
@@ -102,6 +105,7 @@ public class BroadcastEditActivity extends BasePresenterActivity implements Broa
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         getTakePhoto().onCreate(savedInstanceState);
         super.onCreate(savedInstanceState);
+        EventBus.getDefault().register(this);
     }
 
     public TakePhoto getTakePhoto() {
@@ -120,7 +124,7 @@ public class BroadcastEditActivity extends BasePresenterActivity implements Broa
         } else {
             toastShort(baseResponse.message);
         }
-
+        EventBus.getDefault().post(new BroadcastDetailRefreshEvent());
     }
 
     @Override
@@ -233,5 +237,9 @@ public class BroadcastEditActivity extends BasePresenterActivity implements Broa
         }
     }
 
-
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        EventBus.getDefault().unregister(this);
+    }
 }

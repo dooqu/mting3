@@ -258,7 +258,7 @@ public class ArticleDetailActivity extends BasePresenterActivity implements Arti
     @Override
     protected void onSpeechServiceAvailable() {
         super.onSpeechServiceAvailable();
-        if(articleId != null && getPlayingArticle() != null && articleId.equals(getPlayingArticle().getArticleId())) {
+        if (articleId != null && getPlayingArticle() != null && articleId.equals(getPlayingArticle().getArticleId())) {
             switch (getSpeechService().getState()) {
                 case Loadding:
                 case Playing:
@@ -310,30 +310,33 @@ public class ArticleDetailActivity extends BasePresenterActivity implements Arti
                 ArticleDetailActivity.this.finish();
                 break;
             case R.id.view_detail_panel_favor:
-                isFavor = !isFavor;
-                if (isFavor) {
-                    icoFavor.setImageResource(R.mipmap.ico_dialog_favor);
-                    addStore(articleId);
+                if (ContentManager.getInstance().getVisitor().equals("0")) {
+                    toastCenterShort("游客不支持收藏");
                 } else {
-                    icoFavor.setImageResource(R.mipmap.ico_dialog_unfavor);
-                    delStore(articleId);
+                    isFavor = !isFavor;
+                    if (isFavor) {
+                        icoFavor.setImageResource(R.mipmap.ico_dialog_favor);
+                        addStore(articleId);
+                    } else {
+                        icoFavor.setImageResource(R.mipmap.ico_dialog_unfavor);
+                        delStore(articleId);
+                    }
                 }
                 break;
             case R.id.view_detail_panel_play:
                 //播放器播放， 如果有broadcastId,就跟之前一样，没有，就添加待读，然后broadcastid=-1传进去
                 if (null != broadcastId) {
                     Article playingArticle = getPlayingArticle();
-                    boolean isDetailBelongToCurrentPlaying = playingArticle != null && playingArticle.getArticleId() != null &&playingArticle.getArticleId().equals(articleId);
+                    boolean isDetailBelongToCurrentPlaying = playingArticle != null && playingArticle.getArticleId() != null && playingArticle.getArticleId().equals(articleId);
                     //如果当前的播放的 != 详情页显示的
-                    if(isDetailBelongToCurrentPlaying == false) {
+                    if (isDetailBelongToCurrentPlaying == false) {
                         Article article = new Article();
                         article.setBroadcastId(broadcastId);
                         article.setArticleId(articleId);
                         article.setBroadcastTitle(broadcastTitle);
                         article.setTitle(articleTitle);
                         postToSpeechService(article);
-                    }
-                    else {
+                    } else {
                         switch (getSpeechService().getState()) {
                             case Playing:
                             case Loadding:
@@ -376,30 +379,22 @@ public class ArticleDetailActivity extends BasePresenterActivity implements Arti
         }
         if (event instanceof SpeechStartEvent) {
             icoPlay.setImageResource(R.mipmap.ico_dialog_pause);
-        }
-        else if (event instanceof SpeechProgressEvent) {
+        } else if (event instanceof SpeechProgressEvent) {
             icoPlay.setImageResource(R.mipmap.ico_dialog_pause);
-        }
-        else if(event instanceof SpeechEndEvent) {
+        } else if (event instanceof SpeechEndEvent) {
             icoPlay.setImageResource(R.mipmap.ico_dialog_play);
-        }
-        else if (event instanceof SpeechBufferingEvent) {
+        } else if (event instanceof SpeechBufferingEvent) {
             //如果是SpeechStartEvent 或者 BufferEvent，就显示loadding
             icoPlay.setImageResource(R.mipmap.ico_dialog_pause);
-        }
-        else if (event instanceof SpeechSerieLoaddingEvent) {
+        } else if (event instanceof SpeechSerieLoaddingEvent) {
             icoPlay.setImageResource(R.mipmap.ico_dialog_pause);
-        }
-        else if (event instanceof SpeechStopEvent) {
+        } else if (event instanceof SpeechStopEvent) {
             icoPlay.setImageResource(R.mipmap.ico_dialog_play);
-        }
-        else if(event instanceof SpeechPauseEvent) {
+        } else if (event instanceof SpeechPauseEvent) {
             icoPlay.setImageResource(R.mipmap.ico_dialog_play);
-        }
-        else if(event instanceof SpeechResumeEvent) {
+        } else if (event instanceof SpeechResumeEvent) {
             icoPlay.setImageResource(R.mipmap.ico_dialog_pause);
-        }
-        else if (event instanceof SpeechErrorEvent) {
+        } else if (event instanceof SpeechErrorEvent) {
             icoPlay.setImageResource(R.mipmap.ico_dialog_play);
         }
     }
@@ -455,10 +450,12 @@ public class ArticleDetailActivity extends BasePresenterActivity implements Arti
         //articleId应该跟其他activity接收过来的是一致的，不然就有问题，哈哈~
         this.articleId = info.getArticleId();
         //由此判断该文章是否是用户自己创建的,如果获取的文章的用户id跟userInfo中的一致，则表明该文章是自己创建的
-        if (ContentManager.getInstance().getUserInfo().getUserId().equals(userId) && inType == 1) {
-            btnEdit.setVisibility(View.VISIBLE);
-        } else {
-            btnEdit.setVisibility(View.GONE);
+        if (null != ContentManager.getInstance().getUserInfo()) {
+            if (ContentManager.getInstance().getUserInfo().getUserId().equals(userId) && inType == 1) {
+                btnEdit.setVisibility(View.VISIBLE);
+            } else {
+                btnEdit.setVisibility(View.GONE);
+            }
         }
         if (info.getStore() == 1) {//0未收藏,1已收藏
             isFavor = true;
@@ -492,6 +489,7 @@ public class ArticleDetailActivity extends BasePresenterActivity implements Arti
         event.setArticleID(articleId);
         event.setStroe(1);
         EventBus.getDefault().post(event);
+        toastCenterShort("收藏成功");
     }
 
     @Override
@@ -509,6 +507,8 @@ public class ArticleDetailActivity extends BasePresenterActivity implements Arti
         event.setArticleID(articleId);
         event.setStroe(0);
         EventBus.getDefault().post(event);
+        toastCenterShort("取消收藏成功");
+
     }
 
     @Override

@@ -33,6 +33,7 @@
     <dimen name="margin156">156dp</dimen>
     <dimen name="margin15">15dp</dimen>
     <dimen name="my_dimen_32">32dp</dimen>
+    <dimen name="my_dimen_56">56dp</dimen>
     <dimen name="my_dimen_16">16dp</dimen>
     <dimen name="my_font_24">24sp</dimen>
     <dimen name="my_dimen_8">8dp</dimen>
