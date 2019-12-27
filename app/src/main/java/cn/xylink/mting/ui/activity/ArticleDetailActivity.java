@@ -310,13 +310,17 @@ public class ArticleDetailActivity extends BasePresenterActivity implements Arti
                 ArticleDetailActivity.this.finish();
                 break;
             case R.id.view_detail_panel_favor:
-                isFavor = !isFavor;
-                if (isFavor) {
-                    icoFavor.setImageResource(R.mipmap.ico_dialog_favor);
-                    addStore(articleId);
+                if (ContentManager.getInstance().getVisitor().equals("0")) {
+                    toastCenterShort("游客不支持收藏");
                 } else {
-                    icoFavor.setImageResource(R.mipmap.ico_dialog_unfavor);
-                    delStore(articleId);
+                    isFavor = !isFavor;
+                    if (isFavor) {
+                        icoFavor.setImageResource(R.mipmap.ico_dialog_favor);
+                        addStore(articleId);
+                    } else {
+                        icoFavor.setImageResource(R.mipmap.ico_dialog_unfavor);
+                        delStore(articleId);
+                    }
                 }
                 break;
             case R.id.view_detail_panel_play:
