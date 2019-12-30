@@ -220,6 +220,19 @@ public class SearchActivity extends BasePresenterActivity implements SearchConta
     @Override
     public void onSearchBroadcastSuccess(List<SearchInfo> response) {
         hideLoading();
+        if (mCurrentPage == 1) {
+            if (response != null && response.size() == 0) {
+                showSearchEmpty();
+            } else {
+                mEmptylayout.setVisibility(View.GONE);
+            }
+        }
+        if (mCurrentPage > 1) {
+            mRefreshLayout.finishLoadMore(true);
+            if (response.size() < 20) {
+                mRefreshLayout.finishLoadMoreWithNoMoreData();
+            }
+        }
         mCurrentPage++;
         if (mAdapter.getItemCount() == 0) {
             mBroadcastData = response;
