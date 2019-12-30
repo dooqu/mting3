@@ -51,4 +51,30 @@ public class SpeechSettingService {
         }
         return null;
     }
+
+    public SpeechService.CountDownMode getCountDownMode() {
+        if(speechServiceWeakReference != null && speechServiceWeakReference.get() != null) {
+            return speechServiceWeakReference.get().getCountDownMode();
+        }
+        return SpeechService.CountDownMode.None;
+    }
+
+    public int getCountDownThresholdValue() {
+        if(speechServiceWeakReference != null && speechServiceWeakReference.get() != null) {
+            return speechServiceWeakReference.get().getCountDownThresholdValue();
+        }
+        return 0;
+    }
+
+    public void setCountDown(SpeechService.CountDownMode mode, int countDownValue) {
+        if(speechServiceWeakReference != null && speechServiceWeakReference.get() != null) {
+            speechServiceWeakReference.get().setCountDown(mode, countDownValue);
+        }
+    }
+
+    public void cancelCountDown() {
+        if(speechServiceWeakReference != null && speechServiceWeakReference.get() != null) {
+            speechServiceWeakReference.get().cancelCountDown();
+        }
+    }
 }

@@ -417,7 +417,7 @@ public class SpeechService extends Service {
         return this.countDownMode;
     }
 
-    public synchronized int getCountdownThresholdValue() {
+    public synchronized int getCountDownThresholdValue() {
         return this.countdownValueThreshold;
     }
 
