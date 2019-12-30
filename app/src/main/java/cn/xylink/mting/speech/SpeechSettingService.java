@@ -71,4 +71,10 @@ public class SpeechSettingService {
             speechServiceWeakReference.get().setCountDown(mode, countDownValue);
         }
     }
+
+    public void cancelCountDown() {
+        if(speechServiceWeakReference != null && speechServiceWeakReference.get() != null) {
+            speechServiceWeakReference.get().cancelCountDown();
+        }
+    }
 }
