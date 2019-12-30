@@ -6,14 +6,12 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RadioGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import butterknife.BindView;
 import butterknife.OnClick;
 import cn.xylink.mting.R;
 import cn.xylink.mting.common.Const;
-import cn.xylink.mting.speech.SpeechService;
-import cn.xylink.mting.speech.SpeechServiceProxy;
+import cn.xylink.mting.speech.SpeechSettingService;
 import cn.xylink.mting.speech.Speechor;
 import cn.xylink.mting.utils.ContentManager;
 import cn.xylink.mting.utils.SharedPreHelper;
@@ -45,8 +43,7 @@ public class SettingVoiceActivity extends BasePresenterActivity {
     RadioGroup rgSpeed;
     private Speechor.SpeechorRole role;
     private Speechor.SpeechorSpeed speed;
-    private SpeechService service;
-    SpeechServiceProxy proxy;
+    private SpeechSettingService service;
 
     @Override
     protected void preView() {
@@ -61,23 +58,7 @@ public class SettingVoiceActivity extends BasePresenterActivity {
             startActivity(intent);
             finish();
         }
-        proxy = new SpeechServiceProxy(this) {
-            @Override
-            protected void onConnected(boolean connected, SpeechService service) {
-                if (connected) {
-                    SettingVoiceActivity.this.service = service;
-                    role = service.getRole();
-                    speed = service.getSpeed();
-                    setCheckRole(role);
-                    setCheckSpeed(speed);
-                }
-            }
-        };
-        proxy.bind();
 
-        if (proxy.bind() == false) {
-            Toast.makeText(this, "未能连接到播放服务", Toast.LENGTH_SHORT).show();
-        }
         rgSpeed.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
@@ -99,6 +80,20 @@ public class SettingVoiceActivity extends BasePresenterActivity {
             }
         });
 
+    }
+
+    @Override
+    protected void onSpeechServiceAvailable() {
+        super.onSpeechServiceAvailable();
+        service = getSpeechService();
+        if (null != service) {
+            role = service.getRole();
+            speed = service.getSpeed();
+            setCheckRole(role);
+            setCheckSpeed(speed);
+        } else {
+            toastCenterShort("连接不到播放服务");
+        }
     }
 
     @Override
@@ -209,9 +204,7 @@ public class SettingVoiceActivity extends BasePresenterActivity {
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        //断开服务
-        proxy.unbind();
+    protected boolean enableSpeechService() {
+        return true;
     }
 }
