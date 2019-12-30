@@ -374,7 +374,7 @@ public class ArticleDetailActivity extends BasePresenterActivity implements Arti
                 intent3.putExtra(BroadcastActivity.EXTRA_BROADCASTID, broadcastId);
                 intent3.putExtra(BroadcastActivity.EXTRA_TITLE, broadcastTitle);
                 ArticleDetailActivity.this.startActivity(intent3);
-                ArticleDetailActivity.this.finish();
+//                ArticleDetailActivity.this.finish();
                 break;
             default:
                 break;
