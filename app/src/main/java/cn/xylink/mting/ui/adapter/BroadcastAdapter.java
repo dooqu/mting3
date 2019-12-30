@@ -111,6 +111,7 @@ public class BroadcastAdapter extends RecyclerView.Adapter<BroadcastAdapter.View
                         if (mDetailInfo.getShare() == 0) {
                             holder.mShare2worldTextView.setVisibility(View.VISIBLE);
                         } else {
+                            holder.mShare2worldTextView.setVisibility(View.GONE);
                             holder.mSubscribedTextView.setVisibility(View.VISIBLE);
                             holder.mSubscribedTextView.setText("已订阅：" + getSubscribedNum(mDetailInfo.getSubscribeTotal()));
                         }
@@ -198,7 +199,10 @@ public class BroadcastAdapter extends RecyclerView.Adapter<BroadcastAdapter.View
      * 待读传-1，已读历史传-2，收藏传-3，我创建的传-4。
      */
     private void initSysBroadcast(BroadcastAdapter.ViewHolder holder) {
-        holder.mTitleTextView.setText("简介");
+        holder.mTitleTextView.setText("");
+        RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) holder.mTitleTextView.getLayoutParams();
+        layoutParams.setMargins(0,DensityUtil.dip2pxComm(mContext,80),0,0);
+        holder.mTitleTextView.setLayoutParams(layoutParams);
         if (Const.SystemBroadcast.SYSTEMBROADCAST_UNREAD.equals(mBroadcastid)) {
             holder.mImageView.setImageResource(R.mipmap.icon_head_unread);
             holder.mDesTextView.setText("待读会自动存放您添加到轩辕 听内的文章");
