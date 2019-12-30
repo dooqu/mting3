@@ -47,7 +47,7 @@ public class ArticleCreateActivity extends BasePresenterActivity implements Text
             Intent intent = new Intent(new Intent(ArticleCreateActivity.this, LoginActivity.class));
             intent.putExtra(LoginActivity.LOGIN_ACTIVITY, Const.visitor);
             startActivity(intent);
-//            finish();
+            finish();
         }
         articleCreatePresenter = (ArticleCreatePresenter) createPresenter(ArticleCreatePresenter.class);
         articleCreatePresenter.attachView(this);
