@@ -52,6 +52,7 @@ public class PanelViewAdapter {
     Article currentArticle;
     Drawable drawablePlay;
     Drawable drawablePause;
+    SpeechPanelDialog speechPanelDialog;
 
     public static boolean isUserClosed;
 
@@ -102,8 +103,10 @@ public class PanelViewAdapter {
         icoPanelCollapse.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                SpeechPanelDialog dialog = new SpeechPanelDialog(contextRef.get(), speechServiceWeakReference.get());
-                dialog.show();
+                if(speechPanelDialog == null) {
+                    speechPanelDialog = new SpeechPanelDialog(contextRef.get(), speechServiceWeakReference.get());
+                }
+                speechPanelDialog.show();
             }
         });
         statusIcon.setOnClickListener(new View.OnClickListener() {

@@ -54,8 +54,6 @@ public abstract class BaiduSpeechor implements Speechor {
         speechSynthesizer.setAudioStreamType(AudioManager.STREAM_MUSIC);
         speechSynthesizer.initTts(TtsMode.ONLINE);
 
-
-
         speechSynthesizer.setSpeechSynthesizerListener(new SpeechSynthesizerListener() {
             @Override
             public void onSynthesizeStart(String s) {

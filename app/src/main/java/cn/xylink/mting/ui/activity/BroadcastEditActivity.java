@@ -1,11 +1,13 @@
 package cn.xylink.mting.ui.activity;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
@@ -20,6 +22,7 @@ import com.jph.takephoto.permission.InvokeListener;
 import com.jph.takephoto.permission.PermissionManager;
 import com.jph.takephoto.permission.TakePhotoInvocationHandler;
 import com.yalantis.ucrop.UCrop;
+import com.yalantis.ucrop.UCropActivity;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -32,7 +35,6 @@ import butterknife.OnClick;
 import cn.xylink.mting.R;
 import cn.xylink.mting.base.BaseResponse;
 import cn.xylink.mting.bean.BroadcastCreateRequest;
-import cn.xylink.mting.bean.BroadcastDetailInfo;
 import cn.xylink.mting.contract.BroadcastEditContact;
 import cn.xylink.mting.event.BroadcastDetailRefreshEvent;
 import cn.xylink.mting.presenter.BroadcastEditPresenter;
@@ -58,7 +60,7 @@ public class BroadcastEditActivity extends BasePresenterActivity implements Broa
     private BroadcastEditPresenter mEditPresenter;
     private TakePhoto takePhoto;
     private InvokeParam invokeParam;
-    private File coverFile = null;
+    private File coverFile;
     private String broadcastId = "";
     private String name = "";
     private String intro = "";
@@ -140,9 +142,9 @@ public class BroadcastEditActivity extends BasePresenterActivity implements Broa
         } else {
             path = result.getImage().getOriginalPath();
         }
-        ImageUtils.get().load(imgCover, path);
-        coverFile = new File(path);
-        L.v("nana", "coverFile--------" + path);
+        if (!TextUtils.isEmpty(path)) {
+            cropPic(path);
+        }
     }
 
     @Override
@@ -181,6 +183,7 @@ public class BroadcastEditActivity extends BasePresenterActivity implements Broa
             L.v("resultUri.toString()====" + resultUri.toString());
             String picPath = resultUri.toString().replace("file://", "");
             L.v("picPath=====" + picPath);
+            ImageUtils.get().load(imgCover, picPath);
             coverFile = new File(picPath);
         } else if (resultCode == UCrop.RESULT_ERROR) {
             final Throwable cropError = UCrop.getError(data);
@@ -230,6 +233,7 @@ public class BroadcastEditActivity extends BasePresenterActivity implements Broa
                 break;
             case R.id.imv_cover_edit:
             case R.id.tv_change_cover_edit:
+                coverFile = null;
                 takePhoto.onPickFromGallery();
                 break;
             default:
@@ -241,5 +245,26 @@ public class BroadcastEditActivity extends BasePresenterActivity implements Broa
     protected void onDestroy() {
         super.onDestroy();
         EventBus.getDefault().unregister(this);
+    }
+
+    private void cropPic(String result) {
+        //第三方裁剪库
+        File file = new File(this.getExternalCacheDir(), System.currentTimeMillis() + ".jpg");
+        Uri uri = Uri.fromFile(file);
+        Uri uri1 = Uri.parse("file://" + result);
+        L.v(uri1);
+        UCrop uCrop = UCrop.of(uri1, uri);
+        UCrop.Options options = new UCrop.Options();
+        options.setCompressionFormat(Bitmap.CompressFormat.JPEG);
+        options.setAllowedGestures(UCropActivity.SCALE, UCropActivity.ROTATE, UCropActivity.ALL);
+        options.setHideBottomControls(true);
+        options.setToolbarColor(ActivityCompat.getColor(this, R.color.white));
+        options.setStatusBarColor(ActivityCompat.getColor(this, R.color.black_overlay));
+        options.setToolbarWidgetColor(ActivityCompat.getColor(this, android.R.color.black));
+        options.setFreeStyleCropEnabled(false);
+        uCrop.withOptions(options);
+        uCrop.withAspectRatio(1, 1);
+        uCrop.withMaxResultSize(224, 224);
+        uCrop.start(this);
     }
 }

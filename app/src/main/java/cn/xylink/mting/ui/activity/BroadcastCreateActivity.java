@@ -1,11 +1,13 @@
 package cn.xylink.mting.ui.activity;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -22,6 +24,7 @@ import com.jph.takephoto.permission.InvokeListener;
 import com.jph.takephoto.permission.PermissionManager;
 import com.jph.takephoto.permission.TakePhotoInvocationHandler;
 import com.yalantis.ucrop.UCrop;
+import com.yalantis.ucrop.UCropActivity;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -64,7 +67,7 @@ public class BroadcastCreateActivity extends BasePresenterActivity implements Br
     private BroadcastCreatePresenter mBroadcastCreatePresenter;
     private TakePhoto takePhoto;
     private InvokeParam invokeParam;
-    private File coverFile = null;
+    private File coverFile;
 
     @Override
     protected void preView() {
@@ -132,6 +135,7 @@ public class BroadcastCreateActivity extends BasePresenterActivity implements Br
                 break;
             case R.id.imv_cover:
             case R.id.tv_change_cover:
+                coverFile = null;
                 takePhoto.onPickFromGallery();
                 break;
             default:
@@ -168,13 +172,14 @@ public class BroadcastCreateActivity extends BasePresenterActivity implements Br
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
         getTakePhoto().onActivityResult(requestCode, resultCode, data);
+        super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK && requestCode == UCrop.REQUEST_CROP) {
             final Uri resultUri = UCrop.getOutput(data);
             L.v("resultUri.toString()====" + resultUri.toString());
             String picPath = resultUri.toString().replace("file://", "");
             L.v("picPath=====" + picPath);
+            ImageUtils.get().load(imgCover, picPath);
             coverFile = new File(picPath);
         } else if (resultCode == UCrop.RESULT_ERROR) {
             final Throwable cropError = UCrop.getError(data);
@@ -232,9 +237,9 @@ public class BroadcastCreateActivity extends BasePresenterActivity implements Br
         } else {
             path = result.getImage().getOriginalPath();
         }
-        ImageUtils.get().load(imgCover, path);
-        coverFile = new File(path);
-        L.v("nana", "coverFile--------" + path);
+        if (!TextUtils.isEmpty(path)) {
+            cropPic(path);
+        }
     }
 
     @Override
@@ -245,5 +250,26 @@ public class BroadcastCreateActivity extends BasePresenterActivity implements Br
     @Override
     public void takeCancel() {
 
+    }
+
+    private void cropPic(String result) {
+        //第三方裁剪库
+        File file = new File(this.getExternalCacheDir(), System.currentTimeMillis() + ".jpg");
+        Uri uri = Uri.fromFile(file);
+        Uri uri1 = Uri.parse("file://" + result);
+        L.v(uri1);
+        UCrop uCrop = UCrop.of(uri1, uri);
+        UCrop.Options options = new UCrop.Options();
+        options.setCompressionFormat(Bitmap.CompressFormat.JPEG);
+        options.setAllowedGestures(UCropActivity.SCALE, UCropActivity.ROTATE, UCropActivity.ALL);
+        options.setHideBottomControls(true);
+        options.setToolbarColor(ActivityCompat.getColor(this, R.color.white));
+        options.setStatusBarColor(ActivityCompat.getColor(this, R.color.black_overlay));
+        options.setToolbarWidgetColor(ActivityCompat.getColor(this, android.R.color.black));
+        options.setFreeStyleCropEnabled(false);
+        uCrop.withOptions(options);
+        uCrop.withAspectRatio(1, 1);
+        uCrop.withMaxResultSize(224, 224);
+        uCrop.start(this);
     }
 }

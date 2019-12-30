@@ -3,6 +3,8 @@ package cn.xylink.mting.ui.dialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.graphics.drawable.AnimationDrawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.view.ViewPager;
@@ -125,9 +127,6 @@ public class SpeechPanelDialog extends Dialog implements SeekBar.OnSeekBarChange
 
         validatePanelView(null);
 
-        if (EventBus.getDefault().isRegistered(this) == false) {
-            EventBus.getDefault().register(this);
-        }
     }
 
     private ArticleDataProvider.ArticleLoader<Article> favorCallback = new ArticleDataProvider.ArticleLoader<Article>() {
@@ -146,46 +145,6 @@ public class SpeechPanelDialog extends Dialog implements SeekBar.OnSeekBarChange
 
 
     private void onInitControlView(View controlView) {
-        /*
-        controlView.setOnTouchListener(new View.OnTouchListener() {
-            float downPosX;
-            float downPosY;
-            float upPosX;
-            float upPosY;
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                switch (event.getAction()) {
-                    case MotionEvent.ACTION_DOWN:
-                        Log.d(TAG, "up slip start");
-                        downPosX = event.getX();
-                        downPosY = event.getY();
-                        return true;
-                    case MotionEvent.ACTION_MOVE:
-                        return true;
-                    case MotionEvent.ACTION_UP:
-
-                        upPosX = event.getX();
-                        upPosY = event.getY();
-
-                        float lineDistance = (float)Math.sqrt(Math.pow(downPosY - upPosY, 2) + Math.pow(downPosX - upPosX, 2));
-                        float slipSlope = Math.abs(( downPosY - upPosY ) / (downPosX - upPosX));
-                        Log.d(TAG, "up slip end:line" + lineDistance + ", slipSlop:" + slipSlope);
-                        if(downPosY - upPosY > 0 && lineDistance > DensityUtil.dip2px(contextWeakReference.get(), 80)) {
-                            if(slipSlope > 1) {
-                                Log.d(TAG, "discrepency the up slip, the slope is:" + slipSlope);
-                                if(speechServiceWeakReference.get().hasNext()) {
-                                    speechServiceWeakReference.get().playNext();
-                                }
-                                return true;
-                            }
-                        }
-                        return false;
-                }
-                return false;
-            }
-        });
-
-         */
         Article articlePlaying = speechServiceWeakReference.get().getSelected();
         SpeechService.SpeechServiceState currentState = speechServiceWeakReference.get().getState();
         boolean seekBarEnabled = currentState != SpeechService.SpeechServiceState.Loadding && currentState != SpeechService.SpeechServiceState.Stoped && articlePlaying != null;
@@ -744,5 +703,41 @@ public class SpeechPanelDialog extends Dialog implements SeekBar.OnSeekBarChange
             EventBus.getDefault().unregister(this);
         }
         super.dismiss();
+    }
+
+    @Override
+    public void show() {
+        super.show();
+        if (EventBus.getDefault().isRegistered(this) == false) {
+            EventBus.getDefault().register(this);
+        }
+        validatePanelView(null);
+
+        ImageView hand_slip_image = controlView.findViewById(R.id.im_hand_slip_anim);
+        TextView hand_slip_text = controlView.findViewById(R.id.slip_text);
+        SharedPreferences sp = contextWeakReference.get().getSharedPreferences("speech_config", Context.MODE_PRIVATE);
+        if(sp.getBoolean("already_dialog1", false) == false) {
+            SharedPreferences.Editor editor = sp.edit();
+            editor.putBoolean("already_dialog1", true);
+            editor.apply();
+
+            hand_slip_image.setVisibility(View.VISIBLE);
+            hand_slip_image.setImageResource(R.drawable.hand_slip_anim);
+            AnimationDrawable hand_slip_anim = (AnimationDrawable) hand_slip_image.getDrawable();
+            hand_slip_text.setVisibility(View.VISIBLE);
+            hand_slip_text.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    hand_slip_anim.stop();
+                    hand_slip_image.setVisibility(View.INVISIBLE);
+                    v.setVisibility(View.INVISIBLE);
+                }
+            });
+            hand_slip_anim.start();
+        }
+        else {
+            hand_slip_image.setVisibility(View.INVISIBLE);
+            hand_slip_text.setVisibility(View.INVISIBLE);
+        }
     }
 }
