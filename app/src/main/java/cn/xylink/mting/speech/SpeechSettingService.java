@@ -39,7 +39,7 @@ public class SpeechSettingService {
         return null;
     }
 
-    public void setRole(Speechor.SpeechorSpeed speed) {
+    public void setSpeed(Speechor.SpeechorSpeed speed) {
         if(speechServiceWeakReference != null && speechServiceWeakReference.get() != null) {
             speechServiceWeakReference.get().setSpeed(speed);
         }
