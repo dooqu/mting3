@@ -901,7 +901,7 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
         if (ContentManager.getInstance().getVisitor().equals("0")) {
             Intent intent = new Intent(new Intent(this, LoginActivity.class));
             intent.putExtra(LoginActivity.LOGIN_ACTIVITY, Const.visitor);
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+//            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
             this.finish();
         }
