@@ -35,6 +35,7 @@ import java.util.List;
 import cn.xylink.mting.R;
 import cn.xylink.mting.bean.Article;
 import cn.xylink.mting.bean.BroadcastDetailInfo;
+import cn.xylink.mting.common.Const;
 import cn.xylink.mting.event.StoreRefreshEvent;
 import cn.xylink.mting.speech.SpeechService;
 import cn.xylink.mting.speech.Speechor;
@@ -49,7 +50,10 @@ import cn.xylink.mting.ui.activity.ArticleDetailActivity;
 import cn.xylink.mting.ui.activity.BaseActivity;
 import cn.xylink.mting.ui.activity.BroadcastActivity;
 import cn.xylink.mting.ui.activity.BroadcastItemAddActivity;
+import cn.xylink.mting.ui.activity.LoginActivity;
+import cn.xylink.mting.ui.activity.SettingTimerActivity;
 import cn.xylink.mting.ui.adapter.ControlPanelAdapter;
+import cn.xylink.mting.utils.ContentManager;
 import cn.xylink.mting.utils.DensityUtil;
 
 import static cn.xylink.mting.speech.Speechor.SpeechorRole.XiaoIce;
@@ -143,7 +147,6 @@ public class SpeechPanelDialog extends Dialog implements SeekBar.OnSeekBarChange
     };
 
 
-
     private void onInitControlView(View controlView) {
         Article articlePlaying = speechServiceWeakReference.get().getSelected();
         SpeechService.SpeechServiceState currentState = speechServiceWeakReference.get().getState();
@@ -172,7 +175,9 @@ public class SpeechPanelDialog extends Dialog implements SeekBar.OnSeekBarChange
         btnSoundSetting.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                viewPager.setCurrentItem(0, true);
+                if(gotoLoginIfInGuestMode() == false) {
+                    viewPager.setCurrentItem(0, true);
+                }
             }
         });
 
@@ -180,7 +185,9 @@ public class SpeechPanelDialog extends Dialog implements SeekBar.OnSeekBarChange
         btnTimeSetting.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                viewPager.setCurrentItem(2, true);
+                if(gotoLoginIfInGuestMode() == false) {
+                    viewPager.setCurrentItem(2, true);
+                }
             }
         });
 
@@ -227,16 +234,19 @@ public class SpeechPanelDialog extends Dialog implements SeekBar.OnSeekBarChange
                         || speechServiceWeakReference.get().getState() == SpeechService.SpeechServiceState.Loadding) {
                     return;
                 }
-                Article article = speechServiceWeakReference.get().getSelected();
-                ArticleDataProvider provider = new ArticleDataProvider(contextWeakReference.get());
 
-                if (article.getStore() == 0) {
-                    icoFavor.setImageResource(R.mipmap.ico_dialog_favor);
-                    provider.favorArticle(article, favorCallback);
-                }
-                else {
-                    icoFavor.setImageResource(R.mipmap.ico_dialog_unfavor);
-                    provider.unfavorArticle(article, favorCallback);
+                if(gotoLoginIfInGuestMode() == false) {
+                    Article article = speechServiceWeakReference.get().getSelected();
+                    ArticleDataProvider provider = new ArticleDataProvider(contextWeakReference.get());
+
+                    if (article.getStore() == 0) {
+                        icoFavor.setImageResource(R.mipmap.ico_dialog_favor);
+                        provider.favorArticle(article, favorCallback);
+                    }
+                    else {
+                        icoFavor.setImageResource(R.mipmap.ico_dialog_unfavor);
+                        provider.unfavorArticle(article, favorCallback);
+                    }
                 }
             }
         });
@@ -262,15 +272,17 @@ public class SpeechPanelDialog extends Dialog implements SeekBar.OnSeekBarChange
                         || speechServiceWeakReference.get().getSelected() == null) {
                     return;
                 }
-                dismiss();
-                Article article = speechServiceWeakReference.get().getSelected();
-                BroadcastItemMenuDialog shareDialog = new BroadcastItemMenuDialog(contextWeakReference.get());
-                BroadcastDetailInfo broadcastDetailInfo = new BroadcastDetailInfo();
-                broadcastDetailInfo.setName(article.getBroadcastTitle());
-                broadcastDetailInfo.setCreateName(article.getSourceName());
-                broadcastDetailInfo.setShareUrl(article.getShareUrl());
-                shareDialog.setDetailInfo(broadcastDetailInfo);
-                shareDialog.show();
+                if(gotoLoginIfInGuestMode() == false) {
+                    dismiss();
+                    Article article = speechServiceWeakReference.get().getSelected();
+                    BroadcastItemMenuDialog shareDialog = new BroadcastItemMenuDialog(contextWeakReference.get());
+                    BroadcastDetailInfo broadcastDetailInfo = new BroadcastDetailInfo();
+                    broadcastDetailInfo.setName(article.getBroadcastTitle());
+                    broadcastDetailInfo.setCreateName(article.getSourceName());
+                    broadcastDetailInfo.setShareUrl(article.getShareUrl());
+                    shareDialog.setDetailInfo(broadcastDetailInfo);
+                    shareDialog.show();
+                }
             }
         });
     }
@@ -549,7 +561,7 @@ public class SpeechPanelDialog extends Dialog implements SeekBar.OnSeekBarChange
                 countDowns[1].setChecked(true);
                 break;
             case MinuteCount:
-                switch (speechService.getCountdownThresholdValue()) {
+                switch (speechService.getCountDownThresholdValue()) {
                     case 10:
                         countDowns[2].setChecked(true);
                         break;
@@ -738,6 +750,18 @@ public class SpeechPanelDialog extends Dialog implements SeekBar.OnSeekBarChange
         else {
             hand_slip_image.setVisibility(View.INVISIBLE);
             hand_slip_text.setVisibility(View.INVISIBLE);
+        }
+    }
+
+    public boolean gotoLoginIfInGuestMode() {
+        if (ContentManager.getInstance().getVisitor().equals("0")) {//表示是游客登录
+            Intent intent = new Intent(new Intent(contextWeakReference.get(), LoginActivity.class));
+            intent.putExtra(LoginActivity.LOGIN_ACTIVITY, Const.visitor);
+            contextWeakReference.get().startActivity(intent);
+            return true;
+        }
+        else {
+            return false;
         }
     }
 }

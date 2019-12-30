@@ -79,4 +79,9 @@ public class PanelViewPager extends ViewPager {
         }
         return super.dispatchTouchEvent(event);
     }
+
+    @Override
+    public boolean onInterceptTouchEvent(MotionEvent ev) {
+        return false;
+    }
 }
