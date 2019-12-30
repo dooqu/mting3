@@ -168,22 +168,6 @@ public class ArticleDetailActivity extends BasePresenterActivity implements Arti
         Intent intent = getIntent();
         broadcastId = intent.getStringExtra(BROADCAST_ID_DETAIL);
         articleId = intent.getStringExtra(ARTICLE_ID_DETAIL);
-        switch (broadcastId) {
-            case "-1":
-                broadcastTitle = "待读";
-                break;
-            case "-2":
-                broadcastTitle = "已读历史";
-                break;
-            case "-3":
-                broadcastTitle = "收藏";
-                break;
-            case "-4":
-                broadcastTitle = "我创建的";
-                break;
-            default:
-                break;
-        }
 //        broadcastTitle = intent.getStringExtra(BROADCAST_TITLE_DETAIL);
         //显示栏 显示的条件: 有broadcastId&&不是-1234
         if (broadcastId != null) {
@@ -193,6 +177,22 @@ public class ArticleDetailActivity extends BasePresenterActivity implements Arti
             }
         } else {
             rvBroadcastDetail.setVisibility(View.GONE);
+            switch (broadcastId) {
+                case "-1":
+                    broadcastTitle = "待读";
+                    break;
+                case "-2":
+                    broadcastTitle = "已读历史";
+                    break;
+                case "-3":
+                    broadcastTitle = "收藏";
+                    break;
+                case "-4":
+                    broadcastTitle = "我创建的";
+                    break;
+                default:
+                    break;
+            }
         }
 
         doGetArticleDetail();
