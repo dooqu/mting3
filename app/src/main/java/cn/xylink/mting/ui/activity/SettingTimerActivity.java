@@ -6,7 +6,6 @@ import android.widget.CompoundButton;
 import android.widget.RadioGroup;
 import android.widget.Switch;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.tendcloud.tenddata.TCAgent;
 
@@ -15,7 +14,7 @@ import butterknife.OnClick;
 import cn.xylink.mting.R;
 import cn.xylink.mting.common.Const;
 import cn.xylink.mting.speech.SpeechService;
-import cn.xylink.mting.speech.SpeechServiceProxy;
+import cn.xylink.mting.speech.SpeechSettingService;
 import cn.xylink.mting.utils.ContentManager;
 
 /**
@@ -33,8 +32,7 @@ public class SettingTimerActivity extends BasePresenterActivity {
     TextView tvTimer;
 
     private SpeechService.CountDownMode countDownMode;
-    private SpeechService service;
-    SpeechServiceProxy proxy;
+    private SpeechSettingService service;
     private int countDownValue;
     //设置定时关闭回调
     String optName = "articleDetails_timing_close";
@@ -53,18 +51,7 @@ public class SettingTimerActivity extends BasePresenterActivity {
             startActivity(intent);
             finish();
         }
-        proxy = new SpeechServiceProxy(this) {
-            @Override
-            protected void onConnected(boolean connected, SpeechService service) {
-                if (connected) {
-                    SettingTimerActivity.this.service = service;
-                }
-            }
-        };
-        proxy.bind();
-        if (proxy.bind() == false) {
-            Toast.makeText(this, "未能连接到播放服务", Toast.LENGTH_SHORT).show();
-        }
+
         if (countDownMode == null || countDownMode == SpeechService.CountDownMode.None) {
             swCount.setChecked(false);
             rgCountDown.check(-1);
@@ -95,6 +82,9 @@ public class SettingTimerActivity extends BasePresenterActivity {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 switch (checkedId) {
+                    case R.id.rb_close:
+                        service.cancelCountDown();
+                        break;
                     case R.id.rb_current:
                         ContentManager.getInstance().setRgTime(1);
                         swCount.setChecked(true);
@@ -155,8 +145,34 @@ public class SettingTimerActivity extends BasePresenterActivity {
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        proxy.unbind();
+    protected void onSpeechServiceAvailable() {
+        super.onSpeechServiceAvailable();
+        service = getSpeechService();
+        switch (service.getCountDownMode()) {
+            case None:
+                rgCountDown.check(R.id.rb_close);
+                break;
+            case NumberCount:
+                rgCountDown.check(R.id.rb_current);
+                break;
+            case MinuteCount:
+                switch (service.getCountDownThresholdValue()) {
+                    case 10:
+                        rgCountDown.check(R.id.rb_time10);
+                        break;
+                    case 20:
+                        rgCountDown.check(R.id.rb_time20);
+                        break;
+                    case 30:
+                        rgCountDown.check(R.id.rb_time30);
+                        break;
+                }
+                break;
+        }
+    }
+
+    @Override
+    protected boolean enableSpeechService() {
+        return true;
     }
 }

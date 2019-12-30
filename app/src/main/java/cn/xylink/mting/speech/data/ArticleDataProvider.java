@@ -325,7 +325,7 @@ public class ArticleDataProvider {
         request.setArticleId(article.getArticleId());
         request.setBroadcastId(article.getBroadcastId());
         request.setProgress(article.getProgress());
-        request.setRead(article.getProgress() == 1? 1 : 0);
+        request.setRead(article.getProgress() == 1 ? 1 : 0);
         request.setToken(ContentManager.getInstance().getLoginToken());
         request.doSign();
 
