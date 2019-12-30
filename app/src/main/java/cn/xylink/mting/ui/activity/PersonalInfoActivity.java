@@ -54,6 +54,7 @@ import cn.xylink.mting.utils.DateUtils;
 import cn.xylink.mting.utils.ImageUtils;
 import cn.xylink.mting.utils.L;
 import cn.xylink.mting.utils.MD5;
+import cn.xylink.mting.utils.SoftKeyBoardListener;
 
 public class PersonalInfoActivity extends BasePresenterActivity implements TakePhoto.TakeResultListener, InvokeListener, UploadHeadImgContact.IUploadHeadImgView, BottomSelectDialog.OnBottomSelectDialogListener, UpdateUserInfoContact.IUpdateUserView {
 
@@ -139,6 +140,31 @@ public class PersonalInfoActivity extends BasePresenterActivity implements TakeP
         tvTitle.setText("个人信息");
         setUserInfo();
         viewTreeObserver();
+        SoftKeyBoardListener.setListener(this, new SoftKeyBoardListener.OnSoftKeyBoardChangeListener() {
+            @Override
+            public void keyBoardShow(int height) {
+                //键盘显示
+                ivArrow3.setVisibility(View.INVISIBLE);
+                tvNickName.setVisibility(View.INVISIBLE);
+                etNickName.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void keyBoardHide(int height) {
+                //键盘隐藏
+                ivArrow3.setVisibility(View.VISIBLE);
+                tvNickName.setVisibility(View.VISIBLE);
+                etNickName.setVisibility(View.INVISIBLE);
+                if (!TextUtils.isEmpty(etNickName.getText()) && !oldNiceName.equals(etNickName.getText().toString())) {
+                    tvNickName.setText(etNickName.getText());
+                    oldNiceName = etNickName.getText().toString();
+                    UpdateUserRequset request = new UpdateUserRequset();
+                    request.setNickName(etNickName.getText().toString());
+                    updateUser(request);
+                }
+
+            }
+        });
     }
 
     private void viewTreeObserver() {
