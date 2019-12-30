@@ -11,6 +11,7 @@ import android.widget.Toast;
 import com.tendcloud.tenddata.TCAgent;
 
 import butterknife.BindView;
+import butterknife.OnClick;
 import cn.xylink.mting.R;
 import cn.xylink.mting.common.Const;
 import cn.xylink.mting.speech.SpeechService;
@@ -143,6 +144,14 @@ public class SettingTimerActivity extends BasePresenterActivity {
     @Override
     protected void initTitleBar() {
         tvTitle.setText("定时关闭");
+    }
+
+    @OnClick({R.id.btn_left})
+    void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.btn_left:
+                finish();
+        }
     }
 
     @Override
