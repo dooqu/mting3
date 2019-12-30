@@ -107,7 +107,7 @@ public class BroadcastEditActivity extends BasePresenterActivity implements Broa
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         getTakePhoto().onCreate(savedInstanceState);
         super.onCreate(savedInstanceState);
-        EventBus.getDefault().register(this);
+//        EventBus.getDefault().register(this);
     }
 
     public TakePhoto getTakePhoto() {
@@ -244,7 +244,7 @@ public class BroadcastEditActivity extends BasePresenterActivity implements Broa
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        EventBus.getDefault().unregister(this);
+//        EventBus.getDefault().unregister(this);
     }
 
     private void cropPic(String result) {

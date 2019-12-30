@@ -280,11 +280,18 @@ public class ArticleDetailActivity extends BasePresenterActivity implements Arti
                 finish();
                 break;
             case R.id.btn_share:
-                if (articleDetail2Info != null) {
-                    ArticleDetailShareDialog dialog = new ArticleDetailShareDialog(this);
-                    dialog.setDetailInfo(articleDetail2Info);
-                    dialog.show();
+                if (ContentManager.getInstance().getVisitor().equals("0")) {//游客不支持分享
+                    Intent intent2 = new Intent(new Intent(ArticleDetailActivity.this, LoginActivity.class));
+                    intent2.putExtra(LoginActivity.LOGIN_ACTIVITY, Const.visitor);
+                    startActivity(intent2);
+                } else {
+                    if (articleDetail2Info != null) {
+                        ArticleDetailShareDialog dialog = new ArticleDetailShareDialog(this);
+                        dialog.setDetailInfo(articleDetail2Info);
+                        dialog.show();
+                    }
                 }
+
                 break;
             case R.id.btn_more:
                 if (inType == 1) {
@@ -310,8 +317,10 @@ public class ArticleDetailActivity extends BasePresenterActivity implements Arti
                 ArticleDetailActivity.this.finish();
                 break;
             case R.id.view_detail_panel_favor:
-                if (ContentManager.getInstance().getVisitor().equals("0")) {
-                    toastCenterShort("游客不支持收藏");
+                if (ContentManager.getInstance().getVisitor().equals("0")) {//游客不支持收藏
+                    Intent intent2 = new Intent(new Intent(ArticleDetailActivity.this, LoginActivity.class));
+                    intent2.putExtra(LoginActivity.LOGIN_ACTIVITY, Const.visitor);
+                    startActivity(intent2);
                 } else {
                     isFavor = !isFavor;
                     if (isFavor) {
@@ -365,7 +374,7 @@ public class ArticleDetailActivity extends BasePresenterActivity implements Arti
                 intent3.putExtra(BroadcastActivity.EXTRA_BROADCASTID, broadcastId);
                 intent3.putExtra(BroadcastActivity.EXTRA_TITLE, broadcastTitle);
                 ArticleDetailActivity.this.startActivity(intent3);
-                ArticleDetailActivity.this.finish();
+//                ArticleDetailActivity.this.finish();
                 break;
             default:
                 break;

@@ -140,7 +140,7 @@ public class BroadcastAdapter extends RecyclerView.Adapter<BroadcastAdapter.View
                 if (ContentManager.getInstance().getVisitor().equals("0")) {
                     Intent intent = new Intent(new Intent(mContext, LoginActivity.class));
                     intent.putExtra(LoginActivity.LOGIN_ACTIVITY, Const.visitor);
-                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+//                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                     mContext.startActivity(intent);
                 } else {
                     if (mOnItemClickListener != null) {
