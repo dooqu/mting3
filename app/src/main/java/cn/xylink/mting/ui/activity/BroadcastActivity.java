@@ -371,7 +371,8 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
     public void onItemLongClick(BroadcastInfo article) {
         BroadcastItemMenuDialog dialog = new BroadcastItemMenuDialog(this);
         dialog.setBroadcastInfo(article);
-        if (mDetailInfo != null && !mDetailInfo.getCreateUserId().equals(ContentManager.getInstance().getUserInfo().getUserId())) {
+        if (ContentManager.getInstance().getUserInfo() != null && mDetailInfo != null
+                && !mDetailInfo.getCreateUserId().equals(ContentManager.getInstance().getUserInfo().getUserId())) {
             dialog.isShowDel(false);
         }
         if ("-3".equals(getIntent().getStringExtra(EXTRA_BROADCASTID))) {
@@ -417,8 +418,8 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
 
                         @Override
                         public void onRightClick() {
-                            Intent inte=new Intent(BroadcastActivity.this,SelectBroadcastActivity.class);
-                            inte.putExtra(SelectArticleAddActivity.EXTRA_BROADCASTID_TO,getIntent().getStringExtra(EXTRA_BROADCASTID));
+                            Intent inte = new Intent(BroadcastActivity.this, SelectBroadcastActivity.class);
+                            inte.putExtra(SelectArticleAddActivity.EXTRA_BROADCASTID_TO, getIntent().getStringExtra(EXTRA_BROADCASTID));
                             startActivity(inte);
                         }
                     });
@@ -434,8 +435,8 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
     void onClick(View view) {
         switch (view.getId()) {
             case R.id.tv_add:
-                Intent inte=new Intent(this,SelectBroadcastActivity.class);
-                inte.putExtra(SelectArticleAddActivity.EXTRA_BROADCASTID_TO,getIntent().getStringExtra(EXTRA_BROADCASTID));
+                Intent inte = new Intent(this, SelectBroadcastActivity.class);
+                inte.putExtra(SelectArticleAddActivity.EXTRA_BROADCASTID_TO, getIntent().getStringExtra(EXTRA_BROADCASTID));
                 startActivity(inte);
                 break;
             case R.id.ll_empty:
@@ -478,7 +479,8 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
                     }
                 } else if (mDetailInfo != null) {
                     /*是否是我自己的播单*/
-                    if (mDetailInfo.getCreateUserId().equals(ContentManager.getInstance().getUserInfo().getUserId())) {
+                    if (ContentManager.getInstance().getUserInfo() != null
+                            && mDetailInfo.getCreateUserId().equals(ContentManager.getInstance().getUserInfo().getUserId())) {
                         mBottomTingDialog.setItemModle(new BottomTingItemModle(Const.BottomDialogItem.EDIT_BROADCAST,
                                         getResources().getDrawable(R.mipmap.icon_edit_broadcast))
                                 , mDetailInfo.getTop() == 0 ? new BottomTingItemModle(Const.BottomDialogItem.SET_TOP,
@@ -754,7 +756,7 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
             if (info.getPositin() == 1) {
 //                EventBus.getDefault().post(new TingRefreshEvent());
                 EventBus.getDefault().post(new TingChangeMessageEvent(getIntent().getStringExtra(EXTRA_BROADCASTID),
-                        mAdapter.getArticleList().size()>1 ? mAdapter.getArticleList().get(1).getTitle() : ""));
+                        mAdapter.getArticleList().size() > 1 ? mAdapter.getArticleList().get(1).getTitle() : ""));
             }
             if (mAdapter.getItemCount() == 1) {
                 showEmptyLayout();
@@ -829,7 +831,8 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
             mEmptyImageView.setImageResource(R.mipmap.bg_empty);
             mEmptyTextView.setText("暂时还没有文章");
             mLookStudioTextView.setVisibility(View.GONE);
-            if (mDetailInfo != null && mDetailInfo.getCreateUserId().equals(ContentManager.getInstance().getUserInfo().getUserId())) {
+            if (ContentManager.getInstance().getUserInfo() != null &&mDetailInfo != null
+                    && mDetailInfo.getCreateUserId().equals(ContentManager.getInstance().getUserInfo().getUserId())) {
                 mEmptyAddTextView.setVisibility(View.VISIBLE);
             } else {
                 mEmptyAddTextView.setVisibility(View.GONE);
@@ -858,6 +861,7 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
     public void eventRefresh(BroadcastRefreshEvent event) {
         initList();
     }
+
     @Subscribe
     public void eventDetailRefresh(BroadcastDetailRefreshEvent event) {
         initDetail();
@@ -868,7 +872,7 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
         if (Const.SystemBroadcast.SYSTEMBROADCAST_UNREAD.equals(getIntent().getStringExtra(EXTRA_BROADCASTID))) {
             if (event.getArticle().getArticleId().equals(mAdapter.getArticleList().get(1).getArticleId())) {
                 EventBus.getDefault().post(new TingChangeMessageEvent(getIntent().getStringExtra(EXTRA_BROADCASTID),
-                        mAdapter.getArticleList().size()>2 ? mAdapter.getArticleList().get(2).getTitle() : ""));
+                        mAdapter.getArticleList().size() > 2 ? mAdapter.getArticleList().get(2).getTitle() : ""));
             }
             mAdapter.notifyItemRemoe(event.getArticle().getArticleId());
         }

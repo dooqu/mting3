@@ -106,7 +106,8 @@ public class BroadcastAdapter extends RecyclerView.Adapter<BroadcastAdapter.View
                     holder.mShare2worldTextView.setVisibility(View.VISIBLE);
                     holder.mShare2worldTextView.setText("订阅");
                 } else {
-                    if (mDetailInfo.getCreateUserId().equals(ContentManager.getInstance().getUserInfo().getUserId())) {
+                    if (ContentManager.getInstance().getUserInfo() != null
+                            && mDetailInfo.getCreateUserId().equals(ContentManager.getInstance().getUserInfo().getUserId())) {
                         if (mDetailInfo.getShare() == 0) {
                             holder.mShare2worldTextView.setVisibility(View.VISIBLE);
                         } else {
@@ -114,11 +115,11 @@ public class BroadcastAdapter extends RecyclerView.Adapter<BroadcastAdapter.View
                             holder.mSubscribedTextView.setText("已订阅：" + getSubscribedNum(mDetailInfo.getSubscribeTotal()));
                         }
                     } else {
-                        if (mDetailInfo.getSubscribe() == 1){
+                        if (mDetailInfo.getSubscribe() == 1) {
                             holder.mShare2worldTextView.setVisibility(View.GONE);
                             holder.mSubscribedTextView.setVisibility(View.VISIBLE);
                             holder.mSubscribedTextView.setText("已订阅：" + getSubscribedNum(mDetailInfo.getSubscribeTotal()));
-                        }else {
+                        } else {
                             holder.mSubscribedTextView.setVisibility(View.GONE);
                             holder.mShare2worldTextView.setVisibility(View.VISIBLE);
                             holder.mShare2worldTextView.setText("订阅");
@@ -188,7 +189,7 @@ public class BroadcastAdapter extends RecyclerView.Adapter<BroadcastAdapter.View
         notifyItemChanged(0);
     }
 
-    public void setSubscribe(int sub){
+    public void setSubscribe(int sub) {
         mDetailInfo.setSubscribe(sub);
         notifyItemChanged(0);
     }
