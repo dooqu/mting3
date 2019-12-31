@@ -274,9 +274,10 @@ public class SpeechPanelDialog extends Dialog implements SeekBar.OnSeekBarChange
                     Article article = speechServiceWeakReference.get().getSelected();
                     BroadcastItemMenuDialog shareDialog = new BroadcastItemMenuDialog(contextWeakReference.get());
                     BroadcastDetailInfo broadcastDetailInfo = new BroadcastDetailInfo();
-                    broadcastDetailInfo.setName(article.getBroadcastTitle());
+                    broadcastDetailInfo.setName(article.getTitle());
                     broadcastDetailInfo.setCreateName(article.getSourceName());
                     broadcastDetailInfo.setShareUrl(article.getShareUrl());
+                    broadcastDetailInfo.setInfo("");
                     shareDialog.setDetailInfo(broadcastDetailInfo);
                     shareDialog.show();
                 }
