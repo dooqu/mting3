@@ -730,7 +730,7 @@ public class SpeechPanelDialog extends Dialog implements SeekBar.OnSeekBarChange
         ImageView hand_slip_image = controlView.findViewById(R.id.im_hand_slip_anim);
         TextView hand_slip_text = controlView.findViewById(R.id.slip_text);
         SharedPreferences sp = contextWeakReference.get().getSharedPreferences("speech_config", Context.MODE_PRIVATE);
-        if(sp.getBoolean("already_dialog1", false) == false) {
+        if(sp.getBoolean("already_dialog1", false) == true) {
             SharedPreferences.Editor editor = sp.edit();
             editor.putBoolean("already_dialog1", true);
             editor.apply();
