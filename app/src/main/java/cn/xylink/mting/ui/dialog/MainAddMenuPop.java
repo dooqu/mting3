@@ -10,12 +10,14 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.PopupWindow;
 
+import com.scwang.smartrefresh.layout.util.DesignUtil;
 import com.tendcloud.tenddata.TCAgent;
 
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import cn.xylink.mting.R;
 import cn.xylink.mting.utils.DensityUtil;
+import cn.xylink.mting.utils.L;
 
 /**
  *首页右上角菜单
@@ -52,7 +54,8 @@ public class MainAddMenuPop extends PopupWindow {
     }
 
     public void showAsRight(View v) {
-        this.showAsDropDown(v, -330, 0);
+
+        this.showAsDropDown(v, -DensityUtil.dip2pxComm(mContext,95), 0);
     }
 
     @Override
