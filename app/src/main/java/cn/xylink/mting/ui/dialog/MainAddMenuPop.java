@@ -42,7 +42,7 @@ public class MainAddMenuPop extends PopupWindow {
         this.setTouchable(true);
         this.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         this.setOutsideTouchable(true);
-        this.setWidth(DensityUtil.dip2pxComm(mContext, 150f));
+        this.setWidth(DensityUtil.dip2pxComm(mContext, 140f));
         this.setHeight(DensityUtil.dip2pxComm(mContext, 150f));
 //        this.setAnimationStyle(R.style.anim_pop);
         mWindow = ((Activity) context).getWindow();
@@ -52,7 +52,7 @@ public class MainAddMenuPop extends PopupWindow {
     }
 
     public void showAsRight(View v) {
-        this.showAsDropDown(v, 0, 0);
+        this.showAsDropDown(v, -330, 0);
     }
 
     @Override
