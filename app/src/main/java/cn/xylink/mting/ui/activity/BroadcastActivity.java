@@ -384,7 +384,9 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
 
     @Override
     public void onShare2World(boolean isSubscribe) {
-        isVisitorlogin();
+        if (isVisitorlogin()){
+            return;
+        }
         if (isSubscribe) {
             subscribe(SubscribeRequest.EVENT.SUBSCRIBE.name().toLowerCase());
         } else {
@@ -456,7 +458,9 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
                 this.finish();
                 break;
             case R.id.iv_titlebar_share:
-                isVisitorlogin();
+                if (isVisitorlogin()){
+                    return;
+                }
                 if (mDetailInfo != null) {
                     BroadcastItemMenuDialog dialog = new BroadcastItemMenuDialog(this);
                     dialog.setDetailInfo(mDetailInfo);
@@ -515,7 +519,9 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
 
     @Override
     public void onItemCollect(BroadcastInfo info) {
-        isVisitorlogin();
+        if (isVisitorlogin()){
+            return;
+        }
         if (info.getStore() == 0) {
             addStore(info.getArticleId());
         } else {
@@ -546,7 +552,25 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
 
     @Override
     public void onItemDel(BroadcastInfo info) {
-        isVisitorlogin();
+        if (isVisitorlogin()){
+            return;
+        }
+        TipDialog dialog = new TipDialog(this);
+        dialog.setMsg("确定删除这篇文章吗？", "取消", "确定", new TipDialog.OnTipListener() {
+            @Override
+            public void onLeftClick() {
+
+            }
+
+            @Override
+            public void onRightClick() {
+                delItem(info);
+            }
+        });
+        dialog.show();
+    }
+
+    private void delItem(BroadcastInfo info) {
         ArticleIdsRequest request = new ArticleIdsRequest();
         request.setArticleIds(info.getArticleId());
         request.doSign();
@@ -607,7 +631,9 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
 
     @Override
     public void onBottomTingItemClick(BottomTingItemModle modle) {
-        isVisitorlogin();
+        if (isVisitorlogin()){
+            return;
+        }
         switch (modle.getName()) {
             case Const.BottomDialogItem.SET_TOP:
                 setTop(SetTopRequest.EVENT.TOP.name().toLowerCase());
@@ -901,13 +927,14 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
         T.showCustomCenterToast("举报失败");
     }
 
-    private void isVisitorlogin() {
+    private boolean isVisitorlogin() {
         if (ContentManager.getInstance().getVisitor().equals("0")) {
             Intent intent = new Intent(new Intent(this, LoginActivity.class));
             intent.putExtra(LoginActivity.LOGIN_ACTIVITY, Const.visitor);
 //            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
-            this.finish();
+            return true;
         }
+        return false;
     }
 }

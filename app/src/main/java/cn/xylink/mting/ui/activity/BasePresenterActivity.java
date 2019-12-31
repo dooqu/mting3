@@ -167,6 +167,6 @@ public abstract class BasePresenterActivity<T extends BasePresenter> extends Bas
             CharSequence str = clipData.getItemAt(0).getText();
             return str;
         }
-        return null;
+        return "";
     }
 }
