@@ -201,7 +201,7 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
         if (mAdapter != null && mAdapter.getArticleList() != null && mAdapter.getArticleList().size() > 20) {
             BroadcastListRequest request = new BroadcastListRequest();
             request.setBroadcastId(getIntent().getStringExtra(EXTRA_BROADCASTID));
-            request.setEvent(WorldRequest.EVENT.NEW.name().toLowerCase());
+            request.setEvent(WorldRequest.EVENT.OLD.name().toLowerCase());
             request.setLastAt(mAdapter.getArticleList().get(mAdapter.getArticleList().size() - 1).getLastAt());
             request.doSign();
             mPresenter.getBroadcastList(request, true);
