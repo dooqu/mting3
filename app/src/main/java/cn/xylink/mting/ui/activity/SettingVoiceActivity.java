@@ -125,17 +125,17 @@ public class SettingVoiceActivity extends BasePresenterActivity {
                 mCheck1.setVisibility(View.VISIBLE);
                 break;
             case R.id.bt_type2:
-                service.setRole(Speechor.SpeechorRole.XiaoMei);
+                service.setRole(Speechor.SpeechorRole.YaYa);
                 closeAll();
                 mCheck2.setVisibility(View.VISIBLE);
                 break;
             case R.id.bt_type3:
-                service.setRole(Speechor.SpeechorRole.XiaoYao);
+                service.setRole(Speechor.SpeechorRole.XiaoYu);
                 closeAll();
                 mCheck3.setVisibility(View.VISIBLE);
                 break;
             case R.id.bt_type4:
-                service.setRole(Speechor.SpeechorRole.XiaoYu);
+                service.setRole(Speechor.SpeechorRole.XiaoYao);
                 closeAll();
                 mCheck4.setVisibility(View.VISIBLE);
                 break;
@@ -153,13 +153,13 @@ public class SettingVoiceActivity extends BasePresenterActivity {
                 case XiaoIce:
                     mpb1.setVisibility(View.VISIBLE);
                     break;
-                case XiaoMei:
+                case YaYa:
                     mpb2.setVisibility(View.VISIBLE);
                     break;
-                case XiaoYao:
+                case XiaoYu:
                     mpb3.setVisibility(View.VISIBLE);
                     break;
-                case XiaoYu:
+                case XiaoYao:
                     mpb4.setVisibility(View.VISIBLE);
                     break;
             }
@@ -173,7 +173,7 @@ public class SettingVoiceActivity extends BasePresenterActivity {
                 case XiaoIce:
                     mCheck1.setVisibility(View.VISIBLE);
                     break;
-                case XiaoMei:
+                case YaYa:
                     mCheck2.setVisibility(View.VISIBLE);
                     break;
                 case XiaoYao:

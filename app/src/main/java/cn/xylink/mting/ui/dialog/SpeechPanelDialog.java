@@ -723,7 +723,11 @@ public class SpeechPanelDialog extends Dialog implements SeekBar.OnSeekBarChange
         if (EventBus.getDefault().isRegistered(this) == false) {
             EventBus.getDefault().register(this);
         }
+        viewPager.setCurrentItem(1, false);
         validatePanelView(null);
+        renderRolePortraitFromService();
+        renderSoundSpeechFromService();
+        renderCountDownOptionsFromService();
 
         ImageView hand_slip_image = controlView.findViewById(R.id.im_hand_slip_anim);
         TextView hand_slip_text = controlView.findViewById(R.id.slip_text);
