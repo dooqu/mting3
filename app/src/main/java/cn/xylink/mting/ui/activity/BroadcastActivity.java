@@ -547,6 +547,22 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
     @Override
     public void onItemDel(BroadcastInfo info) {
         isVisitorlogin();
+        TipDialog dialog = new TipDialog(this);
+        dialog.setMsg("确定删除这篇文章吗？", "取消", "确定", new TipDialog.OnTipListener() {
+            @Override
+            public void onLeftClick() {
+
+            }
+
+            @Override
+            public void onRightClick() {
+                delItem(info);
+            }
+        });
+        dialog.show();
+    }
+
+    private void delItem(BroadcastInfo info) {
         ArticleIdsRequest request = new ArticleIdsRequest();
         request.setArticleIds(info.getArticleId());
         request.doSign();
