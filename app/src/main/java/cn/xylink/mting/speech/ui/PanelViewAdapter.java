@@ -220,7 +220,7 @@ public class PanelViewAdapter {
 
     private void displayLoaddingAnim(boolean display) {
         if (display) {
-            progressBar.setVisibility(View.INVISIBLE);
+            progressBar.setVisibility(View.VISIBLE);
         }
         else {
             progressBar.setVisibility(View.INVISIBLE);
