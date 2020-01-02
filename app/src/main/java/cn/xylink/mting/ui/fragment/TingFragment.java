@@ -163,9 +163,9 @@ public class TingFragment extends BasePresenterFragment implements TingListConta
         mBottomTingDialog.show();
     }
 
-    @OnClick({R.id.iv_ting_menu,R.id.tv_ting_search})
+    @OnClick({R.id.iv_ting_menu, R.id.tv_ting_search})
     void onClick(View view) {
-        switch (view.getId()){
+        switch (view.getId()) {
             case R.id.iv_ting_menu:
                 MainAddMenuPop pop = new MainAddMenuPop(getActivity(), this);
                 pop.showAsRight(mMenuImageView);
@@ -220,20 +220,20 @@ public class TingFragment extends BasePresenterFragment implements TingListConta
     }
 
     @Override
-    public void onSetTopSuccess(BaseResponse response,String event) {
-        if (event.equals(SetTopRequest.EVENT.TOP.name().toLowerCase())){
+    public void onSetTopSuccess(BaseResponse response, String event) {
+        if (event.equals(SetTopRequest.EVENT.TOP.name().toLowerCase())) {
             T.showCustomCenterToast("置顶成功");
-        }else {
+        } else {
             T.showCustomCenterToast("取消置顶成功");
         }
         initData();
     }
 
     @Override
-    public void onSetTopError(int code, String errorMsg,String event) {
-        if (event.equals(SetTopRequest.EVENT.TOP.name().toLowerCase())){
+    public void onSetTopError(int code, String errorMsg, String event) {
+        if (event.equals(SetTopRequest.EVENT.TOP.name().toLowerCase())) {
             T.showCustomCenterToast("置顶失败");
-        }else {
+        } else {
             T.showCustomCenterToast("取消置顶失败");
         }
     }
@@ -275,7 +275,7 @@ public class TingFragment extends BasePresenterFragment implements TingListConta
 
     @Subscribe
     public void eventChangeMessage(TingChangeMessageEvent event) {
-        mAdapter.changeMessage(event.getBroadcastId(),event.getMessage());
+        mAdapter.changeMessage(event.getBroadcastId(), event.getMessage());
     }
 
     @Override
@@ -289,10 +289,10 @@ public class TingFragment extends BasePresenterFragment implements TingListConta
         @Override
         public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
             super.onScrolled(recyclerView, dx, dy);
-            if (dy>2){
-                EventBus.getDefault().post(new ArticleDetailScrollEvent("upGlide"));
-            }else if (dy<-2){
-                EventBus.getDefault().post(new ArticleDetailScrollEvent("glide"));
+            if (dy > 2) {
+                EventBus.getDefault().post(new ArticleDetailScrollEvent("upGlide", getActivity()));
+            } else if (dy < -2) {
+                EventBus.getDefault().post(new ArticleDetailScrollEvent("glide", getActivity()));
             }
         }
     };

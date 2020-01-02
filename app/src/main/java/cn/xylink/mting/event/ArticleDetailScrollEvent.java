@@ -18,6 +18,11 @@ public class ArticleDetailScrollEvent {
         this.motion = motion;
     }
 
+    public ArticleDetailScrollEvent(String motion, Activity activity) {
+        this.motion = motion;
+        this.activity = activity;
+    }
+
     public String getMotion() {
         return motion;
     }

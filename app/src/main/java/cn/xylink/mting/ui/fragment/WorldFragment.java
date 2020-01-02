@@ -197,9 +197,9 @@ public class WorldFragment extends BasePresenterFragment implements WorldListCon
         public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
             super.onScrolled(recyclerView, dx, dy);
             if (dy>2){
-                EventBus.getDefault().post(new ArticleDetailScrollEvent("upGlide"));
+                EventBus.getDefault().post(new ArticleDetailScrollEvent("upGlide", getActivity()));
             }else if (dy<-2){
-                EventBus.getDefault().post(new ArticleDetailScrollEvent("glide"));
+                EventBus.getDefault().post(new ArticleDetailScrollEvent("glide", getActivity()));
             }
         }
     };
