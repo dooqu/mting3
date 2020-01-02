@@ -172,7 +172,7 @@ public class SpeechPanelDialog extends Dialog implements SeekBar.OnSeekBarChange
         btnSoundSetting.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(gotoLoginIfInGuestMode() == false) {
+                if (gotoLoginIfInGuestMode() == false) {
                     viewPager.setCurrentItem(0, true);
                 }
             }
@@ -182,7 +182,7 @@ public class SpeechPanelDialog extends Dialog implements SeekBar.OnSeekBarChange
         btnTimeSetting.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(gotoLoginIfInGuestMode() == false) {
+                if (gotoLoginIfInGuestMode() == false) {
                     viewPager.setCurrentItem(2, true);
                 }
             }
@@ -232,7 +232,7 @@ public class SpeechPanelDialog extends Dialog implements SeekBar.OnSeekBarChange
                     return;
                 }
 
-                if(gotoLoginIfInGuestMode() == false) {
+                if (gotoLoginIfInGuestMode() == false) {
                     Article article = speechServiceWeakReference.get().getSelected();
                     ArticleDataProvider provider = new ArticleDataProvider(contextWeakReference.get());
 
@@ -269,7 +269,7 @@ public class SpeechPanelDialog extends Dialog implements SeekBar.OnSeekBarChange
                         || speechServiceWeakReference.get().getSelected() == null) {
                     return;
                 }
-                if(gotoLoginIfInGuestMode() == false) {
+                if (gotoLoginIfInGuestMode() == false) {
                     dismiss();
                     Article article = speechServiceWeakReference.get().getSelected();
                     BroadcastItemMenuDialog shareDialog = new BroadcastItemMenuDialog(contextWeakReference.get());
@@ -730,7 +730,7 @@ public class SpeechPanelDialog extends Dialog implements SeekBar.OnSeekBarChange
         ImageView hand_slip_image = controlView.findViewById(R.id.im_hand_slip_anim);
         TextView hand_slip_text = controlView.findViewById(R.id.slip_text);
         SharedPreferences sp = contextWeakReference.get().getSharedPreferences("speech_config", Context.MODE_PRIVATE);
-        if(sp.getBoolean("already_dialog1", false) == false) {
+        if (sp.getBoolean("already_dialog1", false) == false) {
             SharedPreferences.Editor editor = sp.edit();
             editor.putBoolean("already_dialog1", true);
             editor.apply();
