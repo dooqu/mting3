@@ -56,6 +56,10 @@ public class BroadcastAdapter extends RecyclerView.Adapter<BroadcastAdapter.View
         notifyItemChanged(0);
     }
 
+    public BroadcastDetailInfo getDetailInfo() {
+        return mDetailInfo;
+    }
+
     public void setData(List<BroadcastInfo> list) {
         if (mData == null) {
             mData = list;
