@@ -189,4 +189,9 @@ public class MainActivity extends BasePresenterActivity implements ViewPager.OnP
     public void onRightClick(Object tag) {
         doVisitorSyncData();
     }
+
+    @Override
+    protected boolean enableVersionUpgrade() {
+        return true;
+    }
 }
