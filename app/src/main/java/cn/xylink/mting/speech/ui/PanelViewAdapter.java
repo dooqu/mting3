@@ -275,6 +275,7 @@ public class PanelViewAdapter {
     public void onArticleTextScrollEvent(ArticleDetailScrollEvent event) {
         if (contextRef.get() == null
 //                || !(contextRef.get() instanceof ArticleDetailActivity)
+                  ||  contextRef.get()  != event.getActivity()
                 || speechServiceWeakReference.get() == null
                 || speechServiceWeakReference.get().getState() == SpeechService.SpeechServiceState.Stoped
                 || isUserClosed) {
