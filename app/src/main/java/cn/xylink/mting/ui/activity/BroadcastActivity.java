@@ -198,7 +198,7 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
     }
 
     private void loadMoreData() {
-        if (mAdapter != null && mAdapter.getArticleList() != null && mAdapter.getArticleList().size() > 20) {
+        if (mAdapter != null && mAdapter.getArticleList() != null && mAdapter.getArticleList().size() > 1) {
             BroadcastListRequest request = new BroadcastListRequest();
             request.setBroadcastId(getIntent().getStringExtra(EXTRA_BROADCASTID));
             request.setEvent(WorldRequest.EVENT.OLD.name().toLowerCase());
@@ -256,7 +256,7 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
             }
             mAdapter.setData(data);
         }
-        if (data.size() < 20) {
+        if (data == null || data.size() == 0) {
             mRefreshLayout.finishLoadMoreWithNoMoreData();
         }
     }
@@ -384,7 +384,7 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
 
     @Override
     public void onShare2World(boolean isSubscribe) {
-        if (isVisitorlogin()){
+        if (isVisitorlogin()) {
             return;
         }
         if (isSubscribe) {
@@ -458,7 +458,7 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
                 this.finish();
                 break;
             case R.id.iv_titlebar_share:
-                if (isVisitorlogin()){
+                if (isVisitorlogin()) {
                     return;
                 }
                 if (mDetailInfo != null) {
@@ -519,7 +519,7 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
 
     @Override
     public void onItemCollect(BroadcastInfo info) {
-        if (isVisitorlogin()){
+        if (isVisitorlogin()) {
             return;
         }
         if (info.getStore() == 0) {
@@ -552,7 +552,7 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
 
     @Override
     public void onItemDel(BroadcastInfo info) {
-        if (isVisitorlogin()){
+        if (isVisitorlogin()) {
             return;
         }
         TipDialog dialog = new TipDialog(this);
@@ -631,7 +631,7 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
 
     @Override
     public void onBottomTingItemClick(BottomTingItemModle modle) {
-        if (isVisitorlogin()){
+        if (isVisitorlogin()) {
             return;
         }
         switch (modle.getName()) {
@@ -648,7 +648,11 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
                 subscribe(SubscribeRequest.EVENT.CANCEL.name().toLowerCase());
                 break;
             case Const.BottomDialogItem.EDIT_BROADCAST:
-                go2EditBroadcast();
+                if (mAdapter.getDetailInfo() != null && mAdapter.getDetailInfo().getShare() == 1) {
+                    T.showCustomCenterToast("播单分享到世界后，不可修改");
+                } else {
+                    go2EditBroadcast();
+                }
                 break;
             case Const.BottomDialogItem.BATCH:
                 Intent intent = new Intent(this, ArrangeActivity.class);
@@ -857,7 +861,7 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
             mEmptyImageView.setImageResource(R.mipmap.bg_empty);
             mEmptyTextView.setText("暂时还没有文章");
             mLookStudioTextView.setVisibility(View.GONE);
-            if (ContentManager.getInstance().getUserInfo() != null &&mDetailInfo != null
+            if (ContentManager.getInstance().getUserInfo() != null && mDetailInfo != null
                     && mDetailInfo.getCreateUserId().equals(ContentManager.getInstance().getUserInfo().getUserId())) {
                 mEmptyAddTextView.setVisibility(View.VISIBLE);
             } else {

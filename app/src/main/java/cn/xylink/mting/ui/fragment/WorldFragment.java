@@ -140,7 +140,7 @@ public class WorldFragment extends BasePresenterFragment implements WorldListCon
         mEmptylayout.setVisibility(View.GONE);
         if (isLoadMore) {
             mRefreshLayout.finishLoadMore(true);
-            if (data.size() < 20) {
+            if (data == null || data.size() == 0) {
                 mRefreshLayout.finishLoadMoreWithNoMoreData();
             }
         } else {

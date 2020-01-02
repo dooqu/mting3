@@ -190,7 +190,7 @@ public class SearchActivity extends BasePresenterActivity implements SearchConta
         }
         if (mCurrentPage > 1) {
             mRefreshLayout.finishLoadMore(true);
-            if (response.size() < 20) {
+            if (response == null || response.size() == 0) {
                 mRefreshLayout.finishLoadMoreWithNoMoreData();
             }
         }
@@ -229,7 +229,7 @@ public class SearchActivity extends BasePresenterActivity implements SearchConta
         }
         if (mCurrentPage > 1) {
             mRefreshLayout.finishLoadMore(true);
-            if (response.size() < 20) {
+            if (response == null || response.size() == 0) {
                 mRefreshLayout.finishLoadMoreWithNoMoreData();
             }
         }

@@ -74,6 +74,11 @@ public class SelectArticleAddAdapter extends RecyclerView.Adapter<SelectArticleA
             holder.tvAdded.setVisibility(View.VISIBLE);
             holder.tvTitle.setTextColor(mContext.getResources().getColor(R.color.c999999));
             holder.tvSource.setTextColor(mContext.getResources().getColor(R.color.cccccc));
+        }else {
+            holder.ivAdd.setVisibility(View.VISIBLE);
+            holder.tvAdded.setVisibility(View.GONE);
+            holder.tvTitle.setTextColor(mContext.getResources().getColor(R.color.c333333));
+            holder.tvSource.setTextColor(mContext.getResources().getColor(R.color.c666666));
         }
 
         holder.itemView.setOnClickListener(v -> {

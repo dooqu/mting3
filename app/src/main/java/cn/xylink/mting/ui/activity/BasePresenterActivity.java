@@ -130,7 +130,9 @@ public abstract class BasePresenterActivity<T extends BasePresenter> extends Bas
     private CopyAddDialog mCopyAddDialog;
 
     private void showCopyDialog() {
-        if (this.getComponentName().getClassName().equals(MainActivity.class.getName())) {
+        if (this.getComponentName().getClassName().equals(MainActivity.class.getName())
+                || this.getComponentName().getClassName().equals(BroadcastActivity.class.getName())
+                || this.getComponentName().getClassName().equals(ArticleDetailActivity.class.getName())) {
             CharSequence copyStr = getCopy(this);
             if (!TextUtils.isEmpty(copyStr) && !TextUtils.isEmpty(StringUtil.matcherUrl(copyStr.toString()))
                     && !StringUtil.isShieldUrl(this, copyStr.toString())) {
