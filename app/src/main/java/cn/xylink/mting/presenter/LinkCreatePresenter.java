@@ -15,13 +15,13 @@ import cn.xylink.mting.utils.L;
 public class LinkCreatePresenter extends BasePresenter<LinkCreateContact.IPushView> implements LinkCreateContact.Presenter {
     @Override
     public void onPush(LinkCreateRequest request) {
-        L.v("request",request);
+        L.v("request", request);
 //        Gson gs = new GsonBuilder()
 //                .setPrettyPrinting()
 //                .disableHtmlEscaping()
 //                .create();
 //        String json = gs.toJson(request);
-        OkGoUtils.getInstance().postData(mView, RemoteUrl.linkCreateUrl(),new Gson().toJson(request) , new TypeToken<BaseResponse<LinkArticle>>() {
+        OkGoUtils.getInstance().postData(mView, RemoteUrl.linkCreateUrl(), new Gson().toJson(request), new TypeToken<BaseResponse<LinkArticle>>() {
 
         }.getType(), new OkGoUtils.ICallback() {
             @Override
@@ -32,17 +32,20 @@ public class LinkCreatePresenter extends BasePresenter<LinkCreateContact.IPushVi
             public void onSuccess(Object data) {
                 BaseResponse<LinkArticle> baseResponse = (BaseResponse<LinkArticle>) data;
                 int code = baseResponse.code;
-                if(code == 200) {
+                if (code == 200) {
                     mView.onPushSuccess(baseResponse);
-                }else
-                {
-                    mView.onPushError(code,baseResponse.message);
+                } else {
+                    if (null != mView) {
+                        mView.onPushError(code, baseResponse.message);
+                    }
                 }
             }
 
             @Override
             public void onFailure(int code, String errorMsg) {
-                mView.onPushError(code, errorMsg);
+                if (null != mView) {
+                    mView.onPushError(code, errorMsg);
+                }
             }
 
             @Override
