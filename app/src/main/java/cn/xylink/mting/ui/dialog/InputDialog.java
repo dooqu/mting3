@@ -162,6 +162,7 @@ public class InputDialog extends BaseDimDialog implements BroadcastDetailContact
     public void onSuccessArticleDetail(ArticleDetail2Info info) {
         Intent intent = new Intent(mContext, ArticleDetailActivity.class);
         intent.putExtra(ArticleDetailActivity.ARTICLE_ID_DETAIL, info.getArticleId());
+        intent.putExtra(ArticleDetailActivity.BROADCAST_ID_DETAIL, "-4");
         mContext.startActivity(intent);
         this.dismiss();
     }
