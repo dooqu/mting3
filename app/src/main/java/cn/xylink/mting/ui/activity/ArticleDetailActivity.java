@@ -203,11 +203,11 @@ public class ArticleDetailActivity extends BasePresenterActivity implements Arti
             public void onScroll(int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
                 if (oldScrollY - scrollY > DensityUtil.dip2sp(ArticleDetailActivity.this, 5)) {
                     L.v("手指上滑......");
-                    EventBus.getDefault().post(new ArticleDetailScrollEvent("glide"));
+                    EventBus.getDefault().post(new ArticleDetailScrollEvent("glide", ArticleDetailActivity.this));
                 }
                 if (scrollY - oldScrollY > DensityUtil.dip2sp(ArticleDetailActivity.this, 5)) {
                     L.v("手指下滑......");
-                    EventBus.getDefault().post(new ArticleDetailScrollEvent("upGlide"));
+                    EventBus.getDefault().post(new ArticleDetailScrollEvent("upGlide", ArticleDetailActivity.this));
                 }
             }
         });
@@ -216,11 +216,12 @@ public class ArticleDetailActivity extends BasePresenterActivity implements Arti
             public void onScrollChange(NestedScrollView nestedScrollView, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
                 if (oldScrollY - scrollY > DensityUtil.dip2sp(ArticleDetailActivity.this, 5)) {
                     L.v("手指上滑......");
-                    EventBus.getDefault().post(new ArticleDetailScrollEvent("glide"));
+                    EventBus.getDefault().post(new ArticleDetailScrollEvent("glide", ArticleDetailActivity.this));
+
                 }
                 if (scrollY - oldScrollY > DensityUtil.dip2sp(ArticleDetailActivity.this, 5)) {
                     L.v("手指下滑......");
-                    EventBus.getDefault().post(new ArticleDetailScrollEvent("upGlide"));
+                    EventBus.getDefault().post(new ArticleDetailScrollEvent("upGlide", ArticleDetailActivity.this));
                 }
             }
         });
@@ -336,34 +337,31 @@ public class ArticleDetailActivity extends BasePresenterActivity implements Arti
                 break;
             case R.id.view_detail_panel_play:
                 //播放器播放， 如果有broadcastId,就跟之前一样，没有，就添加待读，然后broadcastid=-1传进去
-                if (null != broadcastId) {
-                    Article playingArticle = getPlayingArticle();
-                    boolean isDetailBelongToCurrentPlaying = playingArticle != null && playingArticle.getArticleId() != null && playingArticle.getArticleId().equals(articleId);
-                    //如果当前的播放的 != 详情页显示的
-                    if (isDetailBelongToCurrentPlaying == false) {
-                        Article article = new Article();
-                        article.setBroadcastId(broadcastId);
-                        article.setArticleId(articleId);
-                        article.setBroadcastTitle(broadcastTitle);
-                        article.setTitle(articleTitle);
-                        postToSpeechService(article);
-                    } else {
-                        switch (getSpeechService().getState()) {
-                            case Playing:
-                            case Loadding:
-                                speechServiceWeakReference.get().pause();
-                                break;
-                            case Paused:
-                            case Error:
-                                speechServiceWeakReference.get().resume();
-                                break;
-                        }
+                Article playingArticle = getPlayingArticle();
+                boolean isDetailBelongToCurrentPlaying = playingArticle != null && playingArticle.getArticleId() != null && playingArticle.getArticleId().equals(articleId);
+                if(isDetailBelongToCurrentPlaying == true) {
+                    switch (getSpeechService().getState()) {
+                        case Playing:
+                        case Loadding:
+                            speechServiceWeakReference.get().pause();
+                            break;
+                        case Paused:
+                        case Error:
+                            speechServiceWeakReference.get().resume();
+                            break;
                     }
-
-                } else {
+                }
+                else if(broadcastId != null) {
+                    Article article = new Article();
+                    article.setBroadcastId(broadcastId);
+                    article.setArticleId(articleId);
+                    article.setBroadcastTitle(broadcastTitle);
+                    article.setTitle(articleTitle);
+                    postToSpeechService(article);
+                }
+                else if(broadcastId == null) {
                     doAdd2Unread();
                 }
-
                 break;
             case R.id.view_detail_panel_add_to:
                 Intent intent2 = new Intent(this, BroadcastItemAddActivity.class);
@@ -721,21 +719,28 @@ public class ArticleDetailActivity extends BasePresenterActivity implements Arti
 
     private void doAdd2Unread() {
         showLoading();
+        broadcastId = "-1";
         BroadcastItemAddRequest request = new BroadcastItemAddRequest();
         request.setBroadcastId("-1");
         request.setArticleIds(articleId);
         request.doSign();
-        mBroadcastItemAddPresenter.getBroadcastItemAdd(request);
+        mBroadcastItemAddPresenter.getBroadcastItemAddList(request);
     }
 
     @Override
     public void onBroadcastItemAddListSuccess(List<BroadcastItemAddInfo> data) {
-
+        hideLoading();
+        Article article = new Article();
+        article.setBroadcastId("-1");
+        article.setArticleId(articleId);
+        article.setBroadcastTitle("待读");
+        article.setTitle(articleTitle);
+        postToSpeechService(article);
     }
 
     @Override
     public void onBroadcastItemAddListError(int code, String errorMsg) {
-
+        hideLoading();
     }
 
     @Override
@@ -752,16 +757,17 @@ public class ArticleDetailActivity extends BasePresenterActivity implements Arti
 
     @Override
     public void onBroadcastItemAddError(int code, String errorMsg) {
-
+        hideLoading();
     }
 
     @Override
     public void onArticleReportSuccess(BaseResponse response) {
+        hideLoading();
         toastCenterShort("举报成功");
     }
 
     @Override
     public void onArticleReportError(int code, String errorMsg) {
-
+        hideLoading();
     }
 }
