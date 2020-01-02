@@ -203,11 +203,11 @@ public class ArticleDetailActivity extends BasePresenterActivity implements Arti
             public void onScroll(int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
                 if (oldScrollY - scrollY > DensityUtil.dip2sp(ArticleDetailActivity.this, 5)) {
                     L.v("手指上滑......");
-                    EventBus.getDefault().post(new ArticleDetailScrollEvent("glide",ArticleDetailActivity.this));
+                    EventBus.getDefault().post(new ArticleDetailScrollEvent("glide", ArticleDetailActivity.this));
                 }
                 if (scrollY - oldScrollY > DensityUtil.dip2sp(ArticleDetailActivity.this, 5)) {
                     L.v("手指下滑......");
-                    EventBus.getDefault().post(new ArticleDetailScrollEvent("upGlide",ArticleDetailActivity.this));
+                    EventBus.getDefault().post(new ArticleDetailScrollEvent("upGlide", ArticleDetailActivity.this));
                 }
             }
         });
@@ -722,6 +722,7 @@ public class ArticleDetailActivity extends BasePresenterActivity implements Arti
 
     private void doAdd2Unread() {
         showLoading();
+        broadcastId = "-1";
         BroadcastItemAddRequest request = new BroadcastItemAddRequest();
         request.setBroadcastId("-1");
         request.setArticleIds(articleId);
