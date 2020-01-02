@@ -731,6 +731,7 @@ public class ArticleDetailActivity extends BasePresenterActivity implements Arti
 
     @Override
     public void onBroadcastItemAddListSuccess(List<BroadcastItemAddInfo> data) {
+        hideLoading();
         Article article = new Article();
         article.setBroadcastId("-1");
         article.setArticleId(articleId);
@@ -741,7 +742,7 @@ public class ArticleDetailActivity extends BasePresenterActivity implements Arti
 
     @Override
     public void onBroadcastItemAddListError(int code, String errorMsg) {
-
+        hideLoading();
     }
 
     @Override
@@ -758,16 +759,17 @@ public class ArticleDetailActivity extends BasePresenterActivity implements Arti
 
     @Override
     public void onBroadcastItemAddError(int code, String errorMsg) {
-
+        hideLoading();
     }
 
     @Override
     public void onArticleReportSuccess(BaseResponse response) {
+        hideLoading();
         toastCenterShort("举报成功");
     }
 
     @Override
     public void onArticleReportError(int code, String errorMsg) {
-
+        hideLoading();
     }
 }
