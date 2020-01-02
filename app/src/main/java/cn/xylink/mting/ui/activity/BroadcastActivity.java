@@ -648,7 +648,11 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
                 subscribe(SubscribeRequest.EVENT.CANCEL.name().toLowerCase());
                 break;
             case Const.BottomDialogItem.EDIT_BROADCAST:
-                go2EditBroadcast();
+                if (mAdapter.getDetailInfo() != null && mAdapter.getDetailInfo().getShare() == 1) {
+                    T.showCustomCenterToast("播单分享到世界后，不可修改");
+                } else {
+                    go2EditBroadcast();
+                }
                 break;
             case Const.BottomDialogItem.BATCH:
                 Intent intent = new Intent(this, ArrangeActivity.class);
