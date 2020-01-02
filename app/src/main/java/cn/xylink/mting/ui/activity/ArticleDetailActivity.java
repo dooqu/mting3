@@ -726,7 +726,7 @@ public class ArticleDetailActivity extends BasePresenterActivity implements Arti
         request.setBroadcastId("-1");
         request.setArticleIds(articleId);
         request.doSign();
-        mBroadcastItemAddPresenter.getBroadcastItemAdd(request);
+        mBroadcastItemAddPresenter.getBroadcastItemAddList(request);
     }
 
     @Override
