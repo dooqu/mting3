@@ -337,34 +337,31 @@ public class ArticleDetailActivity extends BasePresenterActivity implements Arti
                 break;
             case R.id.view_detail_panel_play:
                 //播放器播放， 如果有broadcastId,就跟之前一样，没有，就添加待读，然后broadcastid=-1传进去
-                if (null != broadcastId) {
-                    Article playingArticle = getPlayingArticle();
-                    boolean isDetailBelongToCurrentPlaying = playingArticle != null && playingArticle.getArticleId() != null && playingArticle.getArticleId().equals(articleId);
-                    //如果当前的播放的 != 详情页显示的
-                    if (isDetailBelongToCurrentPlaying == false) {
-                        Article article = new Article();
-                        article.setBroadcastId(broadcastId);
-                        article.setArticleId(articleId);
-                        article.setBroadcastTitle(broadcastTitle);
-                        article.setTitle(articleTitle);
-                        postToSpeechService(article);
-                    } else {
-                        switch (getSpeechService().getState()) {
-                            case Playing:
-                            case Loadding:
-                                speechServiceWeakReference.get().pause();
-                                break;
-                            case Paused:
-                            case Error:
-                                speechServiceWeakReference.get().resume();
-                                break;
-                        }
+                Article playingArticle = getPlayingArticle();
+                boolean isDetailBelongToCurrentPlaying = playingArticle != null && playingArticle.getArticleId() != null && playingArticle.getArticleId().equals(articleId);
+                if(isDetailBelongToCurrentPlaying == true) {
+                    switch (getSpeechService().getState()) {
+                        case Playing:
+                        case Loadding:
+                            speechServiceWeakReference.get().pause();
+                            break;
+                        case Paused:
+                        case Error:
+                            speechServiceWeakReference.get().resume();
+                            break;
                     }
-
-                } else {
+                }
+                else if(broadcastId != null) {
+                    Article article = new Article();
+                    article.setBroadcastId(broadcastId);
+                    article.setArticleId(articleId);
+                    article.setBroadcastTitle(broadcastTitle);
+                    article.setTitle(articleTitle);
+                    postToSpeechService(article);
+                }
+                else if(broadcastId == null) {
                     doAdd2Unread();
                 }
-
                 break;
             case R.id.view_detail_panel_add_to:
                 Intent intent2 = new Intent(this, BroadcastItemAddActivity.class);
