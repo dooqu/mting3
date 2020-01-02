@@ -610,7 +610,11 @@ public class SpeechService extends Service {
                         }
                         if (this == dataProviderCallback) {
                             resetSpeechList(data, speechListType);
-                            speechList.select(article.getArticleId());
+                            if(speechList.select(article.getArticleId()) ==  null) {
+                                foregroundServiceAdapter.stopForeground(true);
+                                onSpeechError(SpeechError.ARTCILE_NOT_EXISTS_IN_SERIES, "播单中不存在该文章", article);
+                                return;
+                            }
                             //有可能这里被pause掉了
                             if (getState() == SpeechServiceState.Loadding) {
                                 playSelected();

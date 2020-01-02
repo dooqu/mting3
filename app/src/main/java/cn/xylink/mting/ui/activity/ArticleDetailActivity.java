@@ -381,7 +381,12 @@ public class ArticleDetailActivity extends BasePresenterActivity implements Arti
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onSpeechEvent(SpeechEvent event) {
+        if(event instanceof SpeechStopEvent) {
+            icoPlay.setImageResource(R.mipmap.ico_dialog_play);
+            return;
+        }
         if (getPlayingArticle() == null || getPlayingArticle().getArticleId().equals(articleId) == false) {
+            icoPlay.setImageResource(R.mipmap.ico_dialog_play);
             return;
         }
         if (event instanceof SpeechStartEvent) {

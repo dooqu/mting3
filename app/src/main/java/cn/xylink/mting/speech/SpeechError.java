@@ -14,5 +14,6 @@ public class SpeechError {
     public static int FRAGMENT_LOAD_INNTERNAL_ERROR = 989;
     public static int TOKEN_EXPIRED = 987;
     public static int LIST_LOAD_ERROR = 986;
+    public static int ARTCILE_NOT_EXISTS_IN_SERIES = 985;
 
 }

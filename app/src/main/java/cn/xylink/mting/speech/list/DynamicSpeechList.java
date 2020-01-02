@@ -49,6 +49,7 @@ public class DynamicSpeechList implements SpeechList {
         }
 
         if (hasNext() == false) {
+            currentIndex = -1;
             return false;
         }
 
