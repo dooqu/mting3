@@ -176,7 +176,7 @@ public class ArticleDataProvider {
                             List<Article> list = response.getData();
                             for (Article articleFinded : list) {
                                 articleFinded.setBroadcastId(article.getBroadcastId());
-                                articleFinded.setBroadcastTitle(article.getBroadcastTitle() == null? broadcastTitleCaculated : article.getBroadcastTitle());
+                                articleFinded.setBroadcastTitle(article.getBroadcastTitle() == null ? broadcastTitleCaculated : article.getBroadcastTitle());
                             }
                             if (callback != null) {
                                 callback.invoke(0, response.getData());
