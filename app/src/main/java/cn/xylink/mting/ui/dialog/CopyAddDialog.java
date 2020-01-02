@@ -15,6 +15,7 @@ import cn.xylink.mting.bean.LinkArticle;
 import cn.xylink.mting.bean.LinkCreateRequest;
 import cn.xylink.mting.contract.LinkCreateContact;
 import cn.xylink.mting.presenter.LinkCreatePresenter;
+import cn.xylink.mting.utils.T;
 
 /**
  *检测黏贴板
@@ -107,9 +108,11 @@ public class CopyAddDialog extends BaseDimDialog implements LinkCreateContact.IP
     public void onPushSuccess(BaseResponse<LinkArticle> loginInfoBaseResponse) {
         mLinkArticle = loginInfoBaseResponse.data;
         if (isPlay) {
-            Toast.makeText(mContext, "开始朗读文章", Toast.LENGTH_SHORT).show();
+//            Toast.makeText(mContext, "开始朗读文章", Toast.LENGTH_SHORT).show();
+            T.showCustomCenterToast("开始朗读文章");
         } else {
-            Toast.makeText(mContext, "已添加到待读", Toast.LENGTH_SHORT).show();
+//            Toast.makeText(mContext, "已添加到待读", Toast.LENGTH_SHORT).show();
+            T.showCustomCenterToast("已添加到待读");
         }
         this.dismiss();
     }
