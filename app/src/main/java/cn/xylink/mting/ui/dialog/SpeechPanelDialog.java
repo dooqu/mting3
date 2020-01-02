@@ -8,10 +8,8 @@ import android.graphics.drawable.AnimationDrawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.view.ViewPager;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -22,7 +20,6 @@ import android.widget.RadioGroup;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
-import com.tencent.wxop.stat.event.EventType;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -42,7 +39,7 @@ import cn.xylink.mting.speech.Speechor;
 import cn.xylink.mting.speech.data.ArticleDataProvider;
 import cn.xylink.mting.speech.event.SpeechEvent;
 import cn.xylink.mting.speech.event.SpeechBufferingEvent;
-import cn.xylink.mting.speech.event.SpeechFavorArticleEvent;
+
 import cn.xylink.mting.speech.event.SpeechProgressEvent;
 import cn.xylink.mting.speech.event.SpeechStartEvent;
 import cn.xylink.mting.speech.event.SpeechStopEvent;
@@ -51,10 +48,10 @@ import cn.xylink.mting.ui.activity.BaseActivity;
 import cn.xylink.mting.ui.activity.BroadcastActivity;
 import cn.xylink.mting.ui.activity.BroadcastItemAddActivity;
 import cn.xylink.mting.ui.activity.LoginActivity;
-import cn.xylink.mting.ui.activity.SettingTimerActivity;
+
 import cn.xylink.mting.ui.adapter.ControlPanelAdapter;
 import cn.xylink.mting.utils.ContentManager;
-import cn.xylink.mting.utils.DensityUtil;
+
 
 import static cn.xylink.mting.speech.Speechor.SpeechorRole.XiaoIce;
 import static cn.xylink.mting.speech.Speechor.SpeechorRole.XiaoYao;
@@ -277,9 +274,10 @@ public class SpeechPanelDialog extends Dialog implements SeekBar.OnSeekBarChange
                     Article article = speechServiceWeakReference.get().getSelected();
                     BroadcastItemMenuDialog shareDialog = new BroadcastItemMenuDialog(contextWeakReference.get());
                     BroadcastDetailInfo broadcastDetailInfo = new BroadcastDetailInfo();
-                    broadcastDetailInfo.setName(article.getBroadcastTitle());
+                    broadcastDetailInfo.setName(article.getTitle());
                     broadcastDetailInfo.setCreateName(article.getSourceName());
                     broadcastDetailInfo.setShareUrl(article.getShareUrl());
+                    broadcastDetailInfo.setInfo("");
                     shareDialog.setDetailInfo(broadcastDetailInfo);
                     shareDialog.show();
                 }
@@ -723,7 +721,11 @@ public class SpeechPanelDialog extends Dialog implements SeekBar.OnSeekBarChange
         if (EventBus.getDefault().isRegistered(this) == false) {
             EventBus.getDefault().register(this);
         }
+        viewPager.setCurrentItem(1, false);
         validatePanelView(null);
+        renderRolePortraitFromService();
+        renderSoundSpeechFromService();
+        renderCountDownOptionsFromService();
 
         ImageView hand_slip_image = controlView.findViewById(R.id.im_hand_slip_anim);
         TextView hand_slip_text = controlView.findViewById(R.id.slip_text);

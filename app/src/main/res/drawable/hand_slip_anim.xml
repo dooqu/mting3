@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <animation-list xmlns:android="http://schemas.android.com/apk/res/android"
     android:oneshot="false">
+    <!--
     <item android:drawable="@drawable/hand_slip_anim01" android:duration="50"/>
-    <item android:drawable="@drawable/hand_slip_anim02" android:duration="50"/>
     <item android:drawable="@drawable/hand_slip_anim03" android:duration="50"/>
     <item android:drawable="@drawable/hand_slip_anim04" android:duration="50"/>
     <item android:drawable="@drawable/hand_slip_anim05" android:duration="50"/>
@@ -46,4 +46,27 @@
     <item android:drawable="@drawable/hand_slip_anim43" android:duration="50"/>
     <item android:drawable="@drawable/hand_slip_anim44" android:duration="50"/>
     <item android:drawable="@drawable/hand_slip_anim45" android:duration="50"/>
+    -->
+    <item android:drawable="@drawable/hand_slip_anim01" android:duration="50"/>
+    <item android:drawable="@drawable/hand_slip_anim04" android:duration="50"/>
+    <item android:drawable="@drawable/hand_slip_anim06" android:duration="50"/>
+    <item android:drawable="@drawable/hand_slip_anim08" android:duration="50"/>
+    <item android:drawable="@drawable/hand_slip_anim10" android:duration="50"/>
+    <item android:drawable="@drawable/hand_slip_anim12" android:duration="50"/>
+    <item android:drawable="@drawable/hand_slip_anim14" android:duration="50"/>
+    <item android:drawable="@drawable/hand_slip_anim16" android:duration="50"/>
+    <item android:drawable="@drawable/hand_slip_anim18" android:duration="50"/>
+    <item android:drawable="@drawable/hand_slip_anim20" android:duration="50"/>
+    <item android:drawable="@drawable/hand_slip_anim22" android:duration="50"/>
+    <item android:drawable="@drawable/hand_slip_anim24" android:duration="50"/>
+    <item android:drawable="@drawable/hand_slip_anim26" android:duration="50"/>
+    <item android:drawable="@drawable/hand_slip_anim28" android:duration="50"/>
+    <item android:drawable="@drawable/hand_slip_anim30" android:duration="50"/>
+    <item android:drawable="@drawable/hand_slip_anim32" android:duration="50"/>
+    <item android:drawable="@drawable/hand_slip_anim34" android:duration="50"/>
+    <item android:drawable="@drawable/hand_slip_anim36" android:duration="50"/>
+    <item android:drawable="@drawable/hand_slip_anim38" android:duration="50"/>
+    <item android:drawable="@drawable/hand_slip_anim40" android:duration="50"/>
+    <item android:drawable="@drawable/hand_slip_anim42" android:duration="50"/>
+    <item android:drawable="@drawable/hand_slip_anim44" android:duration="50"/>
 </animation-list>

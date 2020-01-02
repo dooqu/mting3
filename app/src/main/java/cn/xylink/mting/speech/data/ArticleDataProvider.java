@@ -118,12 +118,34 @@ public class ArticleDataProvider {
                 });
     }
 
+    private static String getInternalBroadcastTitle(String broadcastId) {
+        String broadcastTitleCaculated = null;
+        switch (broadcastId) {
+            case "-1":
+                broadcastTitleCaculated = "待读";
+                break;
+            case "-2":
+                broadcastTitleCaculated = "已读";
+                break;
+            case "-3":
+                broadcastTitleCaculated = "收藏";
+                break;
+            case "-4":
+                broadcastTitleCaculated = "我创建的文章";
+                break;
+        }
+
+        return broadcastTitleCaculated;
+    }
+
     public void getSpeechList(Article article, ArticleLoader<List<Article>> callback) {
         SpeechListRequest request = new SpeechListRequest();
         request.setBroadcastId(article.getBroadcastId());
         request.setArticleId(article.getArticleId());
         request.setToken(ContentManager.getInstance().getLoginToken());
         request.doSign();
+        String broadcastTitleCaculated = getInternalBroadcastTitle(article.getBroadcastId());
+
         OkGoUtils.getInstance().postData(
                 new IBaseView() {
                     @Override
@@ -154,7 +176,7 @@ public class ArticleDataProvider {
                             List<Article> list = response.getData();
                             for (Article articleFinded : list) {
                                 articleFinded.setBroadcastId(article.getBroadcastId());
-                                articleFinded.setBroadcastTitle(article.getBroadcastTitle());
+                                articleFinded.setBroadcastTitle(article.getBroadcastTitle() == null? broadcastTitleCaculated : article.getBroadcastTitle());
                             }
                             if (callback != null) {
                                 callback.invoke(0, response.getData());
@@ -208,6 +230,7 @@ public class ArticleDataProvider {
                             List<Article> list = response.getData();
                             for (Article article : list) {
                                 article.setBroadcastId("-1");
+                                article.setBroadcastTitle("待读");
                             }
                             if (callback != null) {
                                 callback.invoke(0, response.getData());
@@ -325,7 +348,7 @@ public class ArticleDataProvider {
         request.setArticleId(article.getArticleId());
         request.setBroadcastId(article.getBroadcastId());
         request.setProgress(article.getProgress());
-        request.setRead(article.getProgress() == 1? 1 : 0);
+        request.setRead(article.getProgress() == 1 ? 1 : 0);
         request.setToken(ContentManager.getInstance().getLoginToken());
         request.doSign();
 
