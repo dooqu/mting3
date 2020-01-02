@@ -731,7 +731,12 @@ public class ArticleDetailActivity extends BasePresenterActivity implements Arti
 
     @Override
     public void onBroadcastItemAddListSuccess(List<BroadcastItemAddInfo> data) {
-
+        Article article = new Article();
+        article.setBroadcastId("-1");
+        article.setArticleId(articleId);
+        article.setBroadcastTitle("待读");
+        article.setTitle(articleTitle);
+        postToSpeechService(article);
     }
 
     @Override
