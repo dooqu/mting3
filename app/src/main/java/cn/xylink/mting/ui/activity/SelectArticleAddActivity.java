@@ -98,10 +98,10 @@ public class SelectArticleAddActivity extends BasePresenterActivity implements B
     }
 
     private void loadMoreData() {
-        if (mAdapter != null && mAdapter.getArticleList() != null && mAdapter.getArticleList().size() > 20) {
+        if (mAdapter != null && mAdapter.getArticleList() != null && mAdapter.getArticleList().size() > 0) {
             BroadcastListRequest request = new BroadcastListRequest();
             request.setBroadcastId(getIntent().getStringExtra(EXTRA_BROADCASTID));
-            request.setEvent(WorldRequest.EVENT.NEW.name().toLowerCase());
+            request.setEvent(WorldRequest.EVENT.OLD.name().toLowerCase());
             request.setLastAt(mAdapter.getArticleList().get(mAdapter.getArticleList().size() - 1).getLastAt());
             request.doSign();
             mPresenter.getBroadcastList(request, true);
@@ -138,7 +138,7 @@ public class SelectArticleAddActivity extends BasePresenterActivity implements B
             }
             mAdapter.setData(data);
         }
-        if (data.size() < 20) {
+        if (data == null || data.size() == 0) {
             mRefreshLayout.finishLoadMoreWithNoMoreData();
         }
     }
