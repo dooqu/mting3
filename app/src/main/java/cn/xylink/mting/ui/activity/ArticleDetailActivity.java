@@ -339,7 +339,7 @@ public class ArticleDetailActivity extends BasePresenterActivity implements Arti
                 //播放器播放， 如果有broadcastId,就跟之前一样，没有，就添加待读，然后broadcastid=-1传进去
                 Article playingArticle = getPlayingArticle();
                 boolean isDetailBelongToCurrentPlaying = playingArticle != null && playingArticle.getArticleId() != null && playingArticle.getArticleId().equals(articleId);
-                if(isDetailBelongToCurrentPlaying == true) {
+                if (isDetailBelongToCurrentPlaying == true) {
                     switch (getSpeechService().getState()) {
                         case Playing:
                         case Loadding:
@@ -350,16 +350,14 @@ public class ArticleDetailActivity extends BasePresenterActivity implements Arti
                             speechServiceWeakReference.get().resume();
                             break;
                     }
-                }
-                else if(broadcastId != null) {
+                } else if (broadcastId != null) {
                     Article article = new Article();
                     article.setBroadcastId(broadcastId);
                     article.setArticleId(articleId);
                     article.setBroadcastTitle(broadcastTitle);
                     article.setTitle(articleTitle);
                     postToSpeechService(article);
-                }
-                else if(broadcastId == null) {
+                } else if (broadcastId == null) {
                     doAdd2Unread();
                 }
                 break;
@@ -383,7 +381,12 @@ public class ArticleDetailActivity extends BasePresenterActivity implements Arti
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onSpeechEvent(SpeechEvent event) {
+        if(event instanceof SpeechStopEvent) {
+            icoPlay.setImageResource(R.mipmap.ico_dialog_play);
+            return;
+        }
         if (getPlayingArticle() == null || getPlayingArticle().getArticleId().equals(articleId) == false) {
+            icoPlay.setImageResource(R.mipmap.ico_dialog_play);
             return;
         }
         if (event instanceof SpeechStartEvent) {
@@ -719,23 +722,23 @@ public class ArticleDetailActivity extends BasePresenterActivity implements Arti
 
     private void doAdd2Unread() {
         showLoading();
-        broadcastId = "-1";
         BroadcastItemAddRequest request = new BroadcastItemAddRequest();
         request.setBroadcastId("-1");
         request.setArticleIds(articleId);
         request.doSign();
-        mBroadcastItemAddPresenter.getBroadcastItemAddList(request);
+        mBroadcastItemAddPresenter.getBroadcastItemAdd(request);
     }
 
+    //我的播单列表
     @Override
     public void onBroadcastItemAddListSuccess(List<BroadcastItemAddInfo> data) {
-        hideLoading();
-        Article article = new Article();
-        article.setBroadcastId("-1");
-        article.setArticleId(articleId);
-        article.setBroadcastTitle("待读");
-        article.setTitle(articleTitle);
-        postToSpeechService(article);
+//        hideLoading();
+//        Article article = new Article();
+//        article.setBroadcastId("-1");
+//        article.setArticleId(articleId);
+//        article.setBroadcastTitle("待读");
+//        article.setTitle(articleTitle);
+//        postToSpeechService(article);
     }
 
     @Override
@@ -743,16 +746,17 @@ public class ArticleDetailActivity extends BasePresenterActivity implements Arti
         hideLoading();
     }
 
+    //播单文章添加
     @Override
     public void onBroadcastItemAddSuccess(BaseResponse<String> baseResponse) {
         hideLoading();
+        broadcastId = "-1";
         Article article = new Article();
         article.setBroadcastId(broadcastId);
         article.setArticleId(articleId);
-        article.setBroadcastTitle(broadcastTitle);
+        article.setBroadcastTitle("待读");
         article.setTitle(articleTitle);
         postToSpeechService(article);
-
     }
 
     @Override

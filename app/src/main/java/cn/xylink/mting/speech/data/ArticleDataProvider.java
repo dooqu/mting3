@@ -450,7 +450,7 @@ public class ArticleDataProvider {
                             ArticleListArgument argumentInner = articleListArgument;
 
                             if ((isFirst || isLast) && "-1".equals(article.getBroadcastId()) == false) {
-                                getSpeechListNearBy(article, (isFirst) ? "old" : "new", new ArticleLoader<List<Article>>() {
+                                getSpeechListNearBy(article, (isFirst) ? "new" : "old", new ArticleLoader<List<Article>>() {
                                     @Override
                                     public void invoke(int errorCode, List<Article> data) {
                                         if (errorCode == 0) {
