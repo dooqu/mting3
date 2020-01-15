@@ -363,7 +363,8 @@
                     android:layout_height="@dimen/dimen_cutting_line"
                     android:layout_marginLeft="@dimen/my_dimen_12"
                     android:layout_marginRight="@dimen/my_dimen_12"
-                    android:background="@color/cutting_line" />
+                    android:background="@color/cutting_line"
+                    android:visibility="gone"/>
 
                 <TextView
                     android:id="@+id/tv_out"
@@ -372,7 +373,8 @@
                     android:gravity="center"
                     android:text="退出"
                     android:textColor="#ff333333"
-                    android:textSize="@dimen/my_font_15" />
+                    android:textSize="@dimen/my_font_15"
+                    android:visibility="gone"/>
 
                 <LinearLayout
                     android:id="@+id/ll_login_out"
