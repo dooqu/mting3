@@ -229,11 +229,11 @@ public class BroadcastAdapter extends RecyclerView.Adapter<BroadcastAdapter.View
      * 10000以上，1万+
      */
     private String getSubscribedNum(int total) {
-        if (0 < total && total < 1000) {
-            return "<1千";
-        } else if (total > 10000) {
-            return "1万+";
-        }
+//        if (0 < total && total < 1000) {
+//            return "<1千";
+//        } else if (total > 10000) {
+//            return "1万+";
+//        }
         return total + "";
     }
 

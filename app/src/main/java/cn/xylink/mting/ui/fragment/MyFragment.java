@@ -132,7 +132,7 @@ public class MyFragment extends BaseFragment {
                 openBroadcast(Const.SystemBroadcast.SYSTEMBROADCAST_STORE, "收藏");
                 break;
             case R.id.ll_read:
-                openBroadcast(Const.SystemBroadcast.SYSTEMBROADCAST_READED, "已读");
+                openBroadcast(Const.SystemBroadcast.SYSTEMBROADCAST_READED, "历史");
                 break;
             case R.id.ll_my_create:
                 openBroadcast(Const.SystemBroadcast.SYSTEMBROADCAST_MY_CREATE_ARTICLE, "我创建的文章");
