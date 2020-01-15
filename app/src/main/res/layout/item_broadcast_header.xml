@@ -4,9 +4,13 @@
     android:id="@+id/rl_broadcast_top_layout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@mipmap/bg_default_bro"
     android:minHeight="208dp">
-
+    <ImageView
+        android:id="@+id/iv_broadcast_bg"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop"
+        android:background="@mipmap/bg_default_bro"/>
     <View
         android:id="@+id/iv_broadcast_shadow"
         android:layout_width="match_parent"

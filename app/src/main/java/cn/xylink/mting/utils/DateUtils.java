@@ -187,4 +187,40 @@ public class DateUtils {
         return false;
     }
 
+
+    /*
+    * 播单文章时间格式化
+    * */
+    public static String getFormatTime(long dt) {
+        int year = 0;//年份
+        int month = 0;//月份
+        int day = 0;//日
+        int hour = 0;//小时
+        int minute = 0;//分
+        int second = 0;//秒
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(dt);
+        year = calendar.get(Calendar.YEAR);
+        month = calendar.get(Calendar.MONTH) + 1;
+        day = calendar.get(Calendar.DATE);
+        //获取当前时间
+        Calendar cal = Calendar.getInstance();
+        int years = cal.get(Calendar.YEAR);//获取年份
+        int months = cal.get(Calendar.MONTH) + 1;//获取月份 ，这里需要需要月份的范围为0~11，因此获取月份的时候需要+1才是当前月份值
+        int days = cal.get(Calendar.DATE);//获取日
+
+        //比较是不是今天
+        if (year == years && month == months && day == days) {
+                return "今天";
+            //比较是不是昨天
+        }else if (year == years && month == months && (days-day) == 1) {
+            return "昨天";
+            //比较是不是今年
+        }else if (year == years) {
+            return month+"月"+day+"日";
+        }else{
+            return year+"年"+month+"月";
+        }
+    }
+
 }

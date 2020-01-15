@@ -31,17 +31,28 @@
 
             <TextView
                 android:id="@+id/tv_broadcast_source"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
+                android:layout_weight="1"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
                 android:layout_marginBottom="16dp"
                 android:ellipsize="end"
                 android:lines="1"
-                android:maxEms="12"
                 android:textColor="@color/c666666"
                 android:textSize="12sp"
                 tools:text="思路四点九六咯爱科技阿斯顿阿斯顿阿斯顿阿斯顿" />
 
+            <TextView
+                android:id="@+id/tv_broadcast_date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="16dp"
+                android:lines="1"
+                android:textColor="@color/c666666"
+                android:textSize="15sp"
+                tools:text="2020年9月" />
             <TextView
                 android:id="@+id/tv_broadcast_progress"
                 android:layout_width="wrap_content"

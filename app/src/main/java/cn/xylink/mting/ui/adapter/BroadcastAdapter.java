@@ -24,6 +24,7 @@ import cn.xylink.mting.common.Const;
 import cn.xylink.mting.ui.activity.BroadcastDetailActivity;
 import cn.xylink.mting.ui.activity.LoginActivity;
 import cn.xylink.mting.utils.ContentManager;
+import cn.xylink.mting.utils.DateUtils;
 import cn.xylink.mting.utils.DensityUtil;
 import cn.xylink.mting.utils.ImageUtils;
 import cn.xylink.mting.utils.L;
@@ -105,7 +106,7 @@ public class BroadcastAdapter extends RecyclerView.Adapter<BroadcastAdapter.View
                 holder.mTitleTextView.setText(mDetailInfo.getCreateName());
                 holder.mDesTextView.setText(mDetailInfo.getInfo());
                 ImageUtils.get().load(holder.mImageView, R.mipmap.cjbd_img_fm_default, R.mipmap.cjbd_img_fm_default, 8, mDetailInfo.getPicture());
-                ImageUtils.get().load(holder.mTopLayout, mDetailInfo.getPicture());
+                ImageUtils.get().load(holder.mBGImageView, mDetailInfo.getPicture());
                 if (ContentManager.getInstance().getVisitor().equals("0")) {
                     holder.mShare2worldTextView.setVisibility(View.VISIBLE);
                     holder.mShare2worldTextView.setText("订阅");
@@ -163,10 +164,11 @@ public class BroadcastAdapter extends RecyclerView.Adapter<BroadcastAdapter.View
             }
             if (!TextUtils.isEmpty(data.getPicture())) {
                 holder.ivImg.setVisibility(View.VISIBLE);
-                ImageUtils.get().load(holder.ivImg, data.getPicture());
+                ImageUtils.get().load(holder.ivImg, DensityUtil.dip2pxComm(mContext, 8), data.getPicture());
             } else {
                 holder.ivImg.setVisibility(View.GONE);
             }
+            holder.tvDate.setText(DateUtils.getFormatTime(data.getCreateAt()));
 
             holder.itemView.setOnClickListener(v -> {
                 if (mOnItemClickListener != null) {
@@ -301,12 +303,14 @@ public class BroadcastAdapter extends RecyclerView.Adapter<BroadcastAdapter.View
         TextView tvTitle;
         TextView tvSource;
         TextView tvProgress;
+        TextView tvDate;
         ImageView ivImg;
         /**
          * top
          */
         RelativeLayout mTopLayout;
         ImageView mImageView;
+        ImageView mBGImageView;
         TextView mTitleTextView;
         TextView mDesTextView;
         TextView mSubscribedTextView;
@@ -318,6 +322,7 @@ public class BroadcastAdapter extends RecyclerView.Adapter<BroadcastAdapter.View
             if (position == 0) {
                 mTopLayout = itemView.findViewById(R.id.rl_broadcast_top_layout);
                 mImageView = itemView.findViewById(R.id.iv_broadcast_img);
+                mBGImageView = itemView.findViewById(R.id.iv_broadcast_bg);
                 mTitleTextView = itemView.findViewById(R.id.tv_broadcast_title);
                 mDesTextView = itemView.findViewById(R.id.tv_broadcast_description);
                 mSubscribedTextView = itemView.findViewById(R.id.tv_broadcast_subscribed);
@@ -327,6 +332,7 @@ public class BroadcastAdapter extends RecyclerView.Adapter<BroadcastAdapter.View
                 tvTitle = itemView.findViewById(R.id.tv_broadcast_title);
                 tvSource = itemView.findViewById(R.id.tv_broadcast_source);
                 tvProgress = itemView.findViewById(R.id.tv_broadcast_progress);
+                tvDate = itemView.findViewById(R.id.tv_broadcast_date);
                 ivImg = itemView.findViewById(R.id.iv_broadcast_img);
             }
         }

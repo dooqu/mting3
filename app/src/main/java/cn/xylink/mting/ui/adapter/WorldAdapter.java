@@ -15,6 +15,7 @@ import java.util.List;
 
 import cn.xylink.mting.R;
 import cn.xylink.mting.bean.WorldInfo;
+import cn.xylink.mting.utils.DensityUtil;
 import cn.xylink.mting.utils.ImageUtils;
 
 /**
@@ -76,7 +77,7 @@ public class WorldAdapter extends RecyclerView.Adapter<WorldAdapter.ViewHolder> 
         }
         if (!TextUtils.isEmpty(data.getPicture())) {
             holder.ivImg.setVisibility(View.VISIBLE);
-            ImageUtils.get().load(holder.ivImg, data.getPicture());
+            ImageUtils.get().load(holder.ivImg, DensityUtil.dip2pxComm(mContext, 8), data.getPicture());
         }else {
             holder.ivImg.setVisibility(View.GONE);
         }
