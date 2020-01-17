@@ -7,6 +7,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.net.Uri;
@@ -130,6 +131,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         filter.addAction(EXITACTION);
         registerReceiver(exitReceiver, filter);
         TCAgent.onPageStart(this, this.getComponentName().getClassName());
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
     }
 
     protected SpeechSettingService getSpeechService() {
