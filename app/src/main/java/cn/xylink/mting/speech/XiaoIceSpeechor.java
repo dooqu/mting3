@@ -164,7 +164,7 @@ public abstract class XiaoIceSpeechor implements Speechor {
 
 
     @Override
-    public synchronized int seek(int index) {
+    public int seek(int index) {
         synchronized (this) {
             if (isReleased) {
                 return -SpeechError.TARGET_IS_RELEASED;
