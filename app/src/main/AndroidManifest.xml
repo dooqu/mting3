@@ -43,7 +43,9 @@
             android:name="org.apache.http.legacy"
             android:required="false" />
 
-        <activity android:name=".ui.activity.BroadcastActivity" />
+        <activity
+            android:name=".ui.activity.BroadcastActivity"
+            android:screenOrientation="portrait" />
 
         <service android:name=".speech.SpeechService" />
 
@@ -158,7 +160,8 @@
             android:windowSoftInputMode="stateHidden|adjustResize" />
         <activity
             android:name=".ui.activity.ShareActivity"
-            android:launchMode="singleTask">
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait">
 
             <!-- 第二个filter -->
             <intent-filter>
