@@ -70,11 +70,8 @@ public class XiaoIceTTSAudioLoader implements TTSAudioLoader {
         XiaoIceTTSRequest request = new XiaoIceTTSRequest();
         request.setSpeed(getSpeechString(speechorSpeed));
         request.setText(text);
-
-        /*
         request.setToken(ContentManager.getInstance().getLoginToken());
 
-         */
         request.doSign();
 
         OkGoUtils.getInstance().postData(
