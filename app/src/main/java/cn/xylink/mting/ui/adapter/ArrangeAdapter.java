@@ -31,6 +31,11 @@ public class ArrangeAdapter extends RecyclerView.Adapter<ArrangeAdapter.ViewHold
         this.mContext = context;
     }
 
+    /**
+     * 设置数据
+     *
+     * @param list 列表
+     */
     public void setData(List<BroadcastInfo> list) {
         if (mData == null) {
             mData = list;
@@ -43,12 +48,19 @@ public class ArrangeAdapter extends RecyclerView.Adapter<ArrangeAdapter.ViewHold
         notifyDataSetChanged();
     }
 
+
+    /**
+     * 清除数据
+     */
     public void clearData() {
         if (mData != null) {
             mData.clear();
         }
     }
 
+    /**
+    * 选中全部
+    * */
     public void selectAll() {
         if (mData != null && mData.size() > 0) {
             boolean isCheck = true;
@@ -70,6 +82,9 @@ public class ArrangeAdapter extends RecyclerView.Adapter<ArrangeAdapter.ViewHold
         }
     }
 
+    /**
+    * 返回选中id集合
+    * */
     public String getSelectArticleIDs() {
         if (mData != null && mData.size() > 0) {
             StringBuffer buffer = new StringBuffer();
@@ -109,6 +124,9 @@ public class ArrangeAdapter extends RecyclerView.Adapter<ArrangeAdapter.ViewHold
     }
 
 
+    /**
+    * 点击选中
+    * */
     private void notifCheckChange(@NonNull ViewHolder holder, BroadcastInfo data) {
         data.setChecked(holder.checkBox.isChecked());
         if (!holder.checkBox.isChecked()) {
@@ -126,6 +144,11 @@ public class ArrangeAdapter extends RecyclerView.Adapter<ArrangeAdapter.ViewHold
     }
 
 
+    /**
+     * 删除item
+     *
+     * @param position
+     */
     public void notifyItemRemoe(int position) {
         if (mData != null & mData.size() > position) {
             ListIterator<BroadcastInfo> ite = mData.listIterator(position);

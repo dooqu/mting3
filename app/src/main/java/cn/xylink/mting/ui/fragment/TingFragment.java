@@ -176,6 +176,9 @@ public class TingFragment extends BasePresenterFragment implements TingListConta
         }
     }
 
+    /**
+    * 置顶
+    * */
     private void setTop(String bid, String event) {
         SetTopRequest request = new SetTopRequest();
         request.setBroadcastId(bid);
@@ -184,6 +187,9 @@ public class TingFragment extends BasePresenterFragment implements TingListConta
         mSetTopPresenter.setTop(request);
     }
 
+    /***
+    * 订阅
+    * */
     private void subscribe(String bid, String event) {
         SubscribeRequest request = new SubscribeRequest();
         request.setBroadcastId(bid);

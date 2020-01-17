@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.text.TextUtils;
 import android.view.View;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -47,6 +48,8 @@ public class InputDialog extends BaseDimDialog implements BroadcastDetailContact
     TextView mUrlTextView;
     @BindView(R.id.ll_input_copy)
     LinearLayout mCopyLayout;
+    @BindView(R.id.btn_input)
+    Button mButton;
     private BroadcastDetailPresenter mBroadcastDetailPresenter;
     private ArticleDetailPresenter mArticleDetailPresenter;
     private LinkCreatePresenter mLinkCreatePresenter;
@@ -112,6 +115,7 @@ public class InputDialog extends BaseDimDialog implements BroadcastDetailContact
                         request.doSign();
                         mLinkCreatePresenter.onPush(request);
                     }
+                    mButton.setEnabled(false);
                 }
                 break;
         }

@@ -24,6 +24,7 @@ import cn.xylink.mting.utils.L;
 
 
 /**
+ * 下拉刷新view
  * -----------------------------------------------------------------
  * 2019/11/8 15:50 : Create TIngHeaderView.java (JoDragon);
  * -----------------------------------------------------------------
@@ -47,6 +48,9 @@ public class TingHeaderView extends LinearLayout implements RefreshHeader {
         mTipPop = new HeaderRefreshTipPop(mContext);
     }
 
+    /**
+    * 设置加载动画颜色
+    * */
     public TingHeaderView setIsWrite(boolean b) {
         if (b) {
             loadingAnim = (AnimationDrawable) mContext.getResources().getDrawable(R.drawable.anim_ting_refresh, null);

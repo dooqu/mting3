@@ -79,7 +79,7 @@ import cn.xylink.mting.widget.EndlessRecyclerOnScrollListener;
 import cn.xylink.mting.widget.HDividerItemDecoration;
 
 /**
- * @author JoDragon
+ * The type Broadcast activity.
  */
 public class BroadcastActivity extends BasePresenterActivity implements BroadcastListContact.IBroadcastListView,
         BroadcastDetailContact.IBroadcastDetailView, BroadcastAdapter.OnItemClickListener, BroadcastItemMenuDialog.OnBroadcastItemMenuListener
@@ -166,6 +166,9 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
         mRefreshLayout.setEnableLoadMoreWhenContentNotFull(false);
         mRefreshLayout.setRefreshFooter(new ClassicsFooter(this));
         mTableBarTitleTextView.setText(getIntent().getStringExtra(EXTRA_TITLE));
+        /*
+         * 判断是否是系统级播单
+         * */
         if (!getIntent().getStringExtra(EXTRA_BROADCASTID).startsWith("-")) {
             initDetail();
             startShareAnim();
@@ -183,6 +186,9 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
     }
 
 
+    /**
+     * 初始化列表
+     * */
     private void initList() {
         BroadcastListRequest request = new BroadcastListRequest();
         request.setBroadcastId(getIntent().getStringExtra(EXTRA_BROADCASTID));
@@ -190,6 +196,9 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
         mPresenter.getBroadcastList(request, false);
     }
 
+    /**
+     * 初始化详情
+     * */
     private void initDetail() {
         BroadcastIdRequest request = new BroadcastIdRequest();
         request.setBroadcastId(getIntent().getStringExtra(EXTRA_BROADCASTID));
@@ -197,6 +206,9 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
         mBroadcastDetailPresenter.getBroadcastDetail(request);
     }
 
+    /**
+     * 加载更多
+     * */
     private void loadMoreData() {
         if (mAdapter != null && mAdapter.getArticleList() != null && mAdapter.getArticleList().size() > 1) {
             BroadcastListRequest request = new BroadcastListRequest();
@@ -218,6 +230,9 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
 
     }
 
+    /**
+     * 分享呼吸动画
+     * */
     private void startShareAnim() {
         //        RotateAnimation animation = new RotateAnimation(-18,18,RotateAnimation.RELATIVE_TO_SELF,0.4f,RotateAnimation.RELATIVE_TO_SELF,0.5f);
         ScaleAnimation animation = new ScaleAnimation(1, 1.2f, 1, 1.2f, RotateAnimation.RELATIVE_TO_SELF, 0.5f, RotateAnimation.RELATIVE_TO_SELF,
@@ -230,6 +245,9 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
         mShareImageView.startAnimation(animation);
     }
 
+    /**
+    * 是否是第一次使用待读
+    * */
     private boolean isUsed = false;
 
     @Override
@@ -293,6 +311,7 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
             dialog.setMsg("播单不存在");
             dialog.show();
         } else if (code == -961) {
+            //播单已被删除提示
             WarningTipDialog dialog = new WarningTipDialog(this);
             dialog.show();
         } else if (code == 9999) {
@@ -302,6 +321,9 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
         }
     }
 
+    /**
+    * 开启播放条
+    * */
     @Override
     protected boolean enableSpeechService() {
         return true;
@@ -309,6 +331,9 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
 
     private int mDY = 0;
     LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
+    /**
+     * 滑动监听及滑动渐变动画
+     * */
     EndlessRecyclerOnScrollListener endlessScrollListener = new EndlessRecyclerOnScrollListener(linearLayoutManager) {
         @Override
         public void onLoadMore(int current_page) {
@@ -381,6 +406,7 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
         dialog.setListener(this);
         dialog.show();
     }
+
 
     @Override
     public void onShare2World(boolean isSubscribe) {
@@ -536,6 +562,9 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
         startActivity(intent);
     }
 
+    /**
+    * 收藏请求
+    * */
     private void addStore(String id) {
         AddStoreRequest request = new AddStoreRequest();
         request.setArticleId(id);
@@ -543,6 +572,9 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
         mAddStorePresenter.addStore(request);
     }
 
+    /**
+     * @description 删除收藏
+     */
     private void delStore(BroadcastInfo info) {
         ArticleIdsRequest request = new ArticleIdsRequest();
         request.setArticleIds(info.getArticleId());
@@ -570,6 +602,9 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
         dialog.show();
     }
 
+    /**
+    * 根据播单删除
+    * */
     private void delItem(BroadcastInfo info) {
         ArticleIdsRequest request = new ArticleIdsRequest();
         request.setArticleIds(info.getArticleId());
@@ -715,6 +750,9 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
         mBroadcastAllDelPresenter.delBroadcast(request);
     }
 
+    /**
+    * 置顶请求
+    * */
     private void setTop(String event) {
         SetTopRequest request = new SetTopRequest();
         request.setBroadcastId(getIntent().getStringExtra(EXTRA_BROADCASTID));
@@ -723,6 +761,9 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
         mSetTopPresenter.setTop(request);
     }
 
+    /**
+     * 订阅请求
+     * */
     private void subscribe(String event) {
         SubscribeRequest request = new SubscribeRequest();
         request.setBroadcastId(mDetailInfo.getBroadcastId());
@@ -829,6 +870,9 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
         }
     }
 
+    /**
+    * 根据当前播单展示空布局
+    * */
     private void showEmptyLayout() {
         mEmptylayout.setVisibility(View.VISIBLE);
         String id = getIntent().getStringExtra(EXTRA_BROADCASTID);
@@ -871,6 +915,9 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
 
     }
 
+    /**
+    * 展示加载失败布局
+    * */
     private void showLoadFail() {
         mEmptylayout.setVisibility(View.VISIBLE);
         mEmptyImageView.setImageResource(R.mipmap.bg_load_fail);
@@ -879,6 +926,9 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
         mEmptyAddTextView.setVisibility(View.GONE);
     }
 
+    /**
+    * 展示网络错误布局
+    * */
     private void showNetworlError() {
         mEmptylayout.setVisibility(View.VISIBLE);
         mEmptyImageView.setImageResource(R.mipmap.bg_network_error);
@@ -887,16 +937,25 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
         mEmptyAddTextView.setVisibility(View.GONE);
     }
 
+    /**
+     * 列表刷新
+     */
     @Subscribe
     public void eventRefresh(BroadcastRefreshEvent event) {
         initList();
     }
 
+    /**
+     * 整体刷新
+     */
     @Subscribe
     public void eventDetailRefresh(BroadcastDetailRefreshEvent event) {
         initDetail();
     }
 
+    /**
+    * 接收已读event刷新
+    * */
     @Subscribe
     public void eventReaded(SpeechArticleReadedEvent event) {
         if (Const.SystemBroadcast.SYSTEMBROADCAST_UNREAD.equals(getIntent().getStringExtra(EXTRA_BROADCASTID))) {
@@ -908,6 +967,9 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
         }
     }
 
+    /**
+    * 接收收藏event刷新
+    * */
     @Subscribe
     public void eventStoreRefresh(StoreRefreshEvent event) {
         if (Const.SystemBroadcast.SYSTEMBROADCAST_STORE.equals(getIntent().getStringExtra(EXTRA_BROADCASTID))) {
@@ -931,6 +993,9 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
         T.showCustomCenterToast("举报失败");
     }
 
+    /**
+    * 判断是否是游客，是的话去登陆
+    * */
     private boolean isVisitorlogin() {
         if (ContentManager.getInstance().getVisitor().equals("0")) {
             Intent intent = new Intent(new Intent(this, LoginActivity.class));
