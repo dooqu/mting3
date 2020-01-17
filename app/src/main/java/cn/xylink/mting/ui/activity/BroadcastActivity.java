@@ -408,6 +408,11 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
     }
 
 
+    /**
+     * 分享到世界按钮回调
+     *
+     * @param isSubscribe 是否是订阅功能
+     */
     @Override
     public void onShare2World(boolean isSubscribe) {
         if (isVisitorlogin()) {
@@ -543,6 +548,11 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
         }
     }
 
+    /**
+     * 收藏回调
+     *
+     * @param info
+     */
     @Override
     public void onItemCollect(BroadcastInfo info) {
         if (isVisitorlogin()) {
@@ -555,6 +565,11 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
         }
     }
 
+    /**
+     * 添加到回调
+     *
+     * @param info 信息
+     */
     @Override
     public void onItemAddTO(BroadcastInfo info) {
         Intent intent = new Intent(this, BroadcastItemAddActivity.class);
