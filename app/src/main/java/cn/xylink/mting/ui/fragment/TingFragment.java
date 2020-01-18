@@ -50,6 +50,7 @@ import cn.xylink.mting.ui.dialog.BottomTingItemModle;
 import cn.xylink.mting.ui.dialog.InputDialog;
 import cn.xylink.mting.ui.dialog.MainAddMenuPop;
 import cn.xylink.mting.ui.dialog.SubscribeTipDialog;
+import cn.xylink.mting.ui.dialog.TipDialog;
 import cn.xylink.mting.utils.ContentManager;
 import cn.xylink.mting.utils.DensityUtil;
 import cn.xylink.mting.utils.T;
@@ -113,8 +114,6 @@ public class TingFragment extends BasePresenterFragment implements TingListConta
         mRefreshLayout.setRefreshHeader(new TingHeaderView(getActivity()).setIsWrite(true));
         mRefreshLayout.setEnableLoadMore(false);
         mBottomTingDialog = new BottomTingDialog(getActivity(), this);
-        mSubscribeTipDialog = new SubscribeTipDialog(getActivity());
-        mSubscribeTipDialog.setMsg("不再订阅此播单？", "播单删除后，播单内的文章也会被删除。", this);
     }
 
     @Override
@@ -226,14 +225,24 @@ public class TingFragment extends BasePresenterFragment implements TingListConta
         startActivity(new Intent(getActivity(), BroadcastCreateActivity.class));
     }
 
-    private SubscribeTipDialog mSubscribeTipDialog;
-
     @Override
     public void onBottomTingItemClick(BottomTingItemModle modle) {
         if (Const.BottomDialogItem.SET_TOP.equals(modle.getName())) {
             setTop(modle.getId(), modle.isTwo() ? SetTopRequest.EVENT.CANCEL.name().toLowerCase() : SetTopRequest.EVENT.TOP.name().toLowerCase());
         } else if (Const.BottomDialogItem.CANCEL_SUBSCRIBE.equals(modle.getName())) {
-            mSubscribeTipDialog.show(modle);
+            TipDialog dialog = new TipDialog(getActivity());
+            dialog.setMsg("不再订阅此播单？", "取消", "确定", new TipDialog.OnTipListener() {
+                @Override
+                public void onLeftClick() {
+
+                }
+
+                @Override
+                public void onRightClick() {
+                    subscribe(modle.getId(), SubscribeRequest.EVENT.CANCEL.name().toLowerCase());
+                }
+            });
+            dialog.show();
         } else if (Const.BottomDialogItem.DELETE.equals(modle.getName())){
             SubscribeTipDialog dialog1 = new SubscribeTipDialog(getActivity());
             dialog1.setMsg("播单删除确认", "播单删除后，播单内的文章也会被删除。", new SubscribeTipDialog.OnTipListener() {
