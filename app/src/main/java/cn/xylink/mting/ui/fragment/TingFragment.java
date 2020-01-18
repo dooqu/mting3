@@ -23,16 +23,20 @@ import cn.xylink.mting.R;
 import cn.xylink.mting.base.BaseRequest;
 import cn.xylink.mting.base.BaseResponse;
 import cn.xylink.mting.base.BaseResponseArray;
+import cn.xylink.mting.bean.BroadcastIdRequest;
+import cn.xylink.mting.bean.BroadcastInfo;
 import cn.xylink.mting.bean.SetTopRequest;
 import cn.xylink.mting.bean.SubscribeRequest;
 import cn.xylink.mting.bean.TingInfo;
 import cn.xylink.mting.common.Const;
+import cn.xylink.mting.contract.BroadcastAllDelContact;
 import cn.xylink.mting.contract.SetTopContact;
 import cn.xylink.mting.contract.SubscribeContact;
 import cn.xylink.mting.contract.TingListContact;
 import cn.xylink.mting.event.ArticleDetailScrollEvent;
 import cn.xylink.mting.event.TingChangeMessageEvent;
 import cn.xylink.mting.event.TingRefreshEvent;
+import cn.xylink.mting.presenter.BroadcastAllDelPresenter;
 import cn.xylink.mting.presenter.SetTopPresenter;
 import cn.xylink.mting.presenter.SubscribePresenter;
 import cn.xylink.mting.presenter.TingListPresenter;
@@ -56,7 +60,7 @@ import cn.xylink.mting.widget.TingHeaderView;
  */
 public class TingFragment extends BasePresenterFragment implements TingListContact.ITingListView, TingAdapter.OnItemClickListener,
         MainAddMenuPop.OnMainAddMenuListener, BottomTingDialog.OnBottomTingListener, SetTopContact.ISetTopView, SubscribeContact.ISubscribeView
-        , SubscribeTipDialog.OnTipListener {
+        , SubscribeTipDialog.OnTipListener , BroadcastAllDelContact.IBroadcastAllDelView{
 
     @BindView(R.id.rv_tab_ting)
     RecyclerView mRecyclerView;
@@ -71,6 +75,7 @@ public class TingFragment extends BasePresenterFragment implements TingListConta
     private BottomTingDialog mBottomTingDialog;
     private SetTopPresenter mSetTopPresenter;
     private SubscribePresenter mSubscribePresenter;
+    private BroadcastAllDelPresenter mBroadcastAllDelPresenter;
 
     public static TingFragment newInstance() {
         return new TingFragment();
@@ -93,6 +98,8 @@ public class TingFragment extends BasePresenterFragment implements TingListConta
         mSetTopPresenter.attachView(this);
         mSubscribePresenter = (SubscribePresenter) createPresenter(SubscribePresenter.class);
         mSubscribePresenter.attachView(this);
+        mBroadcastAllDelPresenter = (BroadcastAllDelPresenter) createPresenter(BroadcastAllDelPresenter.class);
+        mBroadcastAllDelPresenter.attachView(this);
         mAdapter = new TingAdapter(getActivity(), this);
         mRecyclerView.setItemAnimator(null);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
@@ -149,11 +156,16 @@ public class TingFragment extends BasePresenterFragment implements TingListConta
     @Override
     public void onItemLongClick(TingInfo article) {
 
-        if ("-1".equals(article.getBroadcastId()) || ContentManager.getInstance().getUserInfo().getUserId().equals(article.getCreateUserId())) {
+        if ("-1".equals(article.getBroadcastId())) {
             mBottomTingDialog.setItemModle(new BottomTingItemModle(Const.BottomDialogItem.SET_TOP, Const.BottomDialogItem.CANEL_TOP,
                     getActivity().getResources().getDrawable(R.mipmap.icon_set_top),
                     getActivity().getResources().getDrawable(R.mipmap.icon_cancel_top), article.getTop() == 1, article.getBroadcastId()));
-        } else {
+        } else if(ContentManager.getInstance().getUserInfo().getUserId().equals(article.getCreateUserId())){
+            mBottomTingDialog.setItemModle(new BottomTingItemModle(Const.BottomDialogItem.SET_TOP, Const.BottomDialogItem.CANEL_TOP,
+                    getActivity().getResources().getDrawable(R.mipmap.icon_set_top),
+                    getActivity().getResources().getDrawable(R.mipmap.icon_cancel_top), article.getTop() == 1, article.getBroadcastId())
+            ,new BottomTingItemModle(Const.BottomDialogItem.DELETE, getResources().getDrawable(R.mipmap.icon_del), article.getBroadcastId()));
+        }else {
             mBottomTingDialog.setItemModle(new BottomTingItemModle(Const.BottomDialogItem.SET_TOP, Const.BottomDialogItem.CANEL_TOP,
                             getActivity().getResources().getDrawable(R.mipmap.icon_set_top),
                             getActivity().getResources().getDrawable(R.mipmap.icon_cancel_top), article.getTop() == 1, article.getBroadcastId())
@@ -218,11 +230,35 @@ public class TingFragment extends BasePresenterFragment implements TingListConta
 
     @Override
     public void onBottomTingItemClick(BottomTingItemModle modle) {
-        if ("置顶".equals(modle.getName())) {
+        if (Const.BottomDialogItem.SET_TOP.equals(modle.getName())) {
             setTop(modle.getId(), modle.isTwo() ? SetTopRequest.EVENT.CANCEL.name().toLowerCase() : SetTopRequest.EVENT.TOP.name().toLowerCase());
-        } else if ("取消订阅".equals(modle.getName())) {
+        } else if (Const.BottomDialogItem.CANCEL_SUBSCRIBE.equals(modle.getName())) {
             mSubscribeTipDialog.show(modle);
+        } else if (Const.BottomDialogItem.DELETE.equals(modle.getName())){
+            SubscribeTipDialog dialog1 = new SubscribeTipDialog(getActivity());
+            dialog1.setMsg("播单删除确认", "播单删除后，播单内的文章也会被删除。", new SubscribeTipDialog.OnTipListener() {
+                @Override
+                public void onLeftClick(Object tag) {
+
+                }
+
+                @Override
+                public void onRightClick(Object tag) {
+                    delBroadcast(modle.getId());
+                }
+            });
+            dialog1.show();
         }
+    }
+
+    /**
+     * 删除播单
+     */
+    private void delBroadcast(String id) {
+        BroadcastIdRequest request = new BroadcastIdRequest();
+        request.setBroadcastId(id);
+        request.doSign();
+        mBroadcastAllDelPresenter.delBroadcast(request);
     }
 
     @Override
@@ -302,4 +338,15 @@ public class TingFragment extends BasePresenterFragment implements TingListConta
             }
         }
     };
+
+    @Override
+    public void onBroadcastAllDelSuccess(BaseResponse response, BroadcastInfo info) {
+        T.showCustomCenterToast("删除成功");
+        initData();
+    }
+
+    @Override
+    public void onBroadcastAllDelError(int code, String errorMsg) {
+        T.showCustomCenterToast("删除失败");
+    }
 }
