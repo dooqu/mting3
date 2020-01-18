@@ -9,6 +9,7 @@ import java.lang.ref.WeakReference;
 import java.util.List;
 
 import static android.content.Context.AUDIO_SERVICE;
+import static android.media.AudioManager.AUDIOFOCUS_REQUEST_FAILED;
 import static android.media.AudioManager.AUDIOFOCUS_REQUEST_GRANTED;
 
 /*
@@ -122,6 +123,7 @@ public abstract class SpeechEngineWrapper implements Speechor {
 
 
     private boolean requestFocus() {
+
         return audioManager.requestAudioFocus(focusListener, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN) == AUDIOFOCUS_REQUEST_GRANTED;
     }
 

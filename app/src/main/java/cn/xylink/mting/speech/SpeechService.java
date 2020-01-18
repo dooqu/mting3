@@ -312,7 +312,7 @@ public class SpeechService extends Service {
         isBuffering = false;
         article.setProgress((float) fragmentIndex / (float) fragments.size());
         foregroundServiceAdapter.retainForeground();
-        updatePlayState(article.getBroadcastId(), article.getArticleId(), article.getBroadcastTitle(),  article.getProgress());
+        updatePlayState(article.getBroadcastId(), article.getArticleId(), article.getBroadcastTitle(), article.getProgress());
         EventBus.getDefault().post(new SpeechProgressEvent(fragmentIndex, fragments, article));
     }
 
@@ -340,7 +340,7 @@ public class SpeechService extends Service {
         }
         long duration = new java.util.Date().getTime() - speechStartTimeOfArticle;
         speechDurationOfArticle += (duration > 0) ? duration : 0;
-        updatePlayState(null, null,  null, 0);
+        updatePlayState(null, null, null, 0);
         //articleDataProvider.appendArticleRecord(speechArticleIdOfArticle, speechDurationOfArticle / 1000);
     }
 
@@ -361,7 +361,7 @@ public class SpeechService extends Service {
 
     private void onSpeechStoped(SpeechStopEvent.StopReason reason) {
         isBuffering = false;
-        updatePlayState(null, null, null,0);
+        updatePlayState(null, null, null, 0);
         foregroundServiceAdapter.stopForeground(true);
         EventBus.getDefault().post(new SpeechStopEvent(reason));
     }
@@ -610,7 +610,7 @@ public class SpeechService extends Service {
                         }
                         if (this == dataProviderCallback) {
                             resetSpeechList(data, speechListType);
-                            if(speechList.select(article.getArticleId()) ==  null) {
+                            if (speechList.select(article.getArticleId()) == null) {
                                 foregroundServiceAdapter.stopForeground(true);
                                 onSpeechError(SpeechError.ARTCILE_NOT_EXISTS_IN_SERIES, "播单中不存在该文章", article);
                                 return;
@@ -799,7 +799,7 @@ public class SpeechService extends Service {
         this.speechList.pushBack(list);
     }
 
-    public synchronized void resetSpeechList(List<Article> list, SpeechListType speechListType) {
+    protected synchronized void resetSpeechList(List<Article> list, SpeechListType speechListType) {
         if (list == null || list.size() <= 0) {
             return;
         }
@@ -815,7 +815,7 @@ public class SpeechService extends Service {
     }
 
 
-    public synchronized void clearSpeechList() {
+    protected synchronized void clearSpeechList() {
         boolean isSelectedDeleted = this.speechList.removeAll();
         if (isSelectedDeleted) {
             this.speechor.stop();

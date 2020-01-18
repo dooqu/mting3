@@ -65,15 +65,13 @@ public class XiaoIceTTSAudioLoader implements TTSAudioLoader {
     }
 
 
-    public void textToSpeechEx(String text, Speechor.SpeechorSpeed speechorSpeed, LoadResult result) {
+    @Override
+    public void textToSpeech(String text, Speechor.SpeechorSpeed speechorSpeed, LoadResult result) {
         XiaoIceTTSRequest request = new XiaoIceTTSRequest();
         request.setSpeed(getSpeechString(speechorSpeed));
         request.setText(text);
-
-        /*
         request.setToken(ContentManager.getInstance().getLoginToken());
 
-         */
         request.doSign();
 
         OkGoUtils.getInstance().postData(
@@ -160,8 +158,7 @@ public class XiaoIceTTSAudioLoader implements TTSAudioLoader {
     }
 
 
-    @Override
-    public void textToSpeech(String text, Speechor.SpeechorSpeed speechorSpeed, LoadResult result) {
+    public void textToSpeechEx(String text, Speechor.SpeechorSpeed speechorSpeed, LoadResult result) {
         Log.d(TAG, "TTS:" + text);
         String postData = null;
 

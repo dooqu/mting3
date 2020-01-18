@@ -10,9 +10,11 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+
 import java.lang.ref.WeakReference;
 
 import cn.xylink.mting.MainActivity;
@@ -103,7 +105,7 @@ public class PanelViewAdapter {
         icoPanelCollapse.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(speechPanelDialog == null) {
+                if (speechPanelDialog == null) {
                     speechPanelDialog = new SpeechPanelDialog(contextRef.get(), speechServiceWeakReference.get());
                 }
                 speechPanelDialog.show();
@@ -210,10 +212,10 @@ public class PanelViewAdapter {
         this.isPlaying = isPlaying;
         Drawable destDrawable = isPlaying ? drawablePause : drawablePlay;
         boolean needChange = statusIcon.getDrawable() != destDrawable;
-        if(needChange == true) {
+        if (needChange == true) {
             statusIcon.setImageDrawable(isPlaying ? drawablePause : drawablePlay);
-            if(isInit == false) {
-                ((Animatable)statusIcon.getDrawable()).start();
+            if (isInit == false) {
+                ((Animatable) statusIcon.getDrawable()).start();
             }
         }
     }
@@ -229,7 +231,7 @@ public class PanelViewAdapter {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onArticleFavorited(StoreRefreshEvent event) {
-        if(speechServiceWeakReference.get() != null
+        if (speechServiceWeakReference.get() != null
                 && speechServiceWeakReference.get().getSelected() != null
                 && event.getArticleID().contains(speechServiceWeakReference.get().getSelected().getArticleId())) {
             speechServiceWeakReference.get().getSelected().setStore(event.getStroe());
@@ -274,7 +276,7 @@ public class PanelViewAdapter {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onArticleTextScrollEvent(ArticleDetailScrollEvent event) {
         if (contextRef.get() == null
-                  ||  contextRef.get() != event.getActivity()
+                || contextRef.get() != event.getActivity()
                 || speechServiceWeakReference.get() == null
                 || speechServiceWeakReference.get().getState() == SpeechService.SpeechServiceState.Stoped
                 || isUserClosed) {
