@@ -695,7 +695,19 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
                 subscribe(SubscribeRequest.EVENT.SUBSCRIBE.name().toLowerCase());
                 break;
             case Const.BottomDialogItem.CANCEL_SUBSCRIBE:
-                subscribe(SubscribeRequest.EVENT.CANCEL.name().toLowerCase());
+                SubscribeTipDialog subscribeTipDialog = new SubscribeTipDialog(this);
+                subscribeTipDialog.setMsg("不再订阅此播单？", "播单删除后，播单内的文章也会被删除。", new SubscribeTipDialog.OnTipListener() {
+                    @Override
+                    public void onLeftClick(Object tag) {
+
+                    }
+
+                    @Override
+                    public void onRightClick(Object tag) {
+                        subscribe(SubscribeRequest.EVENT.CANCEL.name().toLowerCase());
+                    }
+                });
+                subscribeTipDialog.show();
                 break;
             case Const.BottomDialogItem.EDIT_BROADCAST:
                 if (mAdapter.getDetailInfo() != null && mAdapter.getDetailInfo().getShare() == 1) {
@@ -712,11 +724,11 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
                 startActivity(intent);
                 break;
             case Const.BottomDialogItem.REPORT:
-                ReportDialog dialog = new ReportDialog(this);
-                dialog.setOnClickListener((type, content) -> {
+                ReportDialog dia = new ReportDialog(this);
+                dia.setOnClickListener((type, content) -> {
                     doArticleReport(type, content);
                 });
-                dialog.show();
+                dia.show();
                 break;
             case Const.BottomDialogItem.DELETE:
                 SubscribeTipDialog dialog1 = new SubscribeTipDialog(this);
@@ -738,6 +750,9 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
         }
     }
 
+    /**
+     * go2编辑播单
+     */
     private void go2EditBroadcast() {
         if (mDetailInfo != null) {
             Intent intent = new Intent(this, BroadcastEditActivity.class);
@@ -749,6 +764,12 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
         }
     }
 
+    /**
+     * 举报
+     *
+     * @param type    类型
+     * @param content 内容
+     */
     private void doArticleReport(String type, String content) {
         ReportRequest reportRequest = new ReportRequest();
         reportRequest.setBroadcastId(getIntent().getStringExtra(EXTRA_BROADCASTID));
@@ -758,6 +779,9 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
         mReportPresenter.getArticleReport(reportRequest);
     }
 
+    /**
+     * 删除播单
+     */
     private void delBroadcast() {
         BroadcastIdRequest request = new BroadcastIdRequest();
         request.setBroadcastId(getIntent().getStringExtra(EXTRA_BROADCASTID));
