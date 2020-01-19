@@ -44,14 +44,40 @@
 
     </RelativeLayout>
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="28dp"
         android:layout_marginTop="20dp"
-        android:layout_marginRight="28dp"
-        android:orientation="vertical">
+        android:layout_marginRight="28dp">
 
+        <TextView
+            android:id="@+id/tv_count_down_10"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="72dp"
+            android:layout_marginTop="135.5dp"
+            android:text="9:55"
+            android:textColor="#ff999999"
+            android:textSize="15sp" />
+        <TextView
+            android:id="@+id/tv_count_down_20"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="72dp"
+            android:layout_marginTop="192.5dp"
+            android:text="9:55"
+            android:textColor="#ff999999"
+            android:textSize="15sp" />
+        <TextView
+            android:id="@+id/tv_count_down_30"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="72dp"
+            android:layout_marginTop="249.5dp"
+            android:text="9:55"
+            android:textColor="#ff999999"
+            android:textSize="15sp" />
         <RadioGroup
             android:id="@+id/rg_count_down"
             android:layout_width="match_parent"
@@ -71,22 +97,23 @@
 
             <View
                 android:layout_width="match_parent"
-                android:layout_height="1dp"
+                android:layout_height="1px"
                 android:background="@color/cutting_line" />
 
             <RadioButton
                 android:id="@+id/rb_current"
                 android:layout_width="match_parent"
                 android:layout_height="57dp"
-                android:button="@null"
                 android:background="@null"
+                android:button="@null"
                 android:buttonTint="@color/selector_button_color"
                 android:drawableRight="@drawable/bg_rg_set_timer"
-                android:text="读完本篇后关闭" />
+                android:text="读完本篇后关闭"
+                android:textSize="15sp" />
 
             <View
                 android:layout_width="match_parent"
-                android:layout_height="1dp"
+                android:layout_height="1px"
                 android:background="@color/cutting_line" />
 
             <RadioButton
@@ -96,11 +123,12 @@
                 android:button="@null"
                 android:buttonTint="@color/selector_button_color"
                 android:drawableRight="@drawable/bg_rg_set_timer"
-                android:text="10分钟" />
+                android:text="10分钟"
+                android:textSize="15sp" />
 
             <View
                 android:layout_width="match_parent"
-                android:layout_height="1dp"
+                android:layout_height="1px"
                 android:background="@color/cutting_line" />
 
             <RadioButton
@@ -110,11 +138,12 @@
                 android:button="@null"
                 android:buttonTint="@color/selector_button_color"
                 android:drawableRight="@drawable/bg_rg_set_timer"
-                android:text="20分钟" />
+                android:text="20分钟"
+                android:textSize="15sp" />
 
             <View
                 android:layout_width="match_parent"
-                android:layout_height="1dp"
+                android:layout_height="1px"
                 android:background="@color/cutting_line" />
 
             <RadioButton
@@ -124,10 +153,11 @@
                 android:button="@null"
                 android:buttonTint="@color/selector_button_color"
                 android:drawableRight="@drawable/bg_rg_set_timer"
-                android:text="30分钟" />
+                android:text="30分钟"
+                android:textSize="15sp" />
 
         </RadioGroup>
 
-    </LinearLayout>
+    </RelativeLayout>
 
 </LinearLayout>
