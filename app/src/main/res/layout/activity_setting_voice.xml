@@ -222,8 +222,10 @@
 
     <View
         android:layout_width="match_parent"
-        android:layout_height="1dp"
+        android:layout_height="1px"
+        android:layout_marginLeft="16dp"
         android:layout_marginTop="@dimen/setting_dimen_24"
+        android:layout_marginRight="16dp"
         android:background="@color/cutting_line" />
 
     <TextView
@@ -318,7 +320,9 @@
 
     <View
         android:layout_width="match_parent"
-        android:layout_height="1dp"
+        android:layout_height="1px"
+        android:layout_marginLeft="16dp"
         android:layout_marginTop="@dimen/setting_dimen_24"
+        android:layout_marginRight="16dp"
         android:background="@color/cutting_line" />
 </LinearLayout>
