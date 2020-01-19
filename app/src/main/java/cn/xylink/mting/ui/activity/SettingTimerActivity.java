@@ -110,7 +110,7 @@ public class SettingTimerActivity extends BasePresenterActivity {
                         tvCountDown30.setVisibility(View.INVISIBLE);
                         tvCountDown10.setText(getCountDown());
                         optName = "articleDetails_timing_10";
-                        handler.postDelayed(update_thread,1000);
+                        handler.postDelayed(update_thread, 1000);
                         break;
                     case R.id.rb_time20:
                         ContentManager.getInstance().setRgTime(3);
@@ -121,7 +121,7 @@ public class SettingTimerActivity extends BasePresenterActivity {
                         tvCountDown30.setVisibility(View.INVISIBLE);
                         tvCountDown20.setText(getCountDown());
                         optName = "articleDetails_timing_20";
-                        handler.postDelayed(update_thread,1000);
+                        handler.postDelayed(update_thread, 1000);
                         break;
                     case R.id.rb_time30:
                         ContentManager.getInstance().setRgTime(4);
@@ -132,7 +132,7 @@ public class SettingTimerActivity extends BasePresenterActivity {
                         tvCountDown30.setVisibility(View.VISIBLE);
                         tvCountDown30.setText(getCountDown());
                         optName = "articleDetails_timing_30";
-                        handler.postDelayed(update_thread,1000);
+                        handler.postDelayed(update_thread, 1000);
                         break;
                 }
                 TCAgent.onEvent(SettingTimerActivity.this, optName);
@@ -196,12 +196,14 @@ public class SettingTimerActivity extends BasePresenterActivity {
                         tvCountDown10.setVisibility(View.INVISIBLE);
                         tvCountDown20.setVisibility(View.VISIBLE);
                         tvCountDown30.setVisibility(View.INVISIBLE);
+                        tvCountDown20.setText(getCountDown());
                         break;
                     case 30:
                         rgCountDown.check(R.id.rb_time30);
                         tvCountDown10.setVisibility(View.INVISIBLE);
                         tvCountDown20.setVisibility(View.INVISIBLE);
                         tvCountDown30.setVisibility(View.VISIBLE);
+                        tvCountDown30.setText(getCountDown());
 
                         break;
                 }
@@ -227,16 +229,11 @@ public class SettingTimerActivity extends BasePresenterActivity {
             switch (service.getCountDownMode()) {
                 case None:
                     rgCountDown.check(R.id.rb_close);
-                    //发送消息，结束倒计时
-                    Message message = new Message();
-                    message.what = 1;
-                    handlerStop.sendMessage(message);
+                    handler.removeCallbacks(this);
                     break;
                 case NumberCount:
                     rgCountDown.check(R.id.rb_current);
-                    Message message2 = new Message();
-                    message2.what = 1;
-                    handlerStop.sendMessage(message2);
+                    handler.removeCallbacks(this);
                     break;
                 case MinuteCount:
                     switch (service.getCountDownThresholdValue()) {
@@ -253,6 +250,7 @@ public class SettingTimerActivity extends BasePresenterActivity {
                             tvCountDown10.setVisibility(View.INVISIBLE);
                             tvCountDown20.setVisibility(View.VISIBLE);
                             tvCountDown30.setVisibility(View.INVISIBLE);
+                            tvCountDown20.setText(getCountDown());
                             handler.postDelayed(this, 1000);
                             break;
                         case 30:
@@ -260,6 +258,7 @@ public class SettingTimerActivity extends BasePresenterActivity {
                             tvCountDown10.setVisibility(View.INVISIBLE);
                             tvCountDown20.setVisibility(View.INVISIBLE);
                             tvCountDown30.setVisibility(View.VISIBLE);
+                            tvCountDown30.setText(getCountDown());
                             handler.postDelayed(this, 1000);
                             break;
 
@@ -269,21 +268,4 @@ public class SettingTimerActivity extends BasePresenterActivity {
         }
     };
 
-    final Handler handlerStop = new Handler() {
-        public void handleMessage(Message msg) {
-            switch (msg.what) {
-                case 1:
-                    handler.removeCallbacks(update_thread);
-                    break;
-            }
-            super.handleMessage(msg);
-        }
-
-    };
-
-//    @Override
-//    protected void onDestroy() {
-//        super.onDestroy();
-//        handler.removeCallbacks(update_thread);
-//    }
 }
