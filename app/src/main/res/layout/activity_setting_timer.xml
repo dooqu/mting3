@@ -60,6 +60,7 @@
             android:text="9:55"
             android:textColor="#ff999999"
             android:textSize="15sp" />
+
         <TextView
             android:id="@+id/tv_count_down_20"
             android:layout_width="wrap_content"
@@ -69,6 +70,7 @@
             android:text="9:55"
             android:textColor="#ff999999"
             android:textSize="15sp" />
+
         <TextView
             android:id="@+id/tv_count_down_30"
             android:layout_width="wrap_content"
@@ -78,6 +80,7 @@
             android:text="9:55"
             android:textColor="#ff999999"
             android:textSize="15sp" />
+
         <RadioGroup
             android:id="@+id/rg_count_down"
             android:layout_width="match_parent"
@@ -88,6 +91,7 @@
                 android:id="@+id/rb_close"
                 android:layout_width="match_parent"
                 android:layout_height="57dp"
+                android:background="@null"
                 android:button="@null"
                 android:buttonTint="@color/selector_button_color"
                 android:drawableRight="@drawable/bg_rg_set_timer"
@@ -120,6 +124,7 @@
                 android:id="@+id/rb_time10"
                 android:layout_width="match_parent"
                 android:layout_height="57dp"
+                android:background="@null"
                 android:button="@null"
                 android:buttonTint="@color/selector_button_color"
                 android:drawableRight="@drawable/bg_rg_set_timer"
@@ -135,6 +140,7 @@
                 android:id="@+id/rb_time20"
                 android:layout_width="match_parent"
                 android:layout_height="57dp"
+                android:background="@null"
                 android:button="@null"
                 android:buttonTint="@color/selector_button_color"
                 android:drawableRight="@drawable/bg_rg_set_timer"
@@ -150,6 +156,7 @@
                 android:id="@+id/rb_time30"
                 android:layout_width="match_parent"
                 android:layout_height="57dp"
+                android:background="@null"
                 android:button="@null"
                 android:buttonTint="@color/selector_button_color"
                 android:drawableRight="@drawable/bg_rg_set_timer"
