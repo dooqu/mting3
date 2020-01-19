@@ -30,6 +30,12 @@ public class SettingTimerActivity extends BasePresenterActivity {
     Switch swCount;
     @BindView(R.id.tv_timer)
     TextView tvTimer;
+    @BindView(R.id.tv_count_down_10)
+    TextView tvCountDown10;
+    @BindView(R.id.tv_count_down_20)
+    TextView tvCountDown20;
+    @BindView(R.id.tv_count_down_30)
+    TextView tvCountDown30;
 
     private SpeechService.CountDownMode countDownMode;
     private SpeechSettingService service;
@@ -124,6 +130,7 @@ public class SettingTimerActivity extends BasePresenterActivity {
                 buttonView.setChecked(isChecked);
             }
         });
+//        setCountDown(service.getCountDownMode(), service.getCountDownMode());
     }
 
     @Override
@@ -174,5 +181,10 @@ public class SettingTimerActivity extends BasePresenterActivity {
     @Override
     protected boolean enableSpeechService() {
         return true;
+    }
+
+    public void setCountDown(SpeechService.CountDownMode countDownMode, int countDownValue) {
+        this.countDownMode = countDownMode;
+        this.countDownValue = countDownValue;
     }
 }
