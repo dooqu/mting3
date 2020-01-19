@@ -69,7 +69,6 @@
         android:layout_marginRight="20dp"
         android:gravity="center"
         android:orientation="vertical">
-
         <RadioButton
             android:id="@+id/rb_count_down_0"
             android:layout_width="match_parent"
@@ -84,7 +83,6 @@
             android:textAlignment="textStart"
             android:textColor="#333333"
             android:textSize="15sp" />
-
         <RadioButton
             android:id="@+id/rb_count_down_1"
             android:layout_width="match_parent"

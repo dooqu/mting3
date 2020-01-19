@@ -371,16 +371,16 @@ public class SpeechService extends Service {
     }
 
 
-    public synchronized void setCountDown(CountDownMode mode, int minutesDelay) {
+    public synchronized void setCountDown(CountDownMode mode, int countdownValue) {
 
         this.cancelCountDown();
-        if (minutesDelay <= 0 || mode == CountDownMode.None) {
+        if (countdownValue <= 0 || mode == CountDownMode.None) {
             return;
         }
 
         this.countDownMode = mode;
-        this.countdownValue = minutesDelay * 60;
-        this.countdownValueThreshold = minutesDelay * 60;
+        this.countdownValueThreshold = (mode == CountDownMode.MinuteCount)? countdownValue * 60 : countdownValue;
+        this.countdownValue = countdownValueThreshold;
 
         if (mode == CountDownMode.MinuteCount) {
             countdownTimer = new Timer();
@@ -418,18 +418,35 @@ public class SpeechService extends Service {
     }
 
     public synchronized int getCountDownThresholdValue() {
-        return this.countdownValueThreshold / 60;
+        switch (this.countDownMode) {
+            case MinuteCount:
+                return this.countdownValueThreshold / 60;
+            case NumberCount:
+                return this.countdownValueThreshold;
+            default:
+                return 0;
+        }
     }
 
 
     public synchronized int getCountDownValue() {
-        return this.countdownValue / 60;
+        switch (this.countDownMode) {
+            case MinuteCount:
+                return this.countdownValue / 60;
+            case NumberCount:
+                return this.countdownValue;
+            default:
+                return 0;
+        }
     }
 
     public synchronized String getCountDownStringValue() {
-        int minutes = this.countdownValue / 60;
-        int seconds = this.countdownValue % 60;
-        return (minutes < 10? "0" + minutes : String.valueOf(minutes)) + ":" + (seconds < 10? "0" + seconds : String.valueOf(seconds));
+        if(this.countDownMode == CountDownMode.MinuteCount) {
+            int minutes = this.countdownValue / 60;
+            int seconds = this.countdownValue % 60;
+            return (minutes < 10 ? "0" + minutes : String.valueOf(minutes)) + ":" + (seconds < 10 ? "0" + seconds : String.valueOf(seconds));
+        }
+        return "00:00";
     }
 
 
