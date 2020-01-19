@@ -35,7 +35,7 @@ public class SubscribeTipDialog implements View.OnClickListener {
         sureTextView.setOnClickListener(this);
         builder.setView(view);
         alertDialog = builder.create();
-
+        alertDialog.getWindow().setBackgroundDrawableResource(R.drawable.bg_write_radius8);
     }
 
     public void setMsg(String title,String msg, OnTipListener listener) {
