@@ -66,6 +66,13 @@ public class SpeechSettingService {
         return 0;
     }
 
+    public String getCountDownValueOfTimeFormat() {
+        if(speechServiceWeakReference != null && speechServiceWeakReference.get() != null) {
+            return speechServiceWeakReference.get().getCountDownStringValue();
+        }
+        return "00:00";
+    }
+
     public void setCountDown(SpeechService.CountDownMode mode, int countDownValue) {
         if(speechServiceWeakReference != null && speechServiceWeakReference.get() != null) {
             speechServiceWeakReference.get().setCountDown(mode, countDownValue);
