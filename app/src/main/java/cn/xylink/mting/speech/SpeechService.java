@@ -420,9 +420,9 @@ public class SpeechService extends Service {
     public synchronized int getCountDownThresholdValue() {
         switch (this.countDownMode) {
             case MinuteCount:
-                return this.countdownValue / 60;
+                return this.countdownValueThreshold / 60;
             case NumberCount:
-                return this.countdownValue;
+                return this.countdownValueThreshold;
             default:
                 return 0;
         }
