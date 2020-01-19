@@ -371,16 +371,16 @@ public class SpeechService extends Service {
     }
 
 
-    public synchronized void setCountDown(CountDownMode mode, int tickcountValue) {
+    public synchronized void setCountDown(CountDownMode mode, int minutesDelay) {
 
         this.cancelCountDown();
-        if (tickcountValue <= 0 || mode == CountDownMode.None) {
+        if (minutesDelay <= 0 || mode == CountDownMode.None) {
             return;
         }
 
         this.countDownMode = mode;
-        this.countdownValue = tickcountValue;
-        this.countdownValueThreshold = tickcountValue;
+        this.countdownValue = minutesDelay * 60;
+        this.countdownValueThreshold = minutesDelay * 60;
 
         if (mode == CountDownMode.MinuteCount) {
             countdownTimer = new Timer();
@@ -396,7 +396,7 @@ public class SpeechService extends Service {
                         }
                     }
                 }
-            }, 1000 * 60, 1000 * 60);
+            }, 1000, 1000);
         }
     }
 
@@ -418,12 +418,18 @@ public class SpeechService extends Service {
     }
 
     public synchronized int getCountDownThresholdValue() {
-        return this.countdownValueThreshold;
+        return this.countdownValueThreshold / 60;
     }
 
 
     public synchronized int getCountDownValue() {
-        return this.countdownValue;
+        return this.countdownValue / 60;
+    }
+
+    public synchronized String getCountDownStringValue() {
+        int minutes = this.countdownValue / 60;
+        int seconds = this.countdownValue % 60;
+        return (minutes < 10? "0" + minutes : String.valueOf(minutes)) + ":" + (seconds < 10? "0" + seconds : String.valueOf(seconds));
     }
 
 

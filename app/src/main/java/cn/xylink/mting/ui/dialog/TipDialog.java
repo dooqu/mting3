@@ -45,6 +45,7 @@ public class TipDialog implements View.OnClickListener {
 
     public void show() {
         alertDialog = builder.show();
+        alertDialog.getWindow().setBackgroundDrawableResource(R.drawable.bg_write_radius8);
     }
 
     public void dissmiss() {
