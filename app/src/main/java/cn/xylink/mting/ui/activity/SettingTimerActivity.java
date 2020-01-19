@@ -94,12 +94,18 @@ public class SettingTimerActivity extends BasePresenterActivity {
                 switch (checkedId) {
                     case R.id.rb_close:
                         service.cancelCountDown();
+                        tvCountDown10.setVisibility(View.INVISIBLE);
+                        tvCountDown20.setVisibility(View.INVISIBLE);
+                        tvCountDown30.setVisibility(View.INVISIBLE);
                         break;
                     case R.id.rb_current:
                         ContentManager.getInstance().setRgTime(1);
                         swCount.setChecked(true);
                         service.setCountDown(SpeechService.CountDownMode.NumberCount, 1);
                         optName = "articleDetails_timing_article";
+                        tvCountDown10.setVisibility(View.INVISIBLE);
+                        tvCountDown20.setVisibility(View.INVISIBLE);
+                        tvCountDown30.setVisibility(View.INVISIBLE);
                         break;
                     case R.id.rb_time10:
                         ContentManager.getInstance().setRgTime(2);
@@ -178,9 +184,15 @@ public class SettingTimerActivity extends BasePresenterActivity {
         switch (service.getCountDownMode()) {
             case None:
                 rgCountDown.check(R.id.rb_close);
+                tvCountDown10.setVisibility(View.INVISIBLE);
+                tvCountDown20.setVisibility(View.INVISIBLE);
+                tvCountDown30.setVisibility(View.INVISIBLE);
                 break;
             case NumberCount:
                 rgCountDown.check(R.id.rb_current);
+                tvCountDown10.setVisibility(View.INVISIBLE);
+                tvCountDown20.setVisibility(View.INVISIBLE);
+                tvCountDown30.setVisibility(View.INVISIBLE);
                 break;
             case MinuteCount:
                 switch (service.getCountDownThresholdValue()) {
