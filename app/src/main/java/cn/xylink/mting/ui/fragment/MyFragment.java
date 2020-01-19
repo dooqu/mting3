@@ -62,10 +62,14 @@ public class MyFragment extends BaseFragment {
             @Override
             public void onScroll(int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
                 if (oldScrollY - scrollY > DensityUtil.dip2sp(getActivity(),5)) {
-                    EventBus.getDefault().post(new ArticleDetailScrollEvent("glide", getActivity()));
+                    ArticleDetailScrollEvent event = new ArticleDetailScrollEvent("glide");
+                    event.setActivity(getActivity());
+                    EventBus.getDefault().post(event);
                 }
                 if (scrollY - oldScrollY > DensityUtil.dip2sp(getActivity(),5)) {
-                    EventBus.getDefault().post(new ArticleDetailScrollEvent("upGlide", getActivity()));
+                    ArticleDetailScrollEvent event = new ArticleDetailScrollEvent("upGlide");
+                    event.setActivity(getActivity());
+                    EventBus.getDefault().post(event);
                 }
             }
         });

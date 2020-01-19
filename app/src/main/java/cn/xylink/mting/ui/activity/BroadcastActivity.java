@@ -345,9 +345,13 @@ public class BroadcastActivity extends BasePresenterActivity implements Broadcas
         public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
             super.onScrolled(recyclerView, dx, dy);
             if (dy > 2) {
-                EventBus.getDefault().post(new ArticleDetailScrollEvent("upGlide"));
+                ArticleDetailScrollEvent event = new ArticleDetailScrollEvent("upGlide");
+                event.setActivity(BroadcastActivity.this);
+                EventBus.getDefault().post(event);
             } else if (dy < -2) {
-                EventBus.getDefault().post(new ArticleDetailScrollEvent("glide"));
+                ArticleDetailScrollEvent event = new ArticleDetailScrollEvent("glide");
+                event.setActivity(BroadcastActivity.this);
+                EventBus.getDefault().post(event);
             }
             mDY += dy;
             float pro = mDY / 358f;
