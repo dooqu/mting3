@@ -40,6 +40,7 @@ public class BroadcastDetailInfo implements Serializable {
     private int subscribe;
     private String shareUrl;
     private String createHeadImg;
+    private boolean simulateArticle;
 
     public String getCreateHeadImg() {
         return createHeadImg;
@@ -159,5 +160,13 @@ public class BroadcastDetailInfo implements Serializable {
 
     public void setSubscribe(int subscribe) {
         this.subscribe = subscribe;
+    }
+
+    public boolean isSimulateArticle() {
+        return simulateArticle;
+    }
+
+    public void setSimulateArticle(boolean simulateArticle) {
+        this.simulateArticle = simulateArticle;
     }
 }

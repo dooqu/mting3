@@ -278,6 +278,7 @@ public class SpeechPanelDialog extends Dialog implements SeekBar.OnSeekBarChange
                     broadcastDetailInfo.setCreateName(article.getSourceName());
                     broadcastDetailInfo.setShareUrl(article.getShareUrl());
                     broadcastDetailInfo.setInfo("");
+                    broadcastDetailInfo.setSimulateArticle(true);
                     shareDialog.setDetailInfo(broadcastDetailInfo);
                     shareDialog.show();
                 }

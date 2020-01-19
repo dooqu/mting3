@@ -67,7 +67,7 @@ public class BroadcastItemMenuDialog extends BaseDimDialog {
     }
 
     public void setDetailInfo(BroadcastDetailInfo info) {
-        mTitleTextView.setText("分享");
+        mTitleTextView.setText(info.isSimulateArticle()? info.getName() : "分享");
         mShareUrl = info.getShareUrl();
         mShareTitle = info.getName() + "——" + info.getCreateName();
         mShareDes = info.getInfo();
