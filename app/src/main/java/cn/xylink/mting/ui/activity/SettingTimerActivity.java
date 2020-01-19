@@ -1,6 +1,8 @@
 package cn.xylink.mting.ui.activity;
 
 import android.content.Intent;
+import android.os.Handler;
+import android.os.Message;
 import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.RadioGroup;
@@ -39,7 +41,6 @@ public class SettingTimerActivity extends BasePresenterActivity {
 
     private SpeechService.CountDownMode countDownMode;
     private SpeechSettingService service;
-    private int countDownValue;
     //设置定时关闭回调
     String optName = "articleDetails_timing_close";
 
@@ -51,6 +52,9 @@ public class SettingTimerActivity extends BasePresenterActivity {
 
     @Override
     protected void initView() {
+        tvCountDown10.setVisibility(View.INVISIBLE);
+        tvCountDown20.setVisibility(View.INVISIBLE);
+        tvCountDown30.setVisibility(View.INVISIBLE);
         if (ContentManager.getInstance().getVisitor().equals("0")) {//表示是游客登录
             Intent intent = new Intent(new Intent(SettingTimerActivity.this, LoginActivity.class));
             intent.putExtra(LoginActivity.LOGIN_ACTIVITY, Const.visitor);
@@ -70,7 +74,7 @@ public class SettingTimerActivity extends BasePresenterActivity {
         } else {
             int rgTime = ContentManager.getInstance().getRgTime();
             swCount.setChecked(true);
-            tvTimer.setText(countDownValue + "分钟后关闭");
+//            tvTimer.setText(countDownValue + "分钟后关闭");
             tvTimer.setVisibility(View.VISIBLE);
             switch (rgTime) {
                 case 2:
@@ -101,19 +105,34 @@ public class SettingTimerActivity extends BasePresenterActivity {
                         ContentManager.getInstance().setRgTime(2);
                         swCount.setChecked(true);
                         service.setCountDown(SpeechService.CountDownMode.MinuteCount, 10);
+                        tvCountDown10.setVisibility(View.VISIBLE);
+                        tvCountDown20.setVisibility(View.INVISIBLE);
+                        tvCountDown30.setVisibility(View.INVISIBLE);
+                        tvCountDown10.setText(getCountDown());
                         optName = "articleDetails_timing_10";
+                        handler.postDelayed(update_thread,1000);
                         break;
                     case R.id.rb_time20:
                         ContentManager.getInstance().setRgTime(3);
                         swCount.setChecked(true);
                         service.setCountDown(SpeechService.CountDownMode.MinuteCount, 20);
+                        tvCountDown10.setVisibility(View.INVISIBLE);
+                        tvCountDown20.setVisibility(View.VISIBLE);
+                        tvCountDown30.setVisibility(View.INVISIBLE);
+                        tvCountDown20.setText(getCountDown());
                         optName = "articleDetails_timing_20";
+                        handler.postDelayed(update_thread,1000);
                         break;
                     case R.id.rb_time30:
                         ContentManager.getInstance().setRgTime(4);
                         swCount.setChecked(true);
                         service.setCountDown(SpeechService.CountDownMode.MinuteCount, 30);
+                        tvCountDown10.setVisibility(View.INVISIBLE);
+                        tvCountDown20.setVisibility(View.INVISIBLE);
+                        tvCountDown30.setVisibility(View.VISIBLE);
+                        tvCountDown30.setText(getCountDown());
                         optName = "articleDetails_timing_30";
+                        handler.postDelayed(update_thread,1000);
                         break;
                 }
                 TCAgent.onEvent(SettingTimerActivity.this, optName);
@@ -130,7 +149,7 @@ public class SettingTimerActivity extends BasePresenterActivity {
                 buttonView.setChecked(isChecked);
             }
         });
-//        setCountDown(service.getCountDownMode(), service.getCountDownMode());
+
     }
 
     @Override
@@ -151,6 +170,7 @@ public class SettingTimerActivity extends BasePresenterActivity {
         }
     }
 
+
     @Override
     protected void onSpeechServiceAvailable() {
         super.onSpeechServiceAvailable();
@@ -166,12 +186,23 @@ public class SettingTimerActivity extends BasePresenterActivity {
                 switch (service.getCountDownThresholdValue()) {
                     case 10:
                         rgCountDown.check(R.id.rb_time10);
+                        tvCountDown10.setVisibility(View.VISIBLE);
+                        tvCountDown20.setVisibility(View.INVISIBLE);
+                        tvCountDown30.setVisibility(View.INVISIBLE);
+                        tvCountDown10.setText(getCountDown());
                         break;
                     case 20:
                         rgCountDown.check(R.id.rb_time20);
+                        tvCountDown10.setVisibility(View.INVISIBLE);
+                        tvCountDown20.setVisibility(View.VISIBLE);
+                        tvCountDown30.setVisibility(View.INVISIBLE);
                         break;
                     case 30:
                         rgCountDown.check(R.id.rb_time30);
+                        tvCountDown10.setVisibility(View.INVISIBLE);
+                        tvCountDown20.setVisibility(View.INVISIBLE);
+                        tvCountDown30.setVisibility(View.VISIBLE);
+
                         break;
                 }
                 break;
@@ -183,8 +214,76 @@ public class SettingTimerActivity extends BasePresenterActivity {
         return true;
     }
 
-    public void setCountDown(SpeechService.CountDownMode countDownMode, int countDownValue) {
-        this.countDownMode = countDownMode;
-        this.countDownValue = countDownValue;
+    public String getCountDown() {
+
+        return service.getCountDownValueOfTimeFormat();
+
     }
+
+    Handler handler = new Handler();
+    Runnable update_thread = new Runnable() {
+        @Override
+        public void run() {
+            switch (service.getCountDownMode()) {
+                case None:
+                    rgCountDown.check(R.id.rb_close);
+                    //发送消息，结束倒计时
+                    Message message = new Message();
+                    message.what = 1;
+                    handlerStop.sendMessage(message);
+                    break;
+                case NumberCount:
+                    rgCountDown.check(R.id.rb_current);
+                    Message message2 = new Message();
+                    message2.what = 1;
+                    handlerStop.sendMessage(message2);
+                    break;
+                case MinuteCount:
+                    switch (service.getCountDownThresholdValue()) {
+                        case 10:
+                            rgCountDown.check(R.id.rb_time10);
+                            tvCountDown10.setVisibility(View.VISIBLE);
+                            tvCountDown20.setVisibility(View.INVISIBLE);
+                            tvCountDown30.setVisibility(View.INVISIBLE);
+                            tvCountDown10.setText(getCountDown());
+                            handler.postDelayed(this, 1000);
+                            break;
+                        case 20:
+                            rgCountDown.check(R.id.rb_time20);
+                            tvCountDown10.setVisibility(View.INVISIBLE);
+                            tvCountDown20.setVisibility(View.VISIBLE);
+                            tvCountDown30.setVisibility(View.INVISIBLE);
+                            handler.postDelayed(this, 1000);
+                            break;
+                        case 30:
+                            rgCountDown.check(R.id.rb_time30);
+                            tvCountDown10.setVisibility(View.INVISIBLE);
+                            tvCountDown20.setVisibility(View.INVISIBLE);
+                            tvCountDown30.setVisibility(View.VISIBLE);
+                            handler.postDelayed(this, 1000);
+                            break;
+
+                    }
+                    break;
+            }
+        }
+    };
+
+    final Handler handlerStop = new Handler() {
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                case 1:
+                    handler.removeCallbacks(update_thread);
+                    break;
+            }
+            super.handleMessage(msg);
+        }
+
+    };
+
+//    @Override
+//    protected void onDestroy() {
+//        super.onDestroy();
+//        handler.removeCallbacks(update_thread);
+//    }
 }
