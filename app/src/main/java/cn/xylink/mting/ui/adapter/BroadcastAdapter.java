@@ -158,7 +158,7 @@ public class BroadcastAdapter extends RecyclerView.Adapter<BroadcastAdapter.View
         } else {
             BroadcastInfo data = mData.get(position);
             holder.tvTitle.setText(data.getTitle());
-            holder.tvSource.setText(data.getSourceName());
+            holder.tvSource.setText(TextUtils.isEmpty(data.getSourceName()) ? "其他" : data.getSourceName());
             if (data.getProgress() > 0) {
                 holder.tvProgress.setText("已读" + getPercentFormat(data.getProgress()));
             }
@@ -192,16 +192,16 @@ public class BroadcastAdapter extends RecyclerView.Adapter<BroadcastAdapter.View
     }
 
     /**
-    * 更改分享按钮状态
-    * */
+     * 更改分享按钮状态
+     */
     public void setShare2World() {
         mDetailInfo.setShare(1);
         notifyItemChanged(0);
     }
 
     /**
-    * 修改订阅状态
-    * */
+     * 修改订阅状态
+     */
     public void setSubscribe(int sub) {
         mDetailInfo.setSubscribe(sub);
         notifyItemChanged(0);
@@ -213,7 +213,7 @@ public class BroadcastAdapter extends RecyclerView.Adapter<BroadcastAdapter.View
     private void initSysBroadcast(BroadcastAdapter.ViewHolder holder) {
         holder.mTitleTextView.setText("");
         RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) holder.mTitleTextView.getLayoutParams();
-        layoutParams.setMargins(0,DensityUtil.dip2pxComm(mContext,80),0,0);
+        layoutParams.setMargins(0, DensityUtil.dip2pxComm(mContext, 80), 0, 0);
         holder.mTitleTextView.setLayoutParams(layoutParams);
         if (Const.SystemBroadcast.SYSTEMBROADCAST_UNREAD.equals(mBroadcastid)) {
             holder.mImageView.setImageResource(R.mipmap.icon_head_unread);
@@ -255,8 +255,8 @@ public class BroadcastAdapter extends RecyclerView.Adapter<BroadcastAdapter.View
     }
 
     /**
-    * 格式化进度值
-    * */
+     * 格式化进度值
+     */
     public static String getPercentFormat(float d) {
         NumberFormat nf = java.text.NumberFormat.getPercentInstance();
         nf.setMaximumIntegerDigits(3);//小数点前保留几位
@@ -266,8 +266,8 @@ public class BroadcastAdapter extends RecyclerView.Adapter<BroadcastAdapter.View
     }
 
     /**
-    * 删除根据position
-    * */
+     * 删除根据position
+     */
     public void notifyItemRemoe(int position) {
         if (mData != null & mData.size() > position) {
             ListIterator<BroadcastInfo> ite = mData.listIterator(position);
@@ -279,7 +279,7 @@ public class BroadcastAdapter extends RecyclerView.Adapter<BroadcastAdapter.View
 
     /**
      * 删除根据id
-     * */
+     */
     public void notifyItemRemoe(String id) {
         if (mData != null && mData.size() > 0 && !TextUtils.isEmpty(id)) {
             for (int i = 0; i < mData.size(); i++) {
@@ -294,8 +294,8 @@ public class BroadcastAdapter extends RecyclerView.Adapter<BroadcastAdapter.View
     }
 
     /**
-    * g更改收藏状态
-    * */
+     * g更改收藏状态
+     */
     public void notifyItemChangeStore(String id) {
         if (mData != null && mData.size() > 0 && !TextUtils.isEmpty(id)) {
             for (int i = 0; i < mData.size(); i++) {

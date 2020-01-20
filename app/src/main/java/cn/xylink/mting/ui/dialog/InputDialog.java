@@ -41,7 +41,7 @@ import cn.xylink.mting.widget.EditTextWidthClear;
  * -----------------------------------------------------------------
  */
 public class InputDialog extends BaseDimDialog implements BroadcastDetailContact.IBroadcastDetailView, ArticleDetailContract.IArticleDetailView
-, LinkCreateContact.IPushView {
+        , LinkCreateContact.IPushView {
     @BindView(R.id.etwc_input)
     EditTextWidthClear mEditText;
     @BindView(R.id.tv_input_url)
@@ -73,7 +73,7 @@ public class InputDialog extends BaseDimDialog implements BroadcastDetailContact
         mLinkCreatePresenter.attachView(this);
         String copy = BasePresenterActivity.getCopy(mContext).toString();
 //        String copy = "http://test.xylink.cn/broadcast/201911181650419156111592/sss";
-        if (!TextUtils.isEmpty(copy)) {
+        if (!TextUtils.isEmpty(copy) && !TextUtils.isEmpty(StringUtil.matcherUrl(copy))) {
             mUrlTextView.setText(copy);
         } else {
             mUrlTextView.setVisibility(View.INVISIBLE);
@@ -100,16 +100,16 @@ public class InputDialog extends BaseDimDialog implements BroadcastDetailContact
                 if (!TextUtils.isEmpty(url)) {
                     if (url.startsWith(RemoteUrl.URL_BASE + "/broadcast/")) {
                         BroadcastIdRequest request = new BroadcastIdRequest();
-                        request.setBroadcastId(matcherID(RemoteUrl.URL_BASE + "/broadcast/",url));
+                        request.setBroadcastId(matcherID(RemoteUrl.URL_BASE + "/broadcast/", url));
                         request.doSign();
                         mBroadcastDetailPresenter.getBroadcastDetail(request);
                     } else if (url.startsWith(RemoteUrl.URL_BASE + "/article/")) {
                         ArticleDetailRequest request = new ArticleDetailRequest();
-                        request.setArticleId(matcherID(RemoteUrl.URL_BASE + "/article/",url));
+                        request.setArticleId(matcherID(RemoteUrl.URL_BASE + "/article/", url));
                         request.doSign();
                         mArticleDetailPresenter.createArticleDetail(request);
                     } else {
-                        LinkCreateRequest request =new LinkCreateRequest();
+                        LinkCreateRequest request = new LinkCreateRequest();
                         request.setUrl(url);
                         request.setInType(2);
                         request.doSign();
@@ -126,7 +126,7 @@ public class InputDialog extends BaseDimDialog implements BroadcastDetailContact
         Matcher matcher = p.matcher(url);
         if (matcher.find()) {
             String str = matcher.group();
-            return str.replace(head,"");
+            return str.replace(head, "");
         }
         return "";
     }
@@ -188,7 +188,7 @@ public class InputDialog extends BaseDimDialog implements BroadcastDetailContact
     public void onPushError(int code, String errorMsg) {
         this.dismiss();
 
-        switch (code){
+        switch (code) {
             case -2:
                 T.showCustomCenterToast("url链接无效");
                 break;
