@@ -2,6 +2,7 @@ package cn.xylink.mting;
 
 
 import android.content.Intent;
+import android.support.annotation.Nullable;
 import android.support.v4.view.ViewPager;
 import android.text.TextUtils;
 import android.view.View;
@@ -193,5 +194,11 @@ public class MainActivity extends BasePresenterActivity implements ViewPager.OnP
     @Override
     protected boolean enableVersionUpgrade() {
         return true;
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        mTabAdapter.getItem(mViewPager.getCurrentItem()).onActivityResult(requestCode,resultCode,data);
     }
 }

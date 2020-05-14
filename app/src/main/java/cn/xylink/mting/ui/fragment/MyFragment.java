@@ -1,6 +1,13 @@
 package cn.xylink.mting.ui.fragment;
 
+import android.Manifest;
+import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.SystemClock;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.ActivityOptionsCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.NestedScrollView;
 import android.text.TextUtils;
 import android.view.View;
@@ -8,17 +15,26 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.king.zxing.CaptureActivity;
+import com.king.zxing.Intents;
 import com.tendcloud.tenddata.TCAgent;
 
 import org.greenrobot.eventbus.EventBus;
 
 import butterknife.BindView;
 import butterknife.OnClick;
+import butterknife.OnLongClick;
 import cn.xylink.mting.R;
+import cn.xylink.mting.base.BaseRequest;
+import cn.xylink.mting.bean.QrInfo;
 import cn.xylink.mting.bean.UserInfo;
 import cn.xylink.mting.common.Const;
+import cn.xylink.mting.contract.QrContract;
 import cn.xylink.mting.event.ArticleDetailScrollEvent;
+import cn.xylink.mting.model.CheckTokenRequest;
+import cn.xylink.mting.presenter.QrPresenter;
 import cn.xylink.mting.ui.activity.AboutVersion;
 import cn.xylink.mting.ui.activity.ArticleDetailActivity;
 import cn.xylink.mting.ui.activity.BroadcastActivity;
@@ -36,7 +52,10 @@ import cn.xylink.mting.utils.L;
 import cn.xylink.mting.utils.TingUtils;
 import cn.xylink.mting.widget.MyScrollView;
 
-public class MyFragment extends BaseFragment {
+import static android.app.Activity.RESULT_OK;
+import static org.greenrobot.eventbus.util.ErrorDialogManager.KEY_TITLE;
+
+public class MyFragment extends BasePresenterFragment implements QrContract.IQrView {
     @BindView(R.id.ll_setting_system)
     LinearLayout llSettingSystem;
     @BindView(R.id.imv_head)
@@ -45,6 +64,7 @@ public class MyFragment extends BaseFragment {
     TextView mNickName;
     @BindView(R.id.msv_my)
     MyScrollView mScrollView;
+    private QrPresenter mQrPresenter;
 
 
     public static MyFragment newInstance() {
@@ -58,6 +78,8 @@ public class MyFragment extends BaseFragment {
 
     @Override
     protected void initView(View view) {
+        mQrPresenter  = (QrPresenter) createPresenter(QrPresenter.class);
+        mQrPresenter.attachView(this);
         mScrollView.setOnScrollListener(new MyScrollView.OnScrollListener(){
             @Override
             public void onScroll(int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
@@ -99,6 +121,20 @@ public class MyFragment extends BaseFragment {
                     mNickName.setText(info.getNickName());
             }
         }
+    }
+
+    @OnLongClick(R.id.ll_about_ting)
+    public boolean onLongClick(){
+        if (PackageManager.PERMISSION_GRANTED != ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.CAMERA)) {
+            ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.CAMERA}, 123);
+        }else {
+            Intent intent = new Intent(getActivity(), CaptureActivity.class);
+            intent.putExtra("key_title","扫码登陆");
+            intent.putExtra("key_continuous_scan",true);
+            getActivity().startActivityForResult(intent,123,null);
+        }
+
+        return true;
     }
 
     @OnClick({R.id.ll_my_share, R.id.ll_click_login, R.id.ll_setting_system, R.id.tv_out_account, R.id.tv_out_application,
@@ -205,4 +241,32 @@ public class MyFragment extends BaseFragment {
         getActivity().startActivity(intent);
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        L.e("-------=========================="+requestCode+resultCode+data.getStringExtra(Intents.Scan.RESULT));
+        if(resultCode == RESULT_OK && data!=null){
+            switch (requestCode){
+                case 123:
+                    String result = data.getStringExtra(Intents.Scan.RESULT);
+                    if (!TextUtils.isEmpty(result)){
+                        BaseRequest request = new BaseRequest();
+                        request.doSign();
+                        mQrPresenter.qr(result,request);
+                    }
+                    break;
+            }
+
+        }
+    }
+
+    @Override
+    public void onQrSuccess(QrInfo response) {
+        Toast.makeText(getActivity(),"登陆成功！",Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onQrError(int code, String errorMsg) {
+        Toast.makeText(getActivity(),"请重试！",Toast.LENGTH_SHORT).show();
+    }
 }

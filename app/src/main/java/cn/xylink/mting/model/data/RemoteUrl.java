@@ -3,7 +3,8 @@ package cn.xylink.mting.model.data;
 public class RemoteUrl {
 //    public static final String URL_BASE = "http://test.xylink.cn";//外网2019-4-9
 
-    public static final String URL_BASE = "http://service.xylink.cn";//外网2019-4-9
+//    public static final String URL_BASE = "http://service.xylink.cn";//外网2019-4-9
+    public static final String URL_BASE = "http://service.xylink.net";//外网2019-4-9
 
 
     //获取短信验证码
@@ -327,6 +328,10 @@ public class RemoteUrl {
     //播单列表
     public static String getBroadcastListWithNumUrl() {
         return URL_BASE + "/api/art/v1/broadcast/all_list";
+    }
+    //播单列表
+    public static String getQrConfirmUrl() {
+        return URL_BASE + "/api/user/v1/qrcode/confirm";
     }
 
 }
