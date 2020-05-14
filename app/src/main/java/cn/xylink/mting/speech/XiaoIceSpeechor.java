@@ -288,7 +288,7 @@ public abstract class XiaoIceSpeechor implements Speechor {
                                     }
                                     else {
                                         if (state != SpeechorState.SpeechorStateReady) {
-                                            ttsAudioLoader.textToSpeech(fragment.getFragmentText(), speed, this);
+                                            ttsAudioLoader.textToSpeech2(fragment.getFragmentText(), speed, this);
                                         }
                                     }
                                 }
@@ -296,7 +296,7 @@ public abstract class XiaoIceSpeechor implements Speechor {
                         } // end invoke
                     };
 
-                    ttsAudioLoader.textToSpeech(fragment.getFragmentText(), speed, loadResult);
+                    ttsAudioLoader.textToSpeech2(fragment.getFragmentText(), speed, loadResult);
                     fragment.setFragmentState(SpeechTextFragmentState.AudioLoadding);
                     break;
 

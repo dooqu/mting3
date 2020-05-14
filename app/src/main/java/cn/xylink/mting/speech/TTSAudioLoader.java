@@ -8,5 +8,7 @@ public interface TTSAudioLoader {
 
     void textToSpeech(String text, Speechor.SpeechorSpeed speechorSpeed, LoadResult result);
 
+    void textToSpeech2(String text, Speechor.SpeechorSpeed speechorSpeed, LoadResult result);
+
     void cancelAll();
 }

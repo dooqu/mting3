@@ -11,7 +11,6 @@ import cn.xylink.mting.bean.Article;
 /*
 1、直接点列表的某一项开始播放=> playIterator = article; select
 2、某个条目播放完成，使用moveNext，进行向下搜索，再调用current
-
 */
 public class UnreadSpeechList implements SpeechList {
 

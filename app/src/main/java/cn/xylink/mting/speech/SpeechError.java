@@ -15,5 +15,4 @@ public class SpeechError {
     public static int TOKEN_EXPIRED = 987;
     public static int LIST_LOAD_ERROR = 986;
     public static int ARTCILE_NOT_EXISTS_IN_SERIES = 985;
-
 }

@@ -28,6 +28,9 @@ import cn.xylink.mting.model.UpgradeResponse;
 import cn.xylink.mting.model.data.RemoteUrl;
 import cn.xylink.mting.openapi.QQApi;
 import cn.xylink.mting.openapi.WXapi;
+import cn.xylink.mting.speech.Speechor;
+import cn.xylink.mting.speech.TTSAudioLoader;
+import cn.xylink.mting.speech.data.XiaoIceTTSAudioLoader;
 import cn.xylink.mting.utils.*;
 
 
@@ -97,6 +100,8 @@ public class MTing extends Application {
         serviceIntent.putExtra("speed", defaultSpeed);
 
          */
+        long start = System.currentTimeMillis();
+
         try {
             checkOnlineUpgrade();
         } catch (Exception ex) {

@@ -440,6 +440,12 @@ public class SpeechService extends Service {
         }
     }
 
+    /*
+    获取当前的语音服务的剩余时间动态值；
+    如果当前CountdownMode == None，返回0
+    如果当前CountdownMode == Minutes，返回分钟数
+    如果当前CountdownMode == Number，返回按篇数倒计时值
+     */
     public synchronized String getCountDownStringValue() {
         if(this.countDownMode == CountDownMode.MinuteCount) {
             int minutes = this.countdownValue / 60;
@@ -450,6 +456,9 @@ public class SpeechService extends Service {
     }
 
 
+    /*
+    进行演说的
+     */
     public synchronized int seek(float percentage) {
         //如果当前播放不存在，那返回错误
         if (getSelected() == null) {

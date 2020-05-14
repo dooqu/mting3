@@ -6,6 +6,7 @@ import android.util.Log;
 
 import com.lzy.okgo.OkGo;
 import com.lzy.okgo.callback.FileCallback;
+import com.lzy.okgo.model.Progress;
 import com.lzy.okgo.model.Response;
 
 import org.json.JSONArray;
@@ -115,6 +116,11 @@ public class XiaoIceTTSAudioLoader implements TTSAudioLoader {
                                         .tag(XiaoIceTTSAudioLoader.this)
                                         .execute(new FileCallback(fileStoragePath, filename) {
                                             @Override
+                                            public void downloadProgress(Progress progress) {
+                                                super.downloadProgress(progress);
+                                            }
+
+                                            @Override
                                             public void onSuccess(Response<File> response) {
                                                 String fileUrl = response.body().getAbsolutePath();
                                                 if (result != null) {
@@ -158,7 +164,8 @@ public class XiaoIceTTSAudioLoader implements TTSAudioLoader {
     }
 
 
-    public void textToSpeechEx(String text, Speechor.SpeechorSpeed speechorSpeed, LoadResult result) {
+    @Override
+    public void textToSpeech2(String text, Speechor.SpeechorSpeed speechorSpeed, LoadResult result) {
         Log.d(TAG, "TTS:" + text);
         String postData = null;
 
